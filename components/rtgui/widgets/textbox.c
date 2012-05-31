@@ -229,7 +229,8 @@ static void rtgui_textbox_onkey(struct rtgui_textbox* box, struct rtgui_event_kb
 static rt_bool_t rtgui_textbox_onfocus(struct rtgui_object* object, struct rtgui_event* event)
 {
 	struct rtgui_textbox* box;
-	RTGUI_WIDGET_EVENT_HANDLER_PREPARE
+
+	RT_ASSERT(object != RT_NULL);
 
 	box = RTGUI_TEXTBOX(object);
 	/* set caret to show */
@@ -243,7 +244,8 @@ static rt_bool_t rtgui_textbox_onfocus(struct rtgui_object* object, struct rtgui
 static rt_bool_t rtgui_textbox_onunfocus(struct rtgui_object* object, struct rtgui_event* event)
 {
 	struct rtgui_textbox* box;
-	RTGUI_WIDGET_EVENT_HANDLER_PREPARE
+
+	RT_ASSERT(object != RT_NULL);
 
 	box = RTGUI_TEXTBOX(object);
 	/* stop caret timer */
