@@ -65,7 +65,7 @@ static rt_err_t  sdlfb_control(rt_device_t dev, rt_uint8_t cmd, void *args)
 		struct rt_device_rect_info* rect;
 
 		rect = (struct rt_device_rect_info*)args;
-		if ((_device.width == rect->width) && (_device.height == rect->height)) return;
+		if ((_device.width == rect->width) && (_device.height == rect->height)) return -RT_ERROR;
 		
 		_device.width = rect->width;
 		_device.height = rect->height;
