@@ -91,10 +91,6 @@ void diag_close(struct rtgui_timer* timer, void* parameter)
 	{
 		/* 超时，关闭对话框 */
 		rtgui_win_destroy(msgbox);
-
-		/* 停止并删除定时器 */
-		rtgui_timer_stop(timer);
-		rtgui_timer_destory(timer);
 	}
 }
 
