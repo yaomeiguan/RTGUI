@@ -165,6 +165,27 @@ __on_err:
 
 void rtgui_win_destroy(struct rtgui_win* win)
 {
+	/* close the window first if it's not. */
+	if (!(win->flag & RTGUI_WIN_FLAG_CLOSED))
+	{
+		struct rtgui_event_win_close eclose;
+
+		RTGUI_EVENT_WIN_CLOSE_INIT(&eclose);
+		eclose.wid = win;
+
+		if (win->style & RTGUI_WIN_STYLE_DESTROY_ON_CLOSE)
+		{
+			_rtgui_win_deal_close(win,
+					(struct rtgui_event*)&eclose,
+					RT_TRUE);
+			return;
+		}
+		else
+			_rtgui_win_deal_close(win,
+					(struct rtgui_event*)&eclose,
+					RT_TRUE);
+	}
+
 	if (win->flag & RTGUI_WIN_FLAG_MODAL)
 	{
 		/* set the RTGUI_WIN_STYLE_DESTROY_ON_CLOSE flag so the window will be
@@ -177,11 +198,12 @@ void rtgui_win_destroy(struct rtgui_win* win)
 }
 
 static rt_bool_t _rtgui_win_deal_close(struct rtgui_win *win,
-									   struct rtgui_event *event)
+									   struct rtgui_event *event,
+									   rt_bool_t force_close)
 {
 	if (win->on_close != RT_NULL)
 	{
-		if (win->on_close(RTGUI_OBJECT(win), event) == RT_FALSE)
+		if ((win->on_close(RTGUI_OBJECT(win), event) == RT_FALSE) && !force_close)
 			return RT_FALSE;
 	}
 
@@ -209,7 +231,8 @@ rt_bool_t rtgui_win_close(struct rtgui_win* win)
 	RTGUI_EVENT_WIN_CLOSE_INIT(&eclose);
 	eclose.wid = win;
 	return _rtgui_win_deal_close(win,
-								 (struct rtgui_event*)&eclose);
+								 (struct rtgui_event*)&eclose,
+								 RT_FALSE);
 }
 
 rt_base_t rtgui_win_show(struct rtgui_win* win, rt_bool_t is_modal)
@@ -405,7 +428,7 @@ rt_bool_t rtgui_win_event_handler(struct rtgui_object* object, struct rtgui_even
 		break;
 
 	case RTGUI_EVENT_WIN_CLOSE:
-		_rtgui_win_deal_close(win, event);
+		_rtgui_win_deal_close(win, event, RT_FALSE);
 		/* don't broadcast WIN_CLOSE event to others */
 		return RT_TRUE;
 
