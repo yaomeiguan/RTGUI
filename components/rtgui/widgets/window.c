@@ -253,6 +253,9 @@ rt_base_t rtgui_win_show(struct rtgui_win* win, rt_bool_t is_modal)
 			return exit_code;
 	}
 
+	/* set window unhidden before notify the server */
+	RTGUI_WIDGET_UNHIDE(RTGUI_WIDGET(win));
+
 	if (rtgui_server_post_event_sync(RTGUI_EVENT(&eshow),
 									 sizeof(struct rtgui_event_win_show)
 			) != RT_EOK)
@@ -260,9 +263,6 @@ rt_base_t rtgui_win_show(struct rtgui_win* win, rt_bool_t is_modal)
 		rt_kprintf("show win failed\n");
 		return exit_code;
 	}
-
-	/* set window unhidden */
-	RTGUI_WIDGET_UNHIDE(RTGUI_WIDGET(win));
 
 	if (win->focused_widget == RT_NULL)
 		rtgui_widget_focus(RTGUI_WIDGET(win));
