@@ -24,18 +24,19 @@
 
 /* This list is divided into two parts. The first part is the shown list, in
  * which all the windows have the WINTITLE_SHOWN flag set. Second part is the
- * hidden list, in which all the windows don't have WINTITLE_SHOWN flag.
+ * hidden items, in which all the windows don't have WINTITLE_SHOWN flag.
  *
  * The active window is the one that would receive kbd events. It should always
- * in the first tree. The order of this list is the order of the windows.
- * Thus, the first item is the top most window and the last item is the bottom
- * window. Top window can always clip the window beneath it when the two
+ * be in the first tree. The order of this list is the order of the windows.
+ * Top window can always clip the window beneath it when the two
  * overlapping. Child window can always clip it's parent. Slibing windows can
- * clip each other with the same rule as this list. Thus, each child list is
- * the same as _rtgui_topwin_list. This forms the hierarchy tree structure of
- * all windows.
+ * clip each other with the same rule as this list. Each child list is the same
+ * as _rtgui_topwin_list. This forms the hierarchy tree structure of all
+ * windows.
  *
- * The hidden list have no specific order.
+ * Thus, the left most leaf of the tree is the top most window and the right
+ * most root node is the bottom window.  The hidden part have no specific
+ * order.
  */
 static struct rtgui_dlist_node _rtgui_topwin_list;
 #define get_topwin_from_list(list_entry) \
