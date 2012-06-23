@@ -9,7 +9,10 @@
  *
  * Change Logs:
  * Date           Author       Notes
- *
+ * 2009-10-16     Bernard      first version
+ * 2011-01-224    Bernard      fix backspace issue.
+ * 2012-06-09     asml         refactor
+ * 2012-06-17     Grissiom     misc cleanup and merge
  */
 #include <string.h>
 #include <rtgui/widgets/textbox.h>
