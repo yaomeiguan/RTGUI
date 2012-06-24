@@ -84,9 +84,6 @@ struct rtgui_application* rtgui_application_self(void);
 
 rt_thread_t rtgui_application_get_server(void);
 
-void rtgui_application_set_root_object(struct rtgui_object* object);
-struct rtgui_object* rtgui_application_get_root_object(void);
-
 struct rtgui_event;
 rt_err_t rtgui_application_send(rt_thread_t tid, struct rtgui_event* event, rt_size_t event_size);
 rt_err_t rtgui_application_send_urgent(rt_thread_t tid, struct rtgui_event* event, rt_size_t event_size);
