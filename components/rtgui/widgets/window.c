@@ -260,7 +260,8 @@ rt_base_t rtgui_win_show(struct rtgui_win* win, rt_bool_t is_modal)
 									 sizeof(struct rtgui_event_win_show)
 			) != RT_EOK)
 	{
-		rt_kprintf("show win failed\n");
+		/* It could not be shown if a parent window is hidden. */
+		RTGUI_WIDGET_HIDE(RTGUI_WIDGET(win));
 		return exit_code;
 	}
 

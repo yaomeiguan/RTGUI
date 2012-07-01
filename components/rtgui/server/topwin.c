@@ -402,19 +402,30 @@ static void _rtgui_topwin_move_whole_tree2top(struct rtgui_topwin *topwin)
 #endif
 }
 
-static void _rtgui_topwin_raise_topwin_in_tree(struct rtgui_topwin *topwin)
+static void _rtgui_topwin_raise_in_sibling(struct rtgui_topwin *topwin)
 {
 	struct rtgui_dlist_node *win_level;
 
 	RT_ASSERT(topwin != RT_NULL);
 
-	_rtgui_topwin_move_whole_tree2top(topwin);
 	if (topwin->parent == RT_NULL)
 		win_level = &_rtgui_topwin_list;
 	else
 		win_level = &topwin->parent->child_list;
 	rtgui_dlist_remove(&topwin->list);
 	rtgui_dlist_insert_after(win_level, &topwin->list);
+}
+
+/* it will do 2 things. One is move the whole tree(the root of the tree) to the
+ * front and move topwin to the front of it's siblings. */
+static void _rtgui_topwin_raise_topwin_in_tree(struct rtgui_topwin *topwin)
+{
+	RT_ASSERT(topwin != RT_NULL);
+
+	_rtgui_topwin_move_whole_tree2top(topwin);
+	/* root win is aleady moved by _rtgui_topwin_move_whole_tree2top */
+	if (!IS_ROOT_WIN(topwin))
+		_rtgui_topwin_raise_in_sibling(topwin);
 }
 
 /* activate a win means:
@@ -487,7 +498,8 @@ rt_inline void _rtgui_topwin_mark_hidden(struct rtgui_topwin *topwin)
 
 rt_inline void _rtgui_topwin_mark_shown(struct rtgui_topwin *topwin)
 {
-	if (RTGUI_WIDGET_IS_HIDE(RTGUI_WIDGET(topwin->wid)))
+	if (!(topwin->flag & WINTITLE_SHOWN)
+		&& RTGUI_WIDGET_IS_HIDE(RTGUI_WIDGET(topwin->wid)))
 		return;
 
 	topwin->flag |= WINTITLE_SHOWN;
@@ -495,6 +507,7 @@ rt_inline void _rtgui_topwin_mark_shown(struct rtgui_topwin *topwin)
 	{
 		RTGUI_WIDGET_UNHIDE(RTGUI_WIDGET(topwin->title));
 	}
+	RTGUI_WIDGET_UNHIDE(RTGUI_WIDGET(topwin->wid));
 }
 
 static void _rtgui_topwin_draw_tree(struct rtgui_topwin *topwin, struct rtgui_event_paint *epaint)
@@ -555,9 +568,18 @@ rt_err_t rtgui_topwin_show(struct rtgui_event_win* event)
 
 	/* find in hide list */
 	topwin = rtgui_topwin_search_in_list(wid, &_rtgui_topwin_list);
-	if (topwin == RT_NULL ||
-		!_rtgui_topwin_could_show(topwin))
+	if (topwin == RT_NULL)
 		return -RT_ERROR;
+
+	/* if the parent is hidden, just mark it as shown. It will be shown when
+	 * the parent is shown. */
+	if (!_rtgui_topwin_could_show(topwin))
+	{
+		topwin->flag |= WINTITLE_SHOWN;
+		_rtgui_topwin_raise_in_sibling(topwin);
+
+		return -RT_ERROR;
+	}
 
 	old_focus = rtgui_topwin_get_focus();
 
