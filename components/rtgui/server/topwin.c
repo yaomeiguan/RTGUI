@@ -565,13 +565,9 @@ rt_err_t rtgui_topwin_show(struct rtgui_event_win* event)
 
 	/* we don't want double clipping(bare rtgui_topwin_activate_win will clip),
 	 * so we have to do deactivate/activate manually. */
-	if (old_focus == RT_NULL)
-		_rtgui_topwin_only_activate(topwin);
-	else if (old_focus != topwin)
-	{
+	if (old_focus && old_focus != topwin)
 		_rtgui_topwin_deactivate(old_focus);
-		_rtgui_topwin_only_activate(topwin);
-	}
+	_rtgui_topwin_only_activate(topwin);
 
 	return RT_EOK;
 }
@@ -920,6 +916,7 @@ static void rtgui_topwin_update_clip(void)
 				top = _rtgui_topwin_get_topmost_child_shown(get_topwin_from_list(top->list.next));
 			else
 				break;
+		/* move to next slibing topwin */
 		else if (top->list.next != &top->parent->child_list &&
 			get_topwin_from_list(top->list.next)->flag & WINTITLE_SHOWN)
 			top = _rtgui_topwin_get_topmost_child_shown(get_topwin_from_list(top->list.next));
