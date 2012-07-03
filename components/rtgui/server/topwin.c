@@ -449,10 +449,13 @@ void rtgui_topwin_activate_win(struct rtgui_topwin* topwin)
 		return;
 	}
 
-	old_focus_topwin = rtgui_topwin_get_focus();
-
-	if (old_focus_topwin == topwin)
+	if (topwin->flag & WINTITLE_ACTIVATE)
 		return;
+
+	old_focus_topwin = rtgui_topwin_get_focus();
+	/* if topwin has the focus, it shoule have WINTITLE_ACTIVATE set and
+	 * returned above. */
+	RT_ASSERT(old_focus_topwin != topwin);
 
 	_rtgui_topwin_raise_tree_from_root(topwin);
 	/* update clip info */
