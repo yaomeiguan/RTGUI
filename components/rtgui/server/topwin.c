@@ -550,14 +550,6 @@ static void _rtgui_topwin_show_tree(struct rtgui_topwin *topwin, struct rtgui_ev
 	_rtgui_topwin_draw_tree(topwin, epaint);
 }
 
-/** show a window
- *
- * If any parent window in the hierarchy tree is hidden, this window won't be
- * shown. If this window could be shown, all the child windows will be shown as
- * well. The topmost child will be active.
- *
- * Top level window(parent == RT_NULL) can always be shown.
- */
 rt_err_t rtgui_topwin_show(struct rtgui_event_win* event)
 {
 	struct rtgui_topwin *topwin, *old_focus;
