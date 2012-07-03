@@ -418,7 +418,7 @@ static void _rtgui_topwin_raise_in_sibling(struct rtgui_topwin *topwin)
 
 /* it will do 2 things. One is move the whole tree(the root of the tree) to the
  * front and move topwin to the front of it's siblings. */
-static void _rtgui_topwin_raise_topwin_in_tree(struct rtgui_topwin *topwin)
+static void _rtgui_topwin_raise_tree_from_root(struct rtgui_topwin *topwin)
 {
 	RT_ASSERT(topwin != RT_NULL);
 
@@ -442,7 +442,7 @@ void rtgui_topwin_activate_win(struct rtgui_topwin* topwin)
 	if (topwin->flag & WINTITLE_NOFOCUS)
 	{
 		/* just raise it, not affect others. */
-		_rtgui_topwin_raise_topwin_in_tree(topwin);
+		_rtgui_topwin_raise_tree_from_root(topwin);
 
 		/* update clip info */
 		rtgui_topwin_update_clip();
@@ -454,7 +454,7 @@ void rtgui_topwin_activate_win(struct rtgui_topwin* topwin)
 	if (old_focus_topwin == topwin)
 		return;
 
-	_rtgui_topwin_raise_topwin_in_tree(topwin);
+	_rtgui_topwin_raise_tree_from_root(topwin);
 	/* update clip info */
 	rtgui_topwin_update_clip();
 
@@ -537,7 +537,7 @@ static void _rtgui_topwin_show_tree(struct rtgui_topwin *topwin, struct rtgui_ev
 	RT_ASSERT(topwin != RT_NULL);
 	RT_ASSERT(epaint != RT_NULL);
 
-	_rtgui_topwin_raise_topwin_in_tree(topwin);
+	_rtgui_topwin_raise_tree_from_root(topwin);
 	/* we have to mark the _all_ tree before update_clip because update_clip
 	 * will stop as hidden windows */
 	_rtgui_topwin_preorder_map(topwin, _rtgui_topwin_mark_shown);
