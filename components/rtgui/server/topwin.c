@@ -558,8 +558,8 @@ rt_err_t rtgui_topwin_show(struct rtgui_event_win* event)
 
 	RTGUI_EVENT_PAINT_INIT(&epaint);
 
-	/* find in hide list */
 	topwin = rtgui_topwin_search_in_list(wid, &_rtgui_topwin_list);
+	/* no such a window recorded */
 	if (topwin == RT_NULL)
 		return -RT_ERROR;
 
