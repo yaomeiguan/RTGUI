@@ -23,7 +23,7 @@
 /* add or remove a top win */
 rt_err_t rtgui_topwin_add(struct rtgui_event_win_create* event);
 rt_err_t rtgui_topwin_remove(struct rtgui_win* wid);
-
+rt_err_t rtgui_topwin_activate(struct rtgui_event_win_activate* event);
 rt_err_t rtgui_topwin_activate_topwin(struct rtgui_topwin* win);
 
 /* show a window */

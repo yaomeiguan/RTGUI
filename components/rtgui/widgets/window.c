@@ -340,6 +340,16 @@ void rtgui_win_hiden(struct rtgui_win* win)
 	}
 }
 
+rt_err_t rtgui_win_activate(struct rtgui_win *win)
+{
+	struct rtgui_event_win_activate eact;
+	RTGUI_EVENT_WIN_ACTIVATE_INIT(&eact);
+	eact.wid = win;
+
+	return rtgui_server_post_event_sync(RTGUI_EVENT(&eact),
+									    sizeof(eact));
+}
+
 rt_bool_t rtgui_win_is_activated(struct rtgui_win* win)
 {
 	RT_ASSERT(win != RT_NULL);

@@ -433,6 +433,19 @@ static void _rtgui_topwin_raise_tree_from_root(struct rtgui_topwin *topwin)
  * - raise the window to the front of it's siblings
  * - activate a win
  */
+rt_err_t rtgui_topwin_activate(struct rtgui_event_win_activate* event)
+{
+	struct rtgui_topwin *topwin;
+
+	RT_ASSERT(event);
+
+	topwin = rtgui_topwin_search_in_list(event->wid, &_rtgui_topwin_list);
+	if (topwin == RT_NULL)
+		return -RT_ERROR;
+
+	return rtgui_topwin_activate_topwin(topwin);
+}
+
 rt_err_t rtgui_topwin_activate_topwin(struct rtgui_topwin* topwin)
 {
 	struct rtgui_topwin *old_focus_topwin;
@@ -440,7 +453,7 @@ rt_err_t rtgui_topwin_activate_topwin(struct rtgui_topwin* topwin)
 	RT_ASSERT(topwin != RT_NULL);
 
 	if (!(topwin->flag & WINTITLE_SHOWN))
-		return;
+		return -RT_ERROR;
 
 	if (topwin->flag & WINTITLE_NOFOCUS)
 	{
@@ -449,11 +462,11 @@ rt_err_t rtgui_topwin_activate_topwin(struct rtgui_topwin* topwin)
 
 		/* update clip info */
 		rtgui_topwin_update_clip();
-		return;
+		return RT_EOK;
 	}
 
 	if (topwin->flag & WINTITLE_ACTIVATE)
-		return;
+		return RT_EOK;
 
 	old_focus_topwin = rtgui_topwin_get_focus();
 	/* if topwin has the focus, it shoule have WINTITLE_ACTIVATE set and
@@ -472,6 +485,8 @@ rt_err_t rtgui_topwin_activate_topwin(struct rtgui_topwin* topwin)
 	}
 
 	_rtgui_topwin_only_activate(topwin);
+
+	return RT_EOK;
 }
 
 /* map func to the topwin tree in preorder.

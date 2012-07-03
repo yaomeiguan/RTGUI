@@ -63,8 +63,10 @@ static void demo_normal_window_onbutton(struct rtgui_widget* widget, rtgui_event
             "第 %d 次显示", normal_window_show_count);
     rtgui_label_set_text(normal_window_label,
                          normal_window_label_text);
-	/* 非模态显示窗口 */
-	rtgui_win_show(normal_window, RT_FALSE);
+    if (RTGUI_WIDGET_IS_HIDE(RTGUI_WIDGET(normal_window)))
+        rtgui_win_show(normal_window, RT_FALSE);
+    else
+        rtgui_win_activate(normal_window);
 }
 
 /* 获取一个递增的窗口标题 */

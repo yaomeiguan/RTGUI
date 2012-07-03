@@ -252,6 +252,13 @@ static rt_bool_t rtgui_server_event_handler(struct rtgui_object *object,
 			rtgui_application_ack(event, RTGUI_STATUS_ERROR);
 		break;
 
+	case RTGUI_EVENT_WIN_ACTIVATE:
+		if (rtgui_topwin_activate((struct rtgui_event_win_activate*)event) == RT_EOK)
+			rtgui_application_ack(event, RTGUI_STATUS_OK);
+		else
+			rtgui_application_ack(event, RTGUI_STATUS_ERROR);
+		break;
+
     case RTGUI_EVENT_WIN_DESTROY:
 		if (last_monitor_topwin != RT_NULL &&
 			last_monitor_topwin->wid == ((struct rtgui_event_win*)event)->wid)
