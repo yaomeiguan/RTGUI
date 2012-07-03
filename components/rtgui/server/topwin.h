@@ -24,7 +24,7 @@
 rt_err_t rtgui_topwin_add(struct rtgui_event_win_create* event);
 rt_err_t rtgui_topwin_remove(struct rtgui_win* wid);
 
-void rtgui_topwin_activate_win(struct rtgui_topwin* win);
+rt_err_t rtgui_topwin_activate_topwin(struct rtgui_topwin* win);
 
 /* show a window */
 rt_err_t rtgui_topwin_show(struct rtgui_event_win* event);

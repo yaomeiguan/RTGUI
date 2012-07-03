@@ -433,7 +433,7 @@ static void _rtgui_topwin_raise_tree_from_root(struct rtgui_topwin *topwin)
  * - raise the window to the front of it's siblings
  * - activate a win
  */
-void rtgui_topwin_activate_win(struct rtgui_topwin* topwin)
+rt_err_t rtgui_topwin_activate_topwin(struct rtgui_topwin* topwin)
 {
 	struct rtgui_topwin *old_focus_topwin;
 
