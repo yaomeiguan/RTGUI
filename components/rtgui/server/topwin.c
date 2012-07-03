@@ -439,6 +439,9 @@ void rtgui_topwin_activate_win(struct rtgui_topwin* topwin)
 
 	RT_ASSERT(topwin != RT_NULL);
 
+	if (!(topwin->flag & WINTITLE_SHOWN))
+		return;
+
 	if (topwin->flag & WINTITLE_NOFOCUS)
 	{
 		/* just raise it, not affect others. */
