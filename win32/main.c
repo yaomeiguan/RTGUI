@@ -24,6 +24,7 @@ rt_tick_t rt_tick_get(void)
 }
 
 int done = 0;
+extern void finsh_thread_init(void);
 int main(int argc, char *argv[])
 {
 	SDL_Event event;
@@ -38,6 +39,8 @@ int main(int argc, char *argv[])
 	rt_mq_system_init();
 	rt_mb_system_init();
 	rt_thread_system_init();
+
+	finsh_thread_init();
 
 	// while(!done);
 
