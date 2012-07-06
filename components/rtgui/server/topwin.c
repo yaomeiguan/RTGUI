@@ -418,7 +418,7 @@ static void _rtgui_topwin_raise_in_sibling(struct rtgui_topwin *topwin)
 
 /* it will do 2 things. One is move the whole tree(the root of the tree) to the
  * front and move topwin to the front of it's siblings. */
-static void _rtgui_topwin_raise_topwin_in_tree(struct rtgui_topwin *topwin)
+static void _rtgui_topwin_raise_tree_from_root(struct rtgui_topwin *topwin)
 {
 	RT_ASSERT(topwin != RT_NULL);
 
@@ -433,28 +433,47 @@ static void _rtgui_topwin_raise_topwin_in_tree(struct rtgui_topwin *topwin)
  * - raise the window to the front of it's siblings
  * - activate a win
  */
-void rtgui_topwin_activate_win(struct rtgui_topwin* topwin)
+rt_err_t rtgui_topwin_activate(struct rtgui_event_win_activate* event)
+{
+	struct rtgui_topwin *topwin;
+
+	RT_ASSERT(event);
+
+	topwin = rtgui_topwin_search_in_list(event->wid, &_rtgui_topwin_list);
+	if (topwin == RT_NULL)
+		return -RT_ERROR;
+
+	return rtgui_topwin_activate_topwin(topwin);
+}
+
+rt_err_t rtgui_topwin_activate_topwin(struct rtgui_topwin* topwin)
 {
 	struct rtgui_topwin *old_focus_topwin;
 
 	RT_ASSERT(topwin != RT_NULL);
 
+	if (!(topwin->flag & WINTITLE_SHOWN))
+		return -RT_ERROR;
+
 	if (topwin->flag & WINTITLE_NOFOCUS)
 	{
 		/* just raise it, not affect others. */
-		_rtgui_topwin_raise_topwin_in_tree(topwin);
+		_rtgui_topwin_raise_tree_from_root(topwin);
 
 		/* update clip info */
 		rtgui_topwin_update_clip();
-		return;
+		return RT_EOK;
 	}
 
+	if (topwin->flag & WINTITLE_ACTIVATE)
+		return RT_EOK;
+
 	old_focus_topwin = rtgui_topwin_get_focus();
+	/* if topwin has the focus, it shoule have WINTITLE_ACTIVATE set and
+	 * returned above. */
+	RT_ASSERT(old_focus_topwin != topwin);
 
-	if (old_focus_topwin == topwin)
-		return;
-
-	_rtgui_topwin_raise_topwin_in_tree(topwin);
+	_rtgui_topwin_raise_tree_from_root(topwin);
 	/* update clip info */
 	rtgui_topwin_update_clip();
 
@@ -466,6 +485,8 @@ void rtgui_topwin_activate_win(struct rtgui_topwin* topwin)
 	}
 
 	_rtgui_topwin_only_activate(topwin);
+
+	return RT_EOK;
 }
 
 /* map func to the topwin tree in preorder.
@@ -537,7 +558,7 @@ static void _rtgui_topwin_show_tree(struct rtgui_topwin *topwin, struct rtgui_ev
 	RT_ASSERT(topwin != RT_NULL);
 	RT_ASSERT(epaint != RT_NULL);
 
-	_rtgui_topwin_raise_topwin_in_tree(topwin);
+	_rtgui_topwin_raise_tree_from_root(topwin);
 	/* we have to mark the _all_ tree before update_clip because update_clip
 	 * will stop as hidden windows */
 	_rtgui_topwin_preorder_map(topwin, _rtgui_topwin_mark_shown);
@@ -550,14 +571,6 @@ static void _rtgui_topwin_show_tree(struct rtgui_topwin *topwin, struct rtgui_ev
 	_rtgui_topwin_draw_tree(topwin, epaint);
 }
 
-/** show a window
- *
- * If any parent window in the hierarchy tree is hidden, this window won't be
- * shown. If this window could be shown, all the child windows will be shown as
- * well. The topmost child will be active.
- *
- * Top level window(parent == RT_NULL) can always be shown.
- */
 rt_err_t rtgui_topwin_show(struct rtgui_event_win* event)
 {
 	struct rtgui_topwin *topwin, *old_focus;
@@ -566,8 +579,8 @@ rt_err_t rtgui_topwin_show(struct rtgui_event_win* event)
 
 	RTGUI_EVENT_PAINT_INIT(&epaint);
 
-	/* find in hide list */
 	topwin = rtgui_topwin_search_in_list(wid, &_rtgui_topwin_list);
+	/* no such a window recorded */
 	if (topwin == RT_NULL)
 		return -RT_ERROR;
 

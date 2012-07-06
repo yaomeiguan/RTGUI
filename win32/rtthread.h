@@ -455,4 +455,6 @@ void rt_assert(const char* str, int line);
 
 #define RT_TICK_PER_SECOND  100
 
+void rt_system_tick_init(void);
+rt_tick_t rt_tick_get(void);
 #endif

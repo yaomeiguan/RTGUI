@@ -101,7 +101,7 @@ void rtgui_server_handle_mouse_btn(struct rtgui_event_mouse* event)
 		if (rtgui_topwin_get_focus() != wnd)
 		{
 			/* raise this window */
-			rtgui_topwin_activate_win(wnd);
+			rtgui_topwin_activate_topwin(wnd);
 		}
 
 		if (wnd->title != RT_NULL &&
@@ -200,22 +200,28 @@ static rt_bool_t rtgui_server_event_handler(struct rtgui_object *object,
     /* dispatch event */
     switch (event->type)
     {
+		/* mouse and keyboard event */
+    case RTGUI_EVENT_MOUSE_MOTION:
+        /* handle mouse motion event */
+        rtgui_server_handle_mouse_motion((struct rtgui_event_mouse*)event);
+        break;
+
+    case RTGUI_EVENT_MOUSE_BUTTON:
+        /* handle mouse button */
+        rtgui_server_handle_mouse_btn((struct rtgui_event_mouse*)event);
+        break;
+
+    case RTGUI_EVENT_KBD:
+        /* handle keyboard event */
+        rtgui_server_handle_kbd((struct rtgui_event_kbd*)event);
+        break;
+
 		/* window event */
     case RTGUI_EVENT_WIN_CREATE:
         if (rtgui_topwin_add((struct rtgui_event_win_create*)event) == RT_EOK)
 			rtgui_application_ack(event, RTGUI_STATUS_OK);
 		else
 			rtgui_application_ack(event, RTGUI_STATUS_ERROR);
-        break;
-
-    case RTGUI_EVENT_WIN_DESTROY:
-		if (last_monitor_topwin != RT_NULL &&
-			last_monitor_topwin->wid == ((struct rtgui_event_win*)event)->wid)
-				last_monitor_topwin = RT_NULL;
-        if (rtgui_topwin_remove(((struct rtgui_event_win*)event)->wid) == RT_EOK)
-            rtgui_application_ack(event, RTGUI_STATUS_OK);
-        else
-            rtgui_application_ack(event, RTGUI_STATUS_ERROR);
         break;
 
     case RTGUI_EVENT_WIN_SHOW:
@@ -246,12 +252,32 @@ static rt_bool_t rtgui_server_event_handler(struct rtgui_object *object,
 			rtgui_application_ack(event, RTGUI_STATUS_ERROR);
 		break;
 
+	case RTGUI_EVENT_WIN_ACTIVATE:
+		if (rtgui_topwin_activate((struct rtgui_event_win_activate*)event) == RT_EOK)
+			rtgui_application_ack(event, RTGUI_STATUS_OK);
+		else
+			rtgui_application_ack(event, RTGUI_STATUS_ERROR);
+		break;
+
+    case RTGUI_EVENT_WIN_DESTROY:
+		if (last_monitor_topwin != RT_NULL &&
+			last_monitor_topwin->wid == ((struct rtgui_event_win*)event)->wid)
+				last_monitor_topwin = RT_NULL;
+        if (rtgui_topwin_remove(((struct rtgui_event_win*)event)->wid) == RT_EOK)
+            rtgui_application_ack(event, RTGUI_STATUS_OK);
+        else
+            rtgui_application_ack(event, RTGUI_STATUS_ERROR);
+        break;
+
     case RTGUI_EVENT_WIN_RESIZE:
         rtgui_topwin_resize(((struct rtgui_event_win_resize*)event)->wid,
                 &(((struct rtgui_event_win_resize*)event)->rect));
         break;
 
         /* other event */
+    case RTGUI_EVENT_COMMAND:
+        break;
+
     case RTGUI_EVENT_UPDATE_BEGIN:
 #ifdef RTGUI_USING_MOUSE_CURSOR
         /* hide cursor */
@@ -271,25 +297,6 @@ static rt_bool_t rtgui_server_event_handler(struct rtgui_object *object,
     case RTGUI_EVENT_MONITOR_ADD:
         /* handle mouse monitor */
         rtgui_server_handle_monitor_add((struct rtgui_event_monitor*)event);
-        break;
-
-        /* mouse and keyboard event */
-    case RTGUI_EVENT_MOUSE_MOTION:
-        /* handle mouse motion event */
-        rtgui_server_handle_mouse_motion((struct rtgui_event_mouse*)event);
-        break;
-
-    case RTGUI_EVENT_MOUSE_BUTTON:
-        /* handle mouse button */
-        rtgui_server_handle_mouse_btn((struct rtgui_event_mouse*)event);
-        break;
-
-    case RTGUI_EVENT_KBD:
-        /* handle keyboard event */
-        rtgui_server_handle_kbd((struct rtgui_event_kbd*)event);
-        break;
-
-    case RTGUI_EVENT_COMMAND:
         break;
     }
 

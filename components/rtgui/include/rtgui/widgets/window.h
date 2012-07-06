@@ -133,7 +133,7 @@ rt_bool_t rtgui_win_close(struct rtgui_win* win);
 rt_base_t rtgui_win_show(struct rtgui_win *win, rt_bool_t is_modal);
 void rtgui_win_hiden(rtgui_win_t* win);
 void rtgui_win_end_modal(rtgui_win_t* win, rtgui_modal_code_t modal_code);
-
+rt_err_t rtgui_win_activate(struct rtgui_win *win);
 rt_bool_t rtgui_win_is_activated(struct rtgui_win* win);
 
 void rtgui_win_move(struct rtgui_win* win, int x, int y);

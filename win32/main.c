@@ -5,12 +5,33 @@
 #include <rtgui/rtgui_server.h>
 #include <rtgui/rtgui_system.h>
 
+#ifdef _WIN32
+#include <Windows.h>
+typedef DWORD _host_tick_t;
+#else
+#endif
+
+static _host_tick_t init_tick;
+void rt_system_tick_init(void)
+{
+	init_tick = GetTickCount();
+}
+
+rt_tick_t rt_tick_get(void)
+{
+	/* convert millisecond to tick */
+	return (rt_tick_t)((GetTickCount() - init_tick) * RT_TICK_PER_SECOND / 1000);
+}
+
 int done = 0;
+extern void finsh_thread_init(void);
 int main(int argc, char *argv[])
 {
 	SDL_Event event;
 	int button_state = 0;
 	rt_device_t device;
+
+	rt_system_tick_init();
 
 	rt_kprintf("RTGUI simulator ....\n");
 
@@ -18,6 +39,8 @@ int main(int argc, char *argv[])
 	rt_mq_system_init();
 	rt_mb_system_init();
 	rt_thread_system_init();
+
+	finsh_thread_init();
 
 	// while(!done);
 
