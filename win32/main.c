@@ -42,8 +42,6 @@ int main(int argc, char *argv[])
 
 	finsh_thread_init();
 
-	// while(!done);
-
 	/* init driver */
 	sdlfb_hw_init();
 	device = rt_device_find("sdl");

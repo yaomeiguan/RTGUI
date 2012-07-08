@@ -19,12 +19,6 @@ typedef rt_uint32_t	rt_size_t;		/* Type for size number.	*/
 typedef rt_uint8_t	rt_dev_t;		/* Type for device			*/
 typedef rt_int32_t	rt_off_t;		/* Type for offset, supports 4G at most */
 
-#ifdef RT_VERSION
-#undef RT_VERSION
-#endif
-
-#define RT_VERSION			4
-
 /* RT-Thread bool type definitions */
 #define RT_TRUE 			1
 #define RT_FALSE 			0
@@ -113,6 +107,7 @@ rt_err_t rt_thread_delay(rt_tick_t tick);
 rt_err_t rt_thread_control(rt_thread_t thread, rt_uint8_t cmd, void* arg);
 rt_err_t rt_thread_suspend(rt_thread_t thread);
 rt_err_t rt_thread_resume(rt_thread_t thread);
+rt_thread_t rt_thread_find(char* name);
 
 /*
  * semaphore
@@ -317,6 +312,8 @@ enum rt_device_class_type
 #define RT_DEVICE_CTRL_LCD_GET_FRAMEBUFFER	0x12
 #define RT_DEVICE_CTRL_LCD_UPDATE			0x13
 
+#define RT_DEVICE(device)				((struct rt_device*)(device))
+
 typedef struct rt_device* rt_device_t;
 /**
  * Device structure
@@ -457,4 +454,7 @@ void rt_assert(const char* str, int line);
 
 void rt_system_tick_init(void);
 rt_tick_t rt_tick_get(void);
+
+#define RT_USING_FINSH
+
 #endif

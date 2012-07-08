@@ -141,7 +141,7 @@ void gettimeofday(struct timeval *tv,void* time_zone)
 
 void rt_assert(const char* str, int line)
 {
-	rt_kprintf("assert: %s:%d", str, line);
+	rt_kprintf("assert: %s:%d\n", str, line);
 
 	while(1);
 }

@@ -199,3 +199,25 @@ rt_thread_t rt_thread_find(char* name)
 	SDL_mutexV(_thread_list_mutex);
 	return RT_NULL;
 }
+
+#ifdef RT_USING_FINSH
+#include <finsh.h>
+void list_thread(void)
+{
+	rt_thread_t thread;
+	struct rt_list_node* node;
+
+	rt_kprintf("threads:\n");
+	rt_kprintf("========\n");
+
+	SDL_mutexP(_thread_list_mutex);
+	rt_list_foreach(node, &(_thread_list), next)
+	{
+		thread = rt_list_entry(node, struct rt_thread, tlist);
+		rt_kprintf("%s\n", thread->name);
+	}
+
+	SDL_mutexV(_thread_list_mutex);
+}
+FINSH_FUNCTION_EXPORT(list_thread, display thread information);
+#endif
