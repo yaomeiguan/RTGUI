@@ -1,6 +1,6 @@
 #include <rtgui/rtgui.h>
 #include <rtgui/rtgui_system.h>
-#include <rtgui/rtgui_application.h>
+#include <rtgui/rtgui_app.h>
 
 #include <rtgui/widgets/window.h>
 #include <rtgui/widgets/notebook.h>
@@ -30,10 +30,10 @@ static rt_bool_t demo_handle_key(struct rtgui_object* object, struct rtgui_event
 struct rtgui_win *main_win;
 static void application_entry(void* parameter)
 {
-	struct rtgui_application *app;
+	struct rtgui_app *app;
 	struct rtgui_rect rect;
 
-	app = rtgui_application_create(rt_thread_self(), "gui_demo");
+	app = rtgui_app_create(rt_thread_self(), "gui_demo");
 	if (app == RT_NULL)
 		return;
 
@@ -44,7 +44,7 @@ static void application_entry(void* parameter)
                         RTGUI_WIN_STYLE_NO_BORDER | RTGUI_WIN_STYLE_NO_TITLE);
 	if (main_win == RT_NULL)
 	{
-		rtgui_application_destroy(app);
+		rtgui_app_destroy(app);
 		return;
 	}
 
@@ -55,7 +55,7 @@ static void application_entry(void* parameter)
 	if (the_notebook == RT_NULL)
 	{
 		rtgui_win_destroy(main_win);
-		rtgui_application_destroy(app);
+		rtgui_app_destroy(app);
 		return;
 	}
 
@@ -111,9 +111,9 @@ static void application_entry(void* parameter)
 	rtgui_win_show(main_win, RT_FALSE);
 
 	/* 执行工作台事件循环 */
-	rtgui_application_run(app);
+	rtgui_app_run(app);
 
-	rtgui_application_destroy(app);
+	rtgui_app_destroy(app);
 }
 
 void application_init()

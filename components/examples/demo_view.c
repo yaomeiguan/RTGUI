@@ -1,10 +1,11 @@
 #include <rtgui/rtgui.h>
-#include <rtgui/rtgui_application.h>
+#include <rtgui/rtgui_app.h>
 
 #include <rtgui/widgets/container.h>
 #include <rtgui/widgets/notebook.h>
 #include <rtgui/widgets/button.h>
 #include <rtgui/widgets/staticline.h>
+#include <rtgui/widgets/box.h>
 
 extern struct rtgui_notebook *the_notebook;
 

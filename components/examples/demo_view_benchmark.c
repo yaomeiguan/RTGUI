@@ -79,13 +79,13 @@ rt_bool_t benchmark_event_handler(struct rtgui_object *object, rtgui_event_t *ev
 			if (running)
 			{
 				/* stop */
-				rtgui_application_set_onidle(RT_NULL);
+				rtgui_app_set_onidle(RT_NULL);
 				_draw_default(object, event);
 			}
 			else
 			{
 				/* run */
-				rtgui_application_set_onidle(_onidle);
+				rtgui_app_set_onidle(_onidle);
 			}
 
 			running = !running;

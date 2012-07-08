@@ -3,7 +3,7 @@
 #include <rtgui/rtgui.h>
 #include <rtgui/rtgui_server.h>
 #include <rtgui/rtgui_system.h>
-#include <rtgui/rtgui_application.h>
+#include <rtgui/rtgui_app.h>
 #include <rtgui/widgets/window.h>
 #include <rtgui/widgets/label.h>
 #include <rtgui/driver.h>
@@ -113,7 +113,7 @@ void rt_init_thread_entry(void* parameter)
 	struct rtgui_application* app;
 
 
-	app = rtgui_application_create(
+	app = rtgui_app_create(
 			rt_thread_self(),
 			"guiapp");
 
@@ -125,7 +125,7 @@ void rt_init_thread_entry(void* parameter)
 
 	rtgui_application_run(app);
 
-	rtgui_application_destroy(app);
+	rtgui_app_destroy(app);
 	rt_kprintf("app destroyed\n");
 }
 
