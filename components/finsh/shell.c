@@ -352,6 +352,11 @@ void finsh_run(void)
 	}
 }
 
+static void finsh_shell_thread_entry(void* parameter)
+{
+	finsh_run();
+}
+
 void finsh_system_function_init(const void* begin, const void* end)
 {
 	_syscall_table_begin = (struct finsh_syscall*) begin;
@@ -448,7 +453,7 @@ void finsh_system_init(void)
 void finsh_thread_init(void)
 {
 	rt_thread_t tid;
-	tid = rt_thread_create("finsh", finsh_run, RT_NULL,
+	tid = rt_thread_create("finsh", finsh_shell_thread_entry, RT_NULL,
 		4096, 20, 10);
 	if (tid != RT_NULL)
 	{
