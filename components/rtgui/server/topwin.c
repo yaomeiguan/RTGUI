@@ -19,7 +19,7 @@
 #include <rtgui/image.h>
 #include <rtgui/rtgui_theme.h>
 #include <rtgui/rtgui_system.h>
-#include <rtgui/rtgui_application.h>
+#include <rtgui/rtgui_app.h>
 #include <rtgui/widgets/window.h>
 
 /* This list is divided into two parts. The first part is the shown list, in
@@ -328,7 +328,7 @@ static void _rtgui_topwin_only_activate(struct rtgui_topwin *topwin)
 	topwin->flag |= WINTITLE_ACTIVATE;
 
 	event.wid = topwin->wid;
-	rtgui_application_send(topwin->tid, &(event.parent), sizeof(struct rtgui_event_win));
+	rtgui_send(topwin->tid, &(event.parent), sizeof(struct rtgui_event_win));
 
 	/* redraw title */
 	if (topwin->title != RT_NULL)
@@ -359,7 +359,7 @@ static void _rtgui_topwin_deactivate(struct rtgui_topwin *topwin)
 
 	RTGUI_EVENT_WIN_DEACTIVATE_INIT(&event);
 	event.wid = topwin->wid;
-	rtgui_application_send(topwin->tid,
+	rtgui_send(topwin->tid,
 			&event.parent, sizeof(struct rtgui_event_win));
 
 	topwin->flag &= ~WINTITLE_ACTIVATE;
@@ -541,7 +541,7 @@ static void _rtgui_topwin_draw_tree(struct rtgui_topwin *topwin, struct rtgui_ev
 	}
 
 	epaint->wid = topwin->wid;
-	rtgui_application_send(topwin->tid, &(epaint->parent), sizeof(struct rtgui_event_paint));
+	rtgui_send(topwin->tid, &(epaint->parent), sizeof(struct rtgui_event_paint));
 
 	rtgui_dlist_foreach(node, &topwin->child_list, prev)
 	{
@@ -733,7 +733,7 @@ rt_err_t rtgui_topwin_move(struct rtgui_event_win_move* event)
 		struct rtgui_event_paint epaint;
 		RTGUI_EVENT_PAINT_INIT(&epaint);
 		epaint.wid = topwin->wid;
-		rtgui_application_send(topwin->tid, &(epaint.parent), sizeof(epaint));
+		rtgui_send(topwin->tid, &(epaint.parent), sizeof(epaint));
 	}
 
 	return RT_EOK;
@@ -942,7 +942,7 @@ static void rtgui_topwin_update_clip(void)
 
 		/* send clip event to destination window */
 		eclip.wid = top->wid;
-		rtgui_application_send(top->tid, &(eclip.parent), sizeof(struct rtgui_event_clip_info));
+		rtgui_send(top->tid, &(eclip.parent), sizeof(struct rtgui_event_clip_info));
 
 		/* move to next sibling tree */
 		if (top->parent == RT_NULL)
@@ -988,7 +988,7 @@ static void _rtgui_topwin_redraw_tree(struct rtgui_dlist_node *list,
 		if (rtgui_rect_is_intersect(rect, &(topwin->extent)) == RT_EOK)
 		{
 			epaint->wid = topwin->wid;
-			rtgui_application_send(topwin->tid, &(epaint->parent), sizeof(*epaint));
+			rtgui_send(topwin->tid, &(epaint->parent), sizeof(*epaint));
 
 			/* draw title */
 			if (topwin->title != RT_NULL)
@@ -1056,7 +1056,7 @@ void rtgui_topwin_title_onmouse(struct rtgui_topwin* win, struct rtgui_event_mou
 	if (rtgui_rect_contains_point(&win->extent, event->x, event->y) == RT_EOK)
 	{
 		/* send mouse event to thread */
-		rtgui_application_send(win->tid, &(event->parent), sizeof(struct rtgui_event_mouse));
+		rtgui_send(win->tid, &(event->parent), sizeof(struct rtgui_event_mouse));
 		return;
 	}
 
@@ -1095,7 +1095,7 @@ void rtgui_topwin_title_onmouse(struct rtgui_topwin* win, struct rtgui_event_mou
 				/* send close event to window */
 				RTGUI_EVENT_WIN_CLOSE_INIT(&event);
 				event.wid = win->wid;
-				rtgui_application_send(win->tid, &(event.parent), sizeof(struct rtgui_event_win));
+				rtgui_send(win->tid, &(event.parent), sizeof(struct rtgui_event_win));
 			}
 		}
 	}

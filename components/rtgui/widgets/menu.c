@@ -86,7 +86,7 @@ static rt_bool_t _rtgui_menu_onitem(struct rtgui_object* object, struct rtgui_ev
 	{
 		/* invoke action */
 		if (menu->items[menu->items_list->current_item].on_menuaction != RT_NULL)
-			menu->items[menu->items_list->current_item].on_menuaction(RTGUI_WIDGET(menu), RT_NULL);
+			menu->items[menu->items_list->current_item].on_menuaction(RTGUI_OBJECT(menu), RT_NULL);
 
 		/* hide sub-menu */
 		if (menu->sub_menu != RT_NULL)

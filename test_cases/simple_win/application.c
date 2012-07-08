@@ -18,7 +18,7 @@ rt_bool_t on_window_close(struct rtgui_object* object, struct rtgui_event* event
 	return RT_TRUE;
 }
 
-void create_wins(struct rtgui_application *app, void *parameter)
+void create_wins(struct rtgui_app *app, void *parameter)
 {
 	struct rtgui_win *win1, *win2, *win3, *win4;
 	struct rtgui_label *label;
@@ -96,7 +96,7 @@ void create_wins(struct rtgui_application *app, void *parameter)
 	rtgui_topwin_dump_tree();
 	/*rtgui_win_show(win4, RT_TRUE);*/
 
-	rtgui_application_run(app);
+	rtgui_app_run(app);
 
 	rtgui_win_destroy(win1);
 	rtgui_win_destroy(win2);
@@ -110,7 +110,7 @@ void rt_init_thread_entry(void* parameter)
     extern void rt_hw_lcd_init();
     extern void rtgui_touch_hw_init(void);
 
-	struct rtgui_application* app;
+	struct rtgui_app* app;
 
 
 	app = rtgui_app_create(
@@ -123,7 +123,7 @@ void rt_init_thread_entry(void* parameter)
 
 	window_focus();
 
-	rtgui_application_run(app);
+	rtgui_app_run(app);
 
 	rtgui_app_destroy(app);
 	rt_kprintf("app destroyed\n");

@@ -16,7 +16,7 @@
 #include <rtgui/image.h>
 #include <rtgui/rtgui_system.h>
 #include <rtgui/rtgui_server.h>
-#include <rtgui/rtgui_application.h>
+#include <rtgui/rtgui_app.h>
 
 #include <rtgui/widgets/window.h>
 #include <rtgui/widgets/button.h>
@@ -194,7 +194,9 @@ void rtgui_win_destroy(struct rtgui_win* win)
 		rtgui_win_end_modal(win, RTGUI_MODAL_CANCEL);
 	}
 	else
+	{
 		rtgui_widget_destroy(RTGUI_WIDGET(win));
+	}
 }
 
 static rt_bool_t _rtgui_win_deal_close(struct rtgui_win *win,
@@ -237,9 +239,11 @@ rt_bool_t rtgui_win_close(struct rtgui_win* win)
 
 rt_base_t rtgui_win_show(struct rtgui_win* win, rt_bool_t is_modal)
 {
-	struct rtgui_event_win_show eshow;
 	rt_base_t exit_code = -1;
+	struct rtgui_app *app;
+	struct rtgui_event_win_show eshow;
 
+	app = rtgui_app_self();
 	RTGUI_EVENT_WIN_SHOW_INIT(&eshow);
 	eshow.wid = win;
 
@@ -257,8 +261,7 @@ rt_base_t rtgui_win_show(struct rtgui_win* win, rt_bool_t is_modal)
 	RTGUI_WIDGET_UNHIDE(RTGUI_WIDGET(win));
 
 	if (rtgui_server_post_event_sync(RTGUI_EVENT(&eshow),
-									 sizeof(struct rtgui_event_win_show)
-			) != RT_EOK)
+		sizeof(struct rtgui_event_win_show)) != RT_EOK)
 	{
 		/* It could not be shown if a parent window is hidden. */
 		RTGUI_WIDGET_HIDE(RTGUI_WIDGET(win));
@@ -268,15 +271,19 @@ rt_base_t rtgui_win_show(struct rtgui_win* win, rt_bool_t is_modal)
 	if (win->focused_widget == RT_NULL)
 		rtgui_widget_focus(RTGUI_WIDGET(win));
 
+	/* set main window */
+	if (app->main_object == RT_NULL)
+		rtgui_app_set_main_win(win);
+
     if (is_modal == RT_TRUE)
     {
-		struct rtgui_application *app;
+		struct rtgui_app *app;
 		struct rtgui_event_win_modal_enter emodal;
 
 		RTGUI_EVENT_WIN_MODAL_ENTER_INIT(&emodal);
 		emodal.wid = win;
 
-		app = rtgui_application_self();
+		app = rtgui_app_self();
 		RT_ASSERT(app != RT_NULL);
 
 		win->flag |= RTGUI_WIN_FLAG_MODAL;
@@ -287,7 +294,7 @@ rt_base_t rtgui_win_show(struct rtgui_win* win, rt_bool_t is_modal)
 
 		app->modal_object = RTGUI_OBJECT(win);
 
-		exit_code = rtgui_application_run(app);
+		exit_code = rtgui_app_run(app);
 
 		app->modal_object = RT_NULL;
 		win->flag &= ~RTGUI_WIN_FLAG_MODAL;
@@ -306,7 +313,7 @@ void rtgui_win_end_modal(struct rtgui_win* win, rtgui_modal_code_t modal_code)
 	if (win == RT_NULL || !(win->flag & RTGUI_WIN_FLAG_MODAL))
 		return;
 
-	rtgui_application_exit(rtgui_application_self(), modal_code);
+	rtgui_app_exit(rtgui_app_self(), modal_code);
 
 	/* remove modal mode */
 	win->flag &= ~RTGUI_WIN_FLAG_MODAL;

@@ -14,7 +14,7 @@
  */
 #include <rtgui/dc.h>
 #include <rtgui/rtgui_system.h>
-#include <rtgui/rtgui_application.h>
+#include <rtgui/rtgui_app.h>
 #include <rtgui/widgets/container.h>
 #include <rtgui/widgets/window.h>
 

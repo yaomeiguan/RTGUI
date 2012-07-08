@@ -62,7 +62,7 @@ rt_bool_t rtgui_button_event_handler(struct rtgui_object* object, struct rtgui_e
 	struct rtgui_widget *widget;
 	struct rtgui_button *btn;
 
-	RT_ASSERT(widget != RT_NULL);
+	RT_ASSERT(object != RT_NULL);
 	RT_ASSERT(event != RT_NULL);
 
 	widget = RTGUI_WIDGET(object);
