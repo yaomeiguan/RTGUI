@@ -37,6 +37,7 @@ DECLARE_CLASS_TYPE(win);
 #define RTGUI_WIN_STYLE_MINIBOX		        0x010	/* window has the mini button	*/
 
 #define RTGUI_WIN_STYLE_DESTROY_ON_CLOSE	0x020   /* window is destroyed when closed */
+#define RTGUI_WIN_STYLE_ONTOP               0x040   /* window is in the top layer */
 #ifdef RTGUI_USING_DESKTOP_WINDOW
 /* A desktop window is a full screen window which will beneath all other windows.
  * There will be only one desktop window in a system. And this window should be

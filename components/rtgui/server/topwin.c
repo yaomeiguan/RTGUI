@@ -139,6 +139,7 @@ rt_err_t rtgui_topwin_add(struct rtgui_event_win_create* event)
 	if (event->parent.user & RTGUI_WIN_STYLE_CLOSEBOX) topwin->flag |= WINTITLE_CLOSEBOX;
 	if (!(event->parent.user & RTGUI_WIN_STYLE_NO_BORDER)) topwin->flag |= WINTITLE_BORDER;
 	if (event->parent.user & RTGUI_WIN_STYLE_NO_FOCUS) topwin->flag |= WINTITLE_NOFOCUS;
+	if (event->parent.user & RTGUI_WIN_STYLE_ONTOP) topwin->flag |= WINTITLE_ONTOP;
 
 	if(!(topwin->flag & WINTITLE_NO) || (topwin->flag & WINTITLE_BORDER))
 	{
@@ -395,11 +396,34 @@ static void _rtgui_topwin_move_whole_tree2top(struct rtgui_topwin *topwin)
 	/* remove node from hidden list */
 	rtgui_dlist_remove(&topparent->list);
 	/* add node to show list */
+	if (topwin->flag & WINTITLE_ONTOP)
+	{
 #ifdef RTGUI_USING_DESKTOP_WINDOW
-	rtgui_dlist_insert_after(&the_desktop_topwin->child_list, &(topparent->list));
+		rtgui_dlist_insert_after(&the_desktop_topwin->child_list, &(topparent->list));
 #else
-	rtgui_dlist_insert_after(&_rtgui_topwin_list, &(topparent->list));
+		rtgui_dlist_insert_after(&_rtgui_topwin_list, &(topparent->list));
 #endif
+	}
+	else
+	{
+		/* normal layer window, before the fisrt shown normal layer window. */
+		struct rtgui_topwin *tlayerwin = get_topwin_from_list(&_rtgui_topwin_list);
+		struct rtgui_dlist_node *winlevel, *node;
+
+#ifdef RTGUI_USING_DESKTOP_WINDOW
+		winlevel = &the_desktop_topwin->child_list;
+#else
+		winlevel = &_rtgui_topwin_list;
+#endif
+		rtgui_dlist_foreach(node, winlevel, next)
+		{
+			tlayerwin = get_topwin_from_list(node);
+			if (!((tlayerwin->flag & WINTITLE_ONTOP)
+				  && (tlayerwin->flag & WINTITLE_SHOWN)))
+				break;
+		}
+		rtgui_dlist_insert_before(&tlayerwin->list, &(topparent->list));
+	}
 }
 
 static void _rtgui_topwin_raise_in_sibling(struct rtgui_topwin *topwin)
@@ -808,24 +832,7 @@ static struct rtgui_topwin* _rtgui_topwin_get_focus_from_list(struct rtgui_dlist
 
 struct rtgui_topwin* rtgui_topwin_get_focus(void)
 {
-#if 1
-	// debug code
-	struct rtgui_topwin *topwin = _rtgui_topwin_get_focus_from_list(&_rtgui_topwin_list);
-
-	if (topwin != RT_NULL)
-#ifdef RTGUI_USING_DESKTOP_WINDOW
-		RT_ASSERT(topwin == the_desktop_topwin ||\
-				  get_topwin_from_list(the_desktop_topwin->child_list.next) ==
-				  _rtgui_topwin_get_root_win(topwin));
-#else
-		RT_ASSERT(get_topwin_from_list(_rtgui_topwin_list.next) ==
-				  _rtgui_topwin_get_root_win(topwin));
-#endif
-
-	return topwin;
-#else
 	return _rtgui_topwin_get_focus_from_list(&_rtgui_topwin_list);
-#endif
 }
 
 static struct rtgui_topwin* _rtgui_topwin_get_wnd_from_tree(struct rtgui_dlist_node *list,
