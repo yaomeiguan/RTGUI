@@ -416,8 +416,8 @@ static void _rtgui_topwin_raise_in_sibling(struct rtgui_topwin *topwin)
 	rtgui_dlist_insert_after(win_level, &topwin->list);
 }
 
-/* it will do 2 things. One is move the whole tree(the root of the tree) to the
- * front and move topwin to the front of it's siblings. */
+/* it will do 2 things. One is moving the whole tree(the root of the tree) to
+ * the front and the other is moving topwin to the front of it's siblings. */
 static void _rtgui_topwin_raise_tree_from_root(struct rtgui_topwin *topwin)
 {
 	RT_ASSERT(topwin != RT_NULL);
