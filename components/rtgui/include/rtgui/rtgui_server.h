@@ -34,7 +34,8 @@ enum
 	/* window is modaled by other window */
 	WINTITLE_MODALED    =  0x80,
 	/* window is modaling other window */
-	WINTITLE_MODALING   = 0x100
+	WINTITLE_MODALING   = 0x100,
+	WINTITLE_ONTOP      = 0x200,
 };
 
 #define WINTITLE_HEIGHT         20
