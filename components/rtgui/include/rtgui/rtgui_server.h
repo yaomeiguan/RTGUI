@@ -36,6 +36,7 @@ enum rtgui_topwin_flag
 	/* window is modaling other window */
 	WINTITLE_MODALING   = 0x100,
 	WINTITLE_ONTOP      = 0x200,
+	WINTITLE_ONBTM      = 0x400,
 };
 
 #define WINTITLE_HEIGHT         20
