@@ -177,7 +177,7 @@ struct rtgui_event_win_resize
 /*
  * RTGUI set window manager
  */
-struct rtgui_event_set_wm 
+struct rtgui_event_set_wm
 {
 	struct rtgui_event parent;
 	struct rtgui_app *app;
@@ -363,6 +363,7 @@ union rtgui_event_generic
 	struct rtgui_event_application app_destroy;
 	struct rtgui_event_application app_activate;
 
+	struct rtgui_event_set_wm set_wm;
 	struct rtgui_event_win win_base;
 	struct rtgui_event_win_create win_create;
 	struct rtgui_event_win_move win_move;
