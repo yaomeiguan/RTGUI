@@ -422,7 +422,12 @@ static void _rtgui_topwin_move_whole_tree2top(struct rtgui_topwin *topwin)
 				  && (tlayerwin->flag & WINTITLE_SHOWN)))
 				break;
 		}
-		rtgui_dlist_insert_before(&tlayerwin->list, &(topparent->list));
+		/* all other windows are shown top layer windows. Insert it as
+		 * the last window. */
+		if (node == &_rtgui_topwin_list)
+			rtgui_dlist_insert_before(&_rtgui_topwin_list, &(topparent->list));
+		else
+			rtgui_dlist_insert_before(&tlayerwin->list, &(topparent->list));
 	}
 }
 
