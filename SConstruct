@@ -17,6 +17,11 @@ TARGETS = [['demo', 'demo'],
 
 env = Environment()
 
+if ARGUMENTS.get('VERBOSE') != '1':
+    env['CCCOMSTR'] = "Compiling $TARGET"
+    env['LINKCOMSTR'] = "Linking $TARGET"
+
+
 Export('RTT_ROOT')
 Export('rtconfig')
 
