@@ -20,7 +20,7 @@
 /* RTGUI server definitions */
 
 /* top window definitions in server */
-enum
+enum rtgui_topwin_flag
 {
 	WINTITLE_NO         =  0x01,
 	WINTITLE_BORDER     =  0x02,
@@ -46,7 +46,7 @@ enum
 struct rtgui_topwin
 {
 	/* the window flag */
-	rt_uint32_t flag;
+	enum rtgui_topwin_flag flag;
 	/* event mask */
 	rt_uint32_t mask;
 
