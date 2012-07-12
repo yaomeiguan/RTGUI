@@ -74,8 +74,6 @@ struct rtgui_app
 struct rtgui_app* rtgui_app_create(rt_thread_t tid, const char *title);
 void rtgui_app_destroy(struct rtgui_app *app);
 rt_bool_t rtgui_app_event_handler(struct rtgui_object* obj, rtgui_event_t* event);
-rt_err_t rtgui_app_show(struct rtgui_app *app);
-rt_err_t rtgui_app_hide(struct rtgui_app *app);
 
 rt_base_t rtgui_app_run(struct rtgui_app *app);
 void rtgui_app_exit(struct rtgui_app *app, rt_uint16_t code);
