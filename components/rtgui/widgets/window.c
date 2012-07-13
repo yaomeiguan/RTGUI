@@ -540,20 +540,21 @@ rt_bool_t rtgui_win_event_handler(struct rtgui_object* object, struct rtgui_even
 		/* we should dispatch key event firstly */
 		if (!(win->flag & RTGUI_WIN_FLAG_HANDLE_KEY))
 		{
+			struct rtgui_widget *widget;
 			rt_bool_t res = RT_FALSE;
 			/* we should dispatch the key event just once. Once entered the
 			 * dispatch mode, we should swtich to key handling mode. */
 			win->flag |= RTGUI_WIN_FLAG_HANDLE_KEY;
 
 			/* dispatch the key event */
-			if (win->focused_widget != RT_NULL &&
-					RTGUI_OBJECT(win->focused_widget)->event_handler != RT_NULL)
-				res = RTGUI_OBJECT(win->focused_widget)->event_handler(
-						RTGUI_OBJECT(win->focused_widget), event);
-
-			/* if the focused widget doesn't handle it, I will handle it. */
-			if (res != RT_TRUE && win->on_key != RT_NULL)
-				res = win->on_key(RTGUI_OBJECT(win), event);
+			for (widget = win->focused_widget;
+				 widget && !res;
+				 widget = widget->parent)
+			{
+				if (RTGUI_OBJECT(widget)->event_handler != RT_NULL)
+					res = RTGUI_OBJECT(widget)->event_handler(
+							RTGUI_OBJECT(widget), event);
+			}
 
 			win->flag &= ~RTGUI_WIN_FLAG_HANDLE_KEY;
 			return res;
