@@ -238,13 +238,13 @@ rt_base_t rtgui_win_show(struct rtgui_win* win, rt_bool_t is_modal)
 	}
 
 	/* set window unhidden before notify the server */
-	RTGUI_WIDGET_UNHIDE(RTGUI_WIDGET(win));
+	rtgui_widget_show(RTGUI_WIDGET(win));
 
 	if (rtgui_server_post_event_sync(RTGUI_EVENT(&eshow),
 		sizeof(struct rtgui_event_win_show)) != RT_EOK)
 	{
 		/* It could not be shown if a parent window is hidden. */
-		RTGUI_WIDGET_HIDE(RTGUI_WIDGET(win));
+		rtgui_widget_hide(RTGUI_WIDGET(win));
 		return exit_code;
 	}
 
@@ -318,8 +318,7 @@ void rtgui_win_hiden(struct rtgui_win* win)
 			return;
 		}
 
-		/* set window hide and deactivated */
-		RTGUI_WIDGET_HIDE(RTGUI_WIDGET(win));
+		rtgui_widget_hide(RTGUI_WIDGET(win));
 		win->flag &= ~RTGUI_WIN_FLAG_ACTIVATE;
 	}
 }
@@ -359,7 +358,7 @@ void rtgui_win_move(struct rtgui_win* win, int x, int y)
 	if (win->flag & RTGUI_WIN_FLAG_CONNECTED)
 	{
 		/* set win hide firstly */
-		RTGUI_WIDGET_HIDE(RTGUI_WIDGET(win));
+		rtgui_widget_hide(RTGUI_WIDGET(win));
 
 		emove.wid	= win;
 		emove.x		= x;
@@ -372,7 +371,7 @@ void rtgui_win_move(struct rtgui_win* win, int x, int y)
 	}
 
 	/* set window visible */
-	RTGUI_WIDGET_UNHIDE(RTGUI_WIDGET(win));
+	rtgui_widget_show(RTGUI_WIDGET(win));
 	return;
 }
 

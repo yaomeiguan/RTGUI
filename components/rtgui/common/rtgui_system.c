@@ -328,6 +328,8 @@ const char *event_string[] =
 	"UPDATE_END",			/* end of update rect	*/
 	"MONITOR_ADD",			/* add a monitor rect 	*/
 	"MONITOR_REMOVE", 		/* remove a monitor rect*/
+	"SHOW",				    /* the widget is going to be shown */
+	"HIDE",				    /* the widget is going to be hidden */
 	"PAINT",				/* paint on screen 		*/
 	"TIMER",				/* timer 				*/
 

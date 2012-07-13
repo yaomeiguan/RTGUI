@@ -48,6 +48,8 @@ enum _rtgui_event_type
 	RTGUI_EVENT_UPDATE_END,            /* update a rect         */
 	RTGUI_EVENT_MONITOR_ADD,           /* add a monitor rect    */
 	RTGUI_EVENT_MONITOR_REMOVE,        /* remove a monitor rect */
+	RTGUI_EVENT_SHOW,                  /* the widget is going to be shown */
+	RTGUI_EVENT_HIDE,                  /* the widget is going to be hidden */
 	RTGUI_EVENT_PAINT,                 /* paint on screen       */
 	RTGUI_EVENT_TIMER,                 /* timer                 */
 
@@ -246,6 +248,12 @@ struct rtgui_event_clip_info
 #define RTGUI_EVENT_CLIP_INFO_INIT(e)		RTGUI_EVENT_INIT(&((e)->parent), RTGUI_EVENT_CLIP_INFO)
 #define RTGUI_EVENT_PAINT_INIT(e)			RTGUI_EVENT_INIT(&((e)->parent), RTGUI_EVENT_PAINT)
 #define RTGUI_EVENT_TIMER_INIT(e)			RTGUI_EVENT_INIT(&((e)->parent), RTGUI_EVENT_TIMER)
+
+#define rtgui_event_show rtgui_event
+#define rtgui_event_hide rtgui_event
+
+#define RTGUI_EVENT_SHOW_INIT(e)			RTGUI_EVENT_INIT((e), RTGUI_EVENT_SHOW)
+#define RTGUI_EVENT_HIDE_INIT(e)			RTGUI_EVENT_INIT((e), RTGUI_EVENT_HIDE)
 
 /*
  * RTGUI Mouse and Keyboard Event
