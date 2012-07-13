@@ -324,10 +324,7 @@ static rt_bool_t _rtgui_notebook_current_widget_handle(struct rtgui_notebook *no
 {
 	struct rtgui_widget *widget = rtgui_notebook_get_current(notebook);
 	if (widget && widget != RTGUI_WIDGET(notebook))
-	{
-		rt_kprintf("widget %p handle %d\n", widget, event->type);
 		return RTGUI_OBJECT(widget)->event_handler(RTGUI_OBJECT(widget), event);
-	}
 	else
 		return RT_FALSE;
 }
