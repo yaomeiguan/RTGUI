@@ -48,7 +48,7 @@ static struct rt_semaphore _rtgui_topwin_lock;
 
 static void rtgui_topwin_update_clip(void);
 static void rtgui_topwin_redraw(struct rtgui_rect* rect);
-static void _rtgui_topwin_activate_next(void);
+static void _rtgui_topwin_activate_next(enum rtgui_topwin_flag);
 
 void rtgui_topwin_init(void)
 {
@@ -187,12 +187,31 @@ static struct rtgui_topwin* _rtgui_topwin_get_topmost_child_shown(struct rtgui_t
 	return topwin;
 }
 
-static struct rtgui_topwin* _rtgui_topwin_get_topmost_window_shown(void)
+static rt_bool_t _rtgui_topwin_in_layer(struct rtgui_topwin *topwin, enum rtgui_topwin_flag flag)
 {
-	if (!(get_topwin_from_list(_rtgui_topwin_list.next)->flag & WINTITLE_SHOWN))
-		return RT_NULL;
-	else
-		return _rtgui_topwin_get_topmost_child_shown(get_topwin_from_list(_rtgui_topwin_list.next));
+	return (topwin->flag & (WINTITLE_ONTOP|WINTITLE_ONBTM))
+		    == (flag & (WINTITLE_ONTOP|WINTITLE_ONBTM));
+}
+
+/* find the topmost window shown in the layer set by flag. The flag has many
+ * other infomations but we only use the ONTOP/ONBTM */
+static struct rtgui_topwin* _rtgui_topwin_get_topmost_window_shown(enum rtgui_topwin_flag flag)
+{
+	struct rtgui_dlist_node *node;
+
+	rtgui_dlist_foreach(node, &_rtgui_topwin_list, next)
+	{
+		struct rtgui_topwin *topwin = get_topwin_from_list(node);
+
+		/* reach the hidden region no window shown in current layer */
+		if (!(topwin->flag & WINTITLE_SHOWN))
+			return RT_NULL;
+
+		if (_rtgui_topwin_in_layer(topwin, flag))
+			return _rtgui_topwin_get_topmost_child_shown(topwin);
+	}
+	/* no window in current layer is shown */
+	return RT_NULL;
 }
 
 /* a hidden parent will hide it's children. Top level window can be shown at
@@ -286,7 +305,7 @@ rt_err_t rtgui_topwin_remove(struct rtgui_win* wid)
 
 	if (old_focus == topwin)
 	{
-		_rtgui_topwin_activate_next();
+		_rtgui_topwin_activate_next(topwin->flag);
 	}
 
 	/* redraw the old rect */
@@ -328,11 +347,13 @@ static void _rtgui_topwin_only_activate(struct rtgui_topwin *topwin)
 	}
 }
 
-static void _rtgui_topwin_activate_next(void)
+/* activate next window in the same layer as flag. The flag has many other
+ * infomations but we only use the ONTOP/ONBTM */
+static void _rtgui_topwin_activate_next(enum rtgui_topwin_flag flag)
 {
 	struct rtgui_topwin *topwin;
 
-	topwin = _rtgui_topwin_get_topmost_window_shown();
+	topwin = _rtgui_topwin_get_topmost_window_shown(flag);
 	if (topwin == RT_NULL)
 		return;
 
@@ -688,7 +709,7 @@ rt_err_t rtgui_topwin_hide(struct rtgui_event_win* event)
 
 	if (old_focus_topwin == topwin)
 	{
-		_rtgui_topwin_activate_next();
+		_rtgui_topwin_activate_next(topwin->flag);
 	}
 
 	return RT_EOK;
@@ -923,7 +944,12 @@ static void rtgui_topwin_update_clip(void)
 			rtgui_graphic_driver_get_default()->height);
 
 	/* from top to bottom. */
-	top = _rtgui_topwin_get_topmost_window_shown();
+	top = _rtgui_topwin_get_topmost_window_shown(WINTITLE_ONTOP);
+	/* 0 is normal layer */
+	if (top == RT_NULL)
+		top = _rtgui_topwin_get_topmost_window_shown(0);
+	if (top == RT_NULL)
+		top = _rtgui_topwin_get_topmost_window_shown(WINTITLE_ONBTM);
 
 	while (top != RT_NULL)
 	{
