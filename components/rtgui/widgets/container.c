@@ -152,15 +152,6 @@ rt_bool_t rtgui_container_event_handler(struct rtgui_object* object, struct rtgu
 		break;
 
 	case RTGUI_EVENT_KBD:
-		/* let parent to handle keyboard event */
-		if (widget->parent != RT_NULL &&
-			widget->parent != RTGUI_WIDGET(widget->toplevel) &&
-			RTGUI_OBJECT(widget->parent)->event_handler)
-		{
-			return RTGUI_OBJECT(widget->parent)->event_handler(
-					RTGUI_OBJECT(widget->parent),
-					event);
-		}
 		break;
 
 	case RTGUI_EVENT_MOUSE_BUTTON:
