@@ -150,6 +150,8 @@ rt_bool_t rtgui_radiobox_event_handler(struct rtgui_object* object, struct rtgui
 			rtgui_radiobox_onmouse(radiobox, (struct rtgui_event_mouse*)event);
 		}
 		break;
+	default:
+		return rtgui_widget_event_handler(object, event);
 	}
 
 	return RT_FALSE;

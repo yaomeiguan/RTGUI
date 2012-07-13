@@ -227,6 +227,8 @@ rt_bool_t rtgui_combobox_event_handler(struct rtgui_object* object, struct rtgui
 			}
 		}
 		break;
+	default:
+		return rtgui_widget_event_handler(object, event);
 	}
 
 	return RT_FALSE;

@@ -188,6 +188,9 @@ rt_bool_t rtgui_slider_event_handler(struct rtgui_object *object, struct rtgui_e
 			rtgui_slider_onmouse(slider, (struct rtgui_event_mouse*)event);
 		}
 		break;
+
+	default:
+		return rtgui_widget_event_handler(object, event);
 	}
 
 	return RT_FALSE;

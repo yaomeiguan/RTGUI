@@ -189,6 +189,8 @@ rt_bool_t rtgui_button_event_handler(struct rtgui_object* object, struct rtgui_e
 
 			return RT_TRUE;
 		}
+	default:
+		return rtgui_widget_event_handler(object, event);
 	}
 
 	return RT_FALSE;
