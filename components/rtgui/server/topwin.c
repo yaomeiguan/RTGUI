@@ -42,13 +42,7 @@ static struct rtgui_dlist_node _rtgui_topwin_list;
 #define get_topwin_from_list(list_entry) \
 	(rtgui_dlist_entry((list_entry), struct rtgui_topwin, list))
 
-#ifdef RTGUI_USING_DESKTOP_WINDOW
-static struct rtgui_topwin *the_desktop_topwin;
-
-#define IS_ROOT_WIN(topwin) ((topwin)->parent == the_desktop_topwin)
-#else
 #define IS_ROOT_WIN(topwin) ((topwin)->parent == RT_NULL)
-#endif
 
 static struct rt_semaphore _rtgui_topwin_lock;
 
@@ -114,11 +108,6 @@ rt_err_t rtgui_topwin_add(struct rtgui_event_win_create* event)
 	{
 		topwin->parent = RT_NULL;
 		rtgui_dlist_insert_before(&_rtgui_topwin_list, &topwin->list);
-#ifdef RTGUI_USING_DESKTOP_WINDOW
-		RT_ASSERT(the_desktop_topwin == RT_NULL);
-		RT_ASSERT(event->parent.user & RTGUI_WIN_STYLE_DESKTOP);
-		the_desktop_topwin = topwin;
-#endif
 	}
 	else
 	{
@@ -140,6 +129,7 @@ rt_err_t rtgui_topwin_add(struct rtgui_event_win_create* event)
 	if (!(event->parent.user & RTGUI_WIN_STYLE_NO_BORDER)) topwin->flag |= WINTITLE_BORDER;
 	if (event->parent.user & RTGUI_WIN_STYLE_NO_FOCUS) topwin->flag |= WINTITLE_NOFOCUS;
 	if (event->parent.user & RTGUI_WIN_STYLE_ONTOP) topwin->flag |= WINTITLE_ONTOP;
+	if (event->parent.user & RTGUI_WIN_STYLE_ONBTM) topwin->flag |= WINTITLE_ONBTM;
 
 	if(!(topwin->flag & WINTITLE_NO) || (topwin->flag & WINTITLE_BORDER))
 	{
@@ -378,17 +368,6 @@ static void _rtgui_topwin_move_whole_tree2top(struct rtgui_topwin *topwin)
 
 	RT_ASSERT(topwin != RT_NULL);
 
-#ifdef RTGUI_USING_DESKTOP_WINDOW
-	/* handle desktop window separately, avoid calling
-	 * _rtgui_topwin_get_root_win */
-	if (topwin == the_desktop_topwin)
-	{
-		rtgui_dlist_remove(&the_desktop_topwin->list);
-		rtgui_dlist_insert_after(&_rtgui_topwin_list, &the_desktop_topwin->list);
-		return;
-	}
-#endif
-
 	/* move the whole tree */
 	topparent = _rtgui_topwin_get_root_win(topwin);
 	RT_ASSERT(topparent != RT_NULL);
@@ -398,28 +377,39 @@ static void _rtgui_topwin_move_whole_tree2top(struct rtgui_topwin *topwin)
 	/* add node to show list */
 	if (topwin->flag & WINTITLE_ONTOP)
 	{
-#ifdef RTGUI_USING_DESKTOP_WINDOW
-		rtgui_dlist_insert_after(&the_desktop_topwin->child_list, &(topparent->list));
-#else
 		rtgui_dlist_insert_after(&_rtgui_topwin_list, &(topparent->list));
-#endif
+	}
+	else if (topwin->flag & WINTITLE_ONBTM)
+	{
+		/* botton layer window, before the fisrt bottom window or hidden window. */
+		struct rtgui_topwin *ntopwin = get_topwin_from_list(&_rtgui_topwin_list);
+		struct rtgui_dlist_node *node;
+
+		rtgui_dlist_foreach(node, &_rtgui_topwin_list, next)
+		{
+			ntopwin = get_topwin_from_list(node);
+			if ((ntopwin->flag & WINTITLE_ONBTM)
+					|| !(ntopwin->flag & WINTITLE_SHOWN))
+				break;
+		}
+		/* all other windows are shown top/normal layer windows. Insert it as
+		 * the last window. */
+		if (node == &_rtgui_topwin_list)
+			rtgui_dlist_insert_before(&_rtgui_topwin_list, &(topparent->list));
+		else
+			rtgui_dlist_insert_before(&ntopwin->list, &(topparent->list));
 	}
 	else
 	{
 		/* normal layer window, before the fisrt shown normal layer window. */
-		struct rtgui_topwin *tlayerwin = get_topwin_from_list(&_rtgui_topwin_list);
-		struct rtgui_dlist_node *winlevel, *node;
+		struct rtgui_topwin *ntopwin = get_topwin_from_list(&_rtgui_topwin_list);
+		struct rtgui_dlist_node *node;
 
-#ifdef RTGUI_USING_DESKTOP_WINDOW
-		winlevel = &the_desktop_topwin->child_list;
-#else
-		winlevel = &_rtgui_topwin_list;
-#endif
-		rtgui_dlist_foreach(node, winlevel, next)
+		rtgui_dlist_foreach(node, &_rtgui_topwin_list, next)
 		{
-			tlayerwin = get_topwin_from_list(node);
-			if (!((tlayerwin->flag & WINTITLE_ONTOP)
-				  && (tlayerwin->flag & WINTITLE_SHOWN)))
+			ntopwin = get_topwin_from_list(node);
+			if (!((ntopwin->flag & WINTITLE_ONTOP)
+						&& (ntopwin->flag & WINTITLE_SHOWN)))
 				break;
 		}
 		/* all other windows are shown top layer windows. Insert it as
@@ -427,7 +417,7 @@ static void _rtgui_topwin_move_whole_tree2top(struct rtgui_topwin *topwin)
 		if (node == &_rtgui_topwin_list)
 			rtgui_dlist_insert_before(&_rtgui_topwin_list, &(topparent->list));
 		else
-			rtgui_dlist_insert_before(&tlayerwin->list, &(topparent->list));
+			rtgui_dlist_insert_before(&ntopwin->list, &(topparent->list));
 	}
 }
 
@@ -1169,19 +1159,9 @@ void rtgui_topwin_dump_tree(void)
 {
 	struct rtgui_dlist_node *node;
 
-#ifdef RTGUI_USING_DESKTOP_WINDOW
-	_rtgui_topwin_dump(the_desktop_topwin);
-	rt_kprintf("\n");
-	rtgui_dlist_foreach(node, &the_desktop_topwin->child_list, next)
-	{
-		_rtgui_topwin_dump_tree(get_topwin_from_list(node));
-		rt_kprintf("\n");
-	}
-#else
 	rtgui_dlist_foreach(node, &_rtgui_topwin_list, next)
 	{
 		_rtgui_topwin_dump_tree(get_topwin_from_list(node));
 		rt_kprintf("\n");
 	}
-#endif
 }

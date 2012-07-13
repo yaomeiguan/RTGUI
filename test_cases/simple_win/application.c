@@ -24,16 +24,13 @@ void create_wins(struct rtgui_app *app, void *parameter)
 	struct rtgui_label *label;
 	struct rtgui_rect rect;
 
-#ifdef RTGUI_USING_DESKTOP_WINDOW
-	struct rtgui_win *dsk;
-
 	if (parameter)
 	{
+        struct rtgui_win *dsk;
 		rtgui_graphic_driver_get_rect(rtgui_graphic_driver_get_default(), &rect);
-		dsk = rtgui_win_create(RT_NULL, "desktop", &rect, RTGUI_WIN_STYLE_DESKTOP_DEFAULT);
+		dsk = rtgui_win_create(RT_NULL, "desktop", &rect, RTGUI_WIN_STYLE_ONBTM);
 		rtgui_win_show(dsk, RT_FALSE);
 	}
-#endif
 
 	rect.x1 = 40, rect.y1 = 40, rect.x2 = 200, rect.y2 = 80;
 
@@ -93,7 +90,6 @@ void create_wins(struct rtgui_app *app, void *parameter)
 
 	rtgui_win_set_onclose(win4, on_window_close);
 	rtgui_win_show(win3, RT_FALSE);
-	rtgui_topwin_dump_tree();
 	/*rtgui_win_show(win4, RT_TRUE);*/
 
 	rtgui_app_run(app);
