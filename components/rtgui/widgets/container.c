@@ -25,6 +25,7 @@ static void _rtgui_container_constructor(rtgui_container_t *container)
 		rtgui_container_event_handler);
 
 	rtgui_list_init(&(container->children));
+	container->layout_box = RT_NULL;
 
 	/* container is used to 'contain'(show) widgets and dispatch events to
 	 * them, not interact with user. So no need to grab focus. If we did it,
@@ -45,6 +46,9 @@ static void _rtgui_container_constructor(rtgui_container_t *container)
 static void _rtgui_container_destructor(rtgui_container_t *container)
 {
 	rtgui_container_destroy_children(container);
+
+	if (container->layout_box != RT_NULL)
+		rtgui_object_destroy(RTGUI_OBJECT(container->layout_box));
 }
 
 static void _rtgui_container_update_toplevel(rtgui_container_t* container)
@@ -184,6 +188,7 @@ rtgui_container_t* rtgui_container_create(void)
 
 void rtgui_container_destroy(rtgui_container_t* container)
 {
+	rtgui_container_hide(container);
 	rtgui_widget_destroy(RTGUI_WIDGET(container));
 }
 
@@ -286,13 +291,32 @@ rtgui_widget_t* rtgui_container_get_first_child(rtgui_container_t* container)
 	return child;
 }
 
-#ifndef RTGUI_USING_SMALL_SIZE
 void rtgui_container_set_box(rtgui_container_t* container, struct rtgui_box* box)
 {
 	if (container == RT_NULL || box  == RT_NULL)
         return;
 
-	rtgui_container_add_child(RTGUI_CONTAINER(container), RTGUI_WIDGET(box));
-	rtgui_widget_set_rect(RTGUI_WIDGET(box), &(RTGUI_WIDGET(container)->extent));
+	container->layout_box = box;
+	box->container = container;
 }
-#endif
+
+void rtgui_container_layout(struct rtgui_container* container)
+{
+	if (container == RT_NULL || container->layout_box == RT_NULL)
+		return;
+
+	rtgui_box_layout(container->layout_box);
+}
+
+void rtgui_container_hide(rtgui_container_t* container)
+{
+	if (container == RT_NULL)
+		return;
+
+	if (RTGUI_WIDGET(container)->parent == RT_NULL)
+	{
+		RTGUI_WIDGET_HIDE(RTGUI_WIDGET(container));
+		return;
+	}
+}
+

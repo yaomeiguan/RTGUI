@@ -142,7 +142,7 @@ struct rtgui_box* demo_view_create_box(struct rtgui_container *container, int or
 	rect.y2 -= 25;
 
 	/* 创建一个自动布局引擎 */
-	box = rtgui_box_create(orient, &rect);
+	box = rtgui_box_create(orient, 5);
 	/* 添加box控件到视图中 */
 	rtgui_container_add_child(container, RTGUI_WIDGET(box));
 

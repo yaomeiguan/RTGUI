@@ -36,9 +36,7 @@ static void _rtgui_widget_constructor(rtgui_widget_t *widget)
 	widget->gc.font = rtgui_font_default();
 	widget->gc.textstyle = RTGUI_TEXTSTYLE_NORMAL;
 	widget->gc.textalign = RTGUI_ALIGN_LEFT | RTGUI_ALIGN_TOP;
-#ifndef RTGUI_USING_SMALL_SIZE
 	widget->align = RTGUI_ALIGN_LEFT | RTGUI_ALIGN_TOP;
-#endif
 
 	/* set parent and toplevel root */
 	widget->parent        = RT_NULL;
@@ -114,11 +112,9 @@ void rtgui_widget_set_rect(rtgui_widget_t* widget, const rtgui_rect_t* rect)
 
 	widget->extent = *rect;
 
-#ifndef RTGUI_USING_SMALL_SIZE
 	/* reset mini width and height */
 	widget->mini_width  = rtgui_rect_width(widget->extent);
 	widget->mini_height = rtgui_rect_height(widget->extent);
-#endif
 
 	/* it's not empty, fini it */
 	if (rtgui_region_not_empty(&(widget->clip)))
@@ -166,7 +162,6 @@ void rtgui_widget_get_extent(rtgui_widget_t* widget, rtgui_rect_t *rect)
 	*rect = widget->extent;
 }
 
-#ifndef RTGUI_USING_SMALL_SIZE
 void rtgui_widget_set_miniwidth(rtgui_widget_t* widget, int width)
 {
 	RT_ASSERT(widget != RT_NULL);
@@ -180,7 +175,6 @@ void rtgui_widget_set_miniheight(rtgui_widget_t* widget, int height)
 
 	widget->mini_height = height;
 }
-#endif
 
 /*
  * This function moves widget and its children to a logic point

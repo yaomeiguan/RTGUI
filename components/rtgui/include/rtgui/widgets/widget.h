@@ -52,12 +52,13 @@ extern "C" {
 #define RTGUI_WIDGET_DC_SET_UNVISIBLE(w) (w)->flag &= ~RTGUI_WIDGET_FLAG_DC_VISIBLE
 #define RTGUI_WIDGET_DC(w)				((struct rtgui_dc*)&((w)->dc_type))
 
-/* get rtgui widget object */
-#define RTGUI_WIDGET_FOREGROUND(w) 		((w)->gc.foreground)
-#define RTGUI_WIDGET_BACKGROUND(w)		((w)->gc.background)
-#define RTGUI_WIDGET_TEXTALIGN(w)		((w)->gc.textalign)
-#define RTGUI_WIDGET_FONT(w)			((w)->gc.font)
-#define RTGUI_WIDGET_FLAG(w)			((w)->flag)
+/* rtgui widget attribute */
+#define RTGUI_WIDGET_FOREGROUND(w) 		(RTGUI_WIDGET(w)->gc.foreground)
+#define RTGUI_WIDGET_BACKGROUND(w)		(RTGUI_WIDGET(w)->gc.background)
+#define RTGUI_WIDGET_TEXTALIGN(w)		(RTGUI_WIDGET(w)->gc.textalign)
+#define RTGUI_WIDGET_FONT(w)			(RTGUI_WIDGET(w)->gc.font)
+#define RTGUI_WIDGET_FLAG(w)			(RTGUI_WIDGET(w)->flag)
+#define RTGUI_WIDGET_ALIGN(w)			(RTGUI_WIDGET(w)->align)
 
 DECLARE_CLASS_TYPE(widget);
 
@@ -96,14 +97,10 @@ struct rtgui_widget
 	/* the widget extent */
 	rtgui_rect_t extent;
 
-#ifndef RTGUI_USING_SMALL_SIZE
 	/* minimal width and height of widget */
 	rt_int16_t mini_width, mini_height;
-	rt_int16_t margin, margin_style;
-
 	/* widget align */
 	rt_int32_t align;
-#endif
 
 	/* the rect clip */
 	rtgui_region_t clip;

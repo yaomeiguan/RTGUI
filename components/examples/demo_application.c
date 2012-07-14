@@ -61,6 +61,8 @@ static void application_entry(void* parameter)
 
 	rtgui_container_add_child(RTGUI_CONTAINER(main_win), RTGUI_WIDGET(the_notebook));
 
+	demo_view_box();
+
 	/* 初始化各个例子的视图 */
 	demo_view_benchmark();
 

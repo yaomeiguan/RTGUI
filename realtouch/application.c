@@ -1,7 +1,9 @@
 #include <rtthread.h>
 #include <rtgui/rtgui_app.h>
 #include <rtgui/widgets/window.h>
+#include <rtgui/widgets/label.h>
 #include "customer_list.h"
+#include <rtgui/widgets/box.h>
 
 /* application manager */
 struct rtgui_application_item
@@ -140,6 +142,50 @@ rt_bool_t event_handler(struct rtgui_object* object, rtgui_event_t* event)
 	return result;
 }
 
+rt_bool_t statusbar_event_handler(struct rtgui_object* object, struct rtgui_event* event)
+{
+	switch (event->type)
+	{
+	default:
+		break;
+	}
+
+	return RT_FALSE;
+}
+
+void statusbar_init(void)
+{
+	rtgui_rect_t rect;
+	struct rtgui_win* win;
+	struct rtgui_label* label;
+	struct rtgui_box* box;
+
+	/* create status bar window */
+	rect.x1 = rect.y1 = 0;
+	rect.x2 = rect.x1 + 800;
+	rect.y2 = rect.y1 + 25;
+	win = rtgui_win_create(RT_NULL, "StatusBar", &rect, RTGUI_WIN_STYLE_NO_BORDER |
+		RTGUI_WIN_STYLE_NO_TITLE |
+		RTGUI_WIN_STYLE_ONTOP);
+
+	box = rtgui_box_create(RTGUI_HORIZONTAL, 3);
+	rtgui_container_set_box(RTGUI_CONTAINER(win), box);
+
+	label = rtgui_label_create("12:00");
+	RTGUI_WIDGET_ALIGN(label) = RTGUI_ALIGN_CENTER_VERTICAL | RTGUI_ALIGN_RIGHT;
+	rtgui_widget_set_miniheight(RTGUI_WIDGET(label), 25);
+	rtgui_widget_set_miniwidth(RTGUI_WIDGET(label), 64);
+
+	rtgui_container_add_child(RTGUI_CONTAINER(win), RTGUI_WIDGET(label));
+
+	label = rtgui_label_create("166:00:00");
+	rtgui_container_add_child(RTGUI_CONTAINER(win), RTGUI_WIDGET(label));
+
+	rtgui_container_layout(RTGUI_CONTAINER(win));
+
+	rtgui_win_show(win, RT_FALSE);	
+}
+
 void wm_entry(void* parameter)
 {
 	struct rtgui_win* win;
@@ -168,6 +214,9 @@ void wm_entry(void* parameter)
 		rtgui_container_add_child(RTGUI_CONTAINER(win), RTGUI_WIDGET(app_list));
 
 		rtgui_win_show(win, RT_FALSE);
+
+		/* initialize status bar */
+		statusbar_init();
 
 		/* set our event handler */
 		rtgui_object_set_event_handler(RTGUI_OBJECT(application), 
