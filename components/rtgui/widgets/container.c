@@ -297,16 +297,3 @@ void rtgui_container_set_box(rtgui_container_t* container, struct rtgui_box* box
 	rtgui_widget_set_rect(RTGUI_WIDGET(box), &(RTGUI_WIDGET(container)->extent));
 }
 #endif
-
-void rtgui_container_hide(rtgui_container_t* container)
-{
-	if (container == RT_NULL)
-		return;
-
-	if (RTGUI_WIDGET(container)->parent == RT_NULL)
-	{
-		RTGUI_WIDGET_HIDE(RTGUI_WIDGET(container));
-		return;
-	}
-}
-
