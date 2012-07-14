@@ -184,7 +184,6 @@ rtgui_container_t* rtgui_container_create(void)
 
 void rtgui_container_destroy(rtgui_container_t* container)
 {
-	rtgui_container_hide(container);
 	rtgui_widget_destroy(RTGUI_WIDGET(container));
 }
 
