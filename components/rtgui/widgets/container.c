@@ -188,7 +188,6 @@ rtgui_container_t* rtgui_container_create(void)
 
 void rtgui_container_destroy(rtgui_container_t* container)
 {
-	rtgui_container_hide(container);
 	rtgui_widget_destroy(RTGUI_WIDGET(container));
 }
 
@@ -306,17 +305,5 @@ void rtgui_container_layout(struct rtgui_container* container)
 		return;
 
 	rtgui_box_layout(container->layout_box);
-}
-
-void rtgui_container_hide(rtgui_container_t* container)
-{
-	if (container == RT_NULL)
-		return;
-
-	if (RTGUI_WIDGET(container)->parent == RT_NULL)
-	{
-		RTGUI_WIDGET_HIDE(RTGUI_WIDGET(container));
-		return;
-	}
 }
 
