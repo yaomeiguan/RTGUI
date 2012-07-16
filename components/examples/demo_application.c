@@ -11,7 +11,7 @@ static rt_bool_t demo_handle_key(struct rtgui_object* object, struct rtgui_event
 {
 	struct rtgui_event_kbd* ekbd = (struct rtgui_event_kbd*)event;
 
-	if (ekbd->type == RTGUI_KEYDOWN)
+	if (ekbd->type == RTGUI_KEYUP)
 	{
 		if (ekbd->key == RTGUIK_RIGHT)
 		{
