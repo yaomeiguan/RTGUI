@@ -319,6 +319,16 @@ struct rtgui_widget* rtgui_notebook_get_widget_at(struct rtgui_notebook* noteboo
 	return RT_NULL;
 }
 
+static rt_bool_t _rtgui_notebook_current_widget_handle(struct rtgui_notebook *notebook,
+		                                               struct rtgui_event *event)
+{
+	struct rtgui_widget *widget = rtgui_notebook_get_current(notebook);
+	if (widget && widget != RTGUI_WIDGET(notebook))
+		return RTGUI_OBJECT(widget)->event_handler(RTGUI_OBJECT(widget), event);
+	else
+		return RT_FALSE;
+}
+
 rt_bool_t rtgui_notebook_event_handler(struct rtgui_object* object, struct rtgui_event* event)
 {
 	struct rtgui_notebook* notebook;
@@ -336,16 +346,14 @@ rt_bool_t rtgui_notebook_event_handler(struct rtgui_object* object, struct rtgui
 	case RTGUI_EVENT_MOUSE_BUTTON:
 		_rtgui_notebook_onmouse(notebook, (struct rtgui_event_mouse*)event);
 		break;
+	case RTGUI_EVENT_SHOW:
+	case RTGUI_EVENT_HIDE:
+		/* show myself */
+		rtgui_widget_onshow(object, event);
+		/* show the tab widget */
+		_rtgui_notebook_current_widget_handle(notebook, event);
 	case RTGUI_EVENT_KBD:
-		if (notebook->current != RTGUI_NOT_FOUND)
-		{
-			if (RTGUI_OBJECT(notebook->childs[notebook->current].widget
-						)->event_handler != RT_NULL)
-				return RTGUI_OBJECT(notebook->childs[notebook->current].widget
-						)->event_handler(
-							RTGUI_OBJECT(notebook->childs[notebook->current].widget),
-							event);
-		}
+		_rtgui_notebook_current_widget_handle(notebook, event);
 		break;
 	default:
 		/* use parent event handler */

@@ -164,6 +164,14 @@ rt_bool_t rtgui_container_event_handler(struct rtgui_object* object, struct rtgu
 		return rtgui_container_dispatch_mouse_event(container,
 			(struct rtgui_event_mouse*)event);
 
+	case RTGUI_EVENT_SHOW:
+		rtgui_widget_onshow(RTGUI_OBJECT(container), event);
+		rtgui_container_dispatch_event(container, event);
+		break;
+	case RTGUI_EVENT_HIDE:
+		rtgui_widget_onhide(RTGUI_OBJECT(container), event);
+		rtgui_container_dispatch_event(container, event);
+		break;
 	case RTGUI_EVENT_COMMAND:
 	case RTGUI_EVENT_RESIZE:
 		rtgui_container_dispatch_event(container, event);

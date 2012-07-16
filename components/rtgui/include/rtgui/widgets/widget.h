@@ -26,16 +26,16 @@ extern "C" {
 #endif
 
 #define RTGUI_WIDGET_FLAG_DEFAULT		0x0000
-#define RTGUI_WIDGET_FLAG_HIDE			0x0001
+#define RTGUI_WIDGET_FLAG_SHOWN			0x0001
 #define RTGUI_WIDGET_FLAG_DISABLE		0x0002
 #define RTGUI_WIDGET_FLAG_FOCUS			0x0004
 #define RTGUI_WIDGET_FLAG_TRANSPARENT	0x0008
 #define RTGUI_WIDGET_FLAG_FOCUSABLE		0x0010
 #define RTGUI_WIDGET_FLAG_DC_VISIBLE	0x0100
 
-#define RTGUI_WIDGET_UNHIDE(w)			(w)->flag &= ~RTGUI_WIDGET_FLAG_HIDE
-#define RTGUI_WIDGET_HIDE(w)			(w)->flag |= RTGUI_WIDGET_FLAG_HIDE
-#define RTGUI_WIDGET_IS_HIDE(w)			((w)->flag & RTGUI_WIDGET_FLAG_HIDE)
+#define RTGUI_WIDGET_UNHIDE(w)			(w)->flag |= RTGUI_WIDGET_FLAG_SHOWN
+#define RTGUI_WIDGET_HIDE(w)			(w)->flag &= ~RTGUI_WIDGET_FLAG_SHOWN
+#define RTGUI_WIDGET_IS_HIDE(w)			(!((w)->flag & RTGUI_WIDGET_FLAG_SHOWN))
 
 #define RTGUI_WIDGET_ENABLE(w)			(w)->flag &= ~RTGUI_WIDGET_FLAG_DISABLE
 #define RTGUI_WIDGET_DISABLE(w)			(w)->flag |= RTGUI_WIDGET_FLAG_DISABLE
@@ -186,7 +186,9 @@ void rtgui_widget_update_clip(rtgui_widget_t* widget);
 struct rtgui_win* rtgui_widget_get_toplevel(rtgui_widget_t* widget);
 
 void rtgui_widget_show(rtgui_widget_t* widget);
+rt_bool_t rtgui_widget_onshow(struct rtgui_object *object, struct rtgui_event *event);
 void rtgui_widget_hide(rtgui_widget_t* widget);
+rt_bool_t rtgui_widget_onhide(struct rtgui_object *object, struct rtgui_event *event);
 void rtgui_widget_update(rtgui_widget_t* widget);
 
 /* get parent color */
