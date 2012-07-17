@@ -40,7 +40,7 @@ static void _rtgui_container_constructor(rtgui_container_t *container)
 	 *
 	 * Just eliminate it.
 	 */
-	RTGUI_WIDGET(container)->flag &= ~RTGUI_WIDGET_FLAG_FOCUSABLE;
+	RTGUI_WIDGET(container)->flag |= RTGUI_WIDGET_FLAG_FOCUSABLE;
 }
 
 static void _rtgui_container_destructor(rtgui_container_t *container)
