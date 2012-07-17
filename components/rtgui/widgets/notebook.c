@@ -301,12 +301,16 @@ void rtgui_notebook_set_current_by_index(struct rtgui_notebook* notebook, rt_uin
 
 	if ((index < notebook->count) && (notebook->current != index))
 	{
+		struct rtgui_widget *widget;
+
 		if (notebook->current != RTGUI_NOT_FOUND)
 			rtgui_widget_hide(notebook->childs[notebook->current].widget);
 
 		notebook->current = index;
-		rtgui_widget_show(notebook->childs[notebook->current].widget);
-		rtgui_widget_update(notebook->childs[notebook->current].widget);
+		widget = notebook->childs[notebook->current].widget;
+		rtgui_widget_show(widget);
+		rtgui_widget_update(widget);
+		rtgui_widget_focus(widget);
 	}
 }
 
