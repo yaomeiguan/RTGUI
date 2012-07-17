@@ -74,6 +74,9 @@ rt_bool_t benchmark_event_handler(struct rtgui_object *object, rtgui_event_t *ev
 	{
 		struct rtgui_event_kbd *kbd = (struct rtgui_event_kbd*)event;
 
+		if (kbd->key == RTGUIK_LEFT || kbd->key == RTGUIK_RIGHT)
+			return RT_FALSE;
+
 		if (RTGUI_KBD_IS_UP(kbd))
 		{
 			if (running)
