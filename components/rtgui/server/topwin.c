@@ -297,23 +297,22 @@ rt_err_t rtgui_topwin_remove(struct rtgui_win* wid)
 
 	old_focus = rtgui_topwin_get_focus();
 
-	// TODO: if the window is hidden, there is no need to update the window
-	// region
-	_rtgui_topwin_union_region_tree(topwin, &region);
-	if (topwin->flag & WINTITLE_SHOWN)
-		rtgui_topwin_update_clip();
+	/* remove the root from _rtgui_topwin_list will remove the whole tree from
+	 * _rtgui_topwin_list. */
+	rtgui_dlist_remove(&topwin->list);
 
 	if (old_focus == topwin)
 	{
 		_rtgui_topwin_activate_next(topwin->flag);
 	}
 
-	/* redraw the old rect */
-	rtgui_topwin_redraw(rtgui_region_extents(&region));
-
-	/* remove the root from _rtgui_topwin_list will remove the whole tree from
-	 * _rtgui_topwin_list. */
-	rtgui_dlist_remove(&topwin->list);
+	if (topwin->flag & WINTITLE_SHOWN)
+	{
+		rtgui_topwin_update_clip();
+		/* redraw the old rect */
+		_rtgui_topwin_union_region_tree(topwin, &region);
+		rtgui_topwin_redraw(rtgui_region_extents(&region));
+	}
 
 	_rtgui_topwin_free_tree(topwin);
 
