@@ -1190,3 +1190,12 @@ void rtgui_topwin_dump_tree(void)
 		rt_kprintf("\n");
 	}
 }
+
+#ifdef RT_USING_FINSH
+#include <finsh.h>
+void dump_tree()
+{
+	rtgui_topwin_dump_tree();
+}
+FINSH_FUNCTION_EXPORT(dump_tree, dump rtgui topwin tree)
+#endif
