@@ -101,7 +101,7 @@ rt_bool_t rtgui_radiobox_event_handler(struct rtgui_object* object, struct rtgui
 
 #ifndef RTGUI_USING_SMALL_SIZE
 		if (widget->on_key != RT_NULL)
-			widget->on_key(RTGUI_OBJECT(widget), event);
+			return widget->on_key(RTGUI_OBJECT(widget), event);
 		else
 #endif
 		{
@@ -116,12 +116,18 @@ rt_bool_t rtgui_radiobox_event_handler(struct rtgui_object* object, struct rtgui
 	            if (e->key == RTGUIK_UP)
 	            {
 	                if (radiobox->item_selection > 0)
+					{
 	                    rtgui_radiobox_set_selection(radiobox, radiobox->item_selection - 1);
+						return RT_TRUE;
+					}
 	            }
 	            else if (e->key == RTGUIK_DOWN)
 	            {
 	                if (radiobox->item_selection < radiobox->item_count - 1)
+					{
 	                    rtgui_radiobox_set_selection(radiobox, radiobox->item_selection + 1);
+						return RT_TRUE;
+					}
 	            }
 			}
 			else
@@ -129,12 +135,18 @@ rt_bool_t rtgui_radiobox_event_handler(struct rtgui_object* object, struct rtgui
 	            if (e->key == RTGUIK_LEFT)
 	            {
 	                if (radiobox->item_selection > 0)
+					{
 	                    rtgui_radiobox_set_selection(radiobox, radiobox->item_selection - 1);
+						return RT_TRUE;
+					}
 	            }
 	            else if (e->key == RTGUIK_RIGHT)
 	            {
 	                if (radiobox->item_selection < radiobox->item_count - 1)
+					{
 	                    rtgui_radiobox_set_selection(radiobox, radiobox->item_selection + 1);
+						return RT_TRUE;
+					}
 	            }
 			}
         }
