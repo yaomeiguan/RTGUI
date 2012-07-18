@@ -354,17 +354,14 @@ rt_bool_t rtgui_notebook_event_handler(struct rtgui_object* object, struct rtgui
 		/* show myself */
 		rtgui_widget_onshow(object, event);
 		/* show the tab widget */
-		_rtgui_notebook_current_widget_handle(notebook, event);
-		break;
+		return _rtgui_notebook_current_widget_handle(notebook, event);
 	case RTGUI_EVENT_HIDE:
 		/* hide myself */
 		rtgui_widget_onhide(object, event);
 		/* hide the tab widget */
-		_rtgui_notebook_current_widget_handle(notebook, event);
-		break;
+		return _rtgui_notebook_current_widget_handle(notebook, event);
 	case RTGUI_EVENT_KBD:
-		_rtgui_notebook_current_widget_handle(notebook, event);
-		break;
+		return _rtgui_notebook_current_widget_handle(notebook, event);
 	default:
 		/* use parent event handler */
 		return rtgui_widget_event_handler(object, event);
