@@ -143,6 +143,32 @@ __on_err:
 	return RT_NULL;
 }
 
+static rt_bool_t _rtgui_win_deal_close(struct rtgui_win *win,
+									   struct rtgui_event *event,
+									   rt_bool_t force_close)
+{
+	if (win->on_close != RT_NULL)
+	{
+		if ((win->on_close(RTGUI_OBJECT(win), event) == RT_FALSE) && !force_close)
+			return RT_FALSE;
+	}
+
+	rtgui_win_hiden(win);
+
+	win->flag |= RTGUI_WIN_FLAG_CLOSED;
+
+	if (win->flag & RTGUI_WIN_FLAG_MODAL)
+	{
+		rtgui_win_end_modal(win, RTGUI_MODAL_CANCEL);
+	}
+	else if (win->style & RTGUI_WIN_STYLE_DESTROY_ON_CLOSE)
+	{
+		rtgui_win_destroy(win);
+	}
+
+	return RT_TRUE;
+}
+
 void rtgui_win_destroy(struct rtgui_win* win)
 {
 	/* close the window first if it's not. */
@@ -177,32 +203,6 @@ void rtgui_win_destroy(struct rtgui_win* win)
 	{
 		rtgui_widget_destroy(RTGUI_WIDGET(win));
 	}
-}
-
-static rt_bool_t _rtgui_win_deal_close(struct rtgui_win *win,
-									   struct rtgui_event *event,
-									   rt_bool_t force_close)
-{
-	if (win->on_close != RT_NULL)
-	{
-		if ((win->on_close(RTGUI_OBJECT(win), event) == RT_FALSE) && !force_close)
-			return RT_FALSE;
-	}
-
-	rtgui_win_hiden(win);
-
-	win->flag |= RTGUI_WIN_FLAG_CLOSED;
-
-	if (win->flag & RTGUI_WIN_FLAG_MODAL)
-	{
-		rtgui_win_end_modal(win, RTGUI_MODAL_CANCEL);
-	}
-	else if (win->style & RTGUI_WIN_STYLE_DESTROY_ON_CLOSE)
-	{
-		rtgui_win_destroy(win);
-	}
-
-	return RT_TRUE;
 }
 
 /* send a close event to myself to get a consistent behavior */
