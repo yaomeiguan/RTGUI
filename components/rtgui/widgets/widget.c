@@ -407,8 +407,6 @@ rt_bool_t rtgui_widget_event_handler(struct rtgui_object* object, rtgui_event_t*
 	RT_ASSERT(object != RT_NULL);
 	RT_ASSERT(event != RT_NULL);
 
-	widget = RTGUI_WIDGET(object);
-
 	switch (event->type)
 	{
 	case RTGUI_EVENT_SHOW:
