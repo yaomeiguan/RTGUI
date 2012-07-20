@@ -24,13 +24,15 @@ typedef rt_int32_t	rt_off_t;		/* Type for offset, supports 4G at most */
 #define RT_FALSE 			0
 
 /* RT-Thread error code definitions */
-#define RT_EOK				0		/*!< There is no error happen. */
-#define RT_ERROR			1		/*!< A generic error happens. 	*/
-#define RT_ETIMEOUT			2		/*!< Some timing sensitive action failed, because timed out. */
-#define RT_EFULL			3		/*!< The resource is full. */
-#define RT_EEMPTY			4		/*!< The resource is empty. */
-#define RT_ENOSYS			5		/*!< No system. */
-#define RT_EBUSY			6		/**< Busy */
+#define RT_EOK                          0               /**< There is no error       */
+#define RT_ERROR                        1               /**< A generic error happens */
+#define RT_ETIMEOUT                     2               /**< Timed out               */
+#define RT_EFULL                        3               /**< The resource is full    */
+#define RT_EEMPTY                       4               /**< The resource is empty   */
+#define RT_ENOMEM                       5               /**< No memory               */
+#define RT_ENOSYS                       6               /**< No system               */
+#define RT_EBUSY                        7               /**< Busy                    */
+#define RT_EIO                          8               /**< IO error                */
 
 #define RT_ALIGN_SIZE		4
 #define RT_ALIGN(size, align)	(((size) + (align) - 1) & ~((align)-1))
