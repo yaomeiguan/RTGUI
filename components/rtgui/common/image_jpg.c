@@ -558,10 +558,6 @@ struct rtgui_image_jpeg
 
 /* Private macro -------------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
-/* static rt_bool_t rtgui_image_jpeg_check(struct rtgui_filerw* file,
-    rt_uint16_t *width, rt_uint16_t *height);
-static rt_bool_t rtgui_image_jpeg_load(struct rtgui_image* image,
-    struct rtgui_filerw* file, rt_uint8_t scale, rt_bool_t load); */
 static rt_bool_t rtgui_image_jpeg_check(struct rtgui_filerw* file);
 static rt_bool_t rtgui_image_jpeg_load(struct rtgui_image* image, struct rtgui_filerw* file, rt_bool_t load);
 static void rtgui_image_jpeg_unload(struct rtgui_image* image);
@@ -691,8 +687,6 @@ static UINT tjpgd_out_func(JDEC *jdec, void *bitmap, JRECT *rect)
 }
 
 static rt_bool_t rtgui_image_jpeg_check(struct rtgui_filerw* file)
-//static rt_bool_t rtgui_image_jpeg_check(struct rtgui_filerw* file,
-//    rt_uint32_t *width, rt_uint32_t *height)
 {
 	rt_bool_t is_JPG;
     JDEC tjpgd;
@@ -721,8 +715,6 @@ static rt_bool_t rtgui_image_jpeg_check(struct rtgui_filerw* file)
         if (jd_prepare(&tjpgd, tjpgd_in_func, pool,
             TJPGD_WORKING_BUFFER_SIZE, (void *)&file) == JDR_OK)
         {
-//            *width = (rt_uint32_t)tjpgd.width;
-//            *height = (rt_uint32_t)tjpgd.height;
             is_JPG = RT_TRUE;
         }
 
@@ -735,8 +727,6 @@ static rt_bool_t rtgui_image_jpeg_check(struct rtgui_filerw* file)
 }
 
 static rt_bool_t rtgui_image_jpeg_load(struct rtgui_image* image, struct rtgui_filerw* file, rt_bool_t load)
-//static rt_bool_t rtgui_image_jpeg_load(struct rtgui_image* image,
-//    struct rtgui_filerw* file, rt_uint8_t scale, rt_bool_t load)
 {
     rt_uint8_t scale = 0;
     rt_bool_t res = RT_FALSE;
