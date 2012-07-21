@@ -41,10 +41,6 @@ struct rtgui_image_bmp
 	rt_uint8_t pad;
 };
 
-/* static rt_bool_t rtgui_image_bmp_check(struct rtgui_filerw* file,
-    rt_uint32_t *width, rt_uint32_t *height);
-static rt_bool_t rtgui_image_bmp_load(struct rtgui_image* image,
-    struct rtgui_filerw* file, rt_uint8_t scale, rt_bool_t load); */
 static rt_bool_t rtgui_image_bmp_check(struct rtgui_filerw* file);
 static rt_bool_t rtgui_image_bmp_load(struct rtgui_image* image, struct rtgui_filerw* file, rt_bool_t load);
 static void rtgui_image_bmp_unload(struct rtgui_image* image);
@@ -62,8 +58,6 @@ struct rtgui_image_engine rtgui_image_bmp_engine =
 };
 
 static rt_bool_t rtgui_image_bmp_check(struct rtgui_filerw* file)
-//static rt_bool_t rtgui_image_bmp_check(struct rtgui_filerw* file,
-//    rt_uint32_t *width, rt_uint32_t *height)
 {
 	rt_uint8_t buffer[18];
 	rt_bool_t is_bmp = RT_FALSE;
@@ -98,8 +92,6 @@ static rt_bool_t rtgui_image_bmp_check(struct rtgui_filerw* file)
                 break;
             }
             /* Read image size */
-//            *width = (rt_uint32_t)*(rt_uint16_t *)&buffer[0];
-//            *height = (rt_uint32_t)*(rt_uint16_t *)&buffer[2];
             is_bmp = RT_TRUE;
         }
         else
@@ -109,8 +101,6 @@ static rt_bool_t rtgui_image_bmp_check(struct rtgui_filerw* file)
                 break;
             }
             /* Read image size */
-//            *width = *(rt_uint32_t *)&buffer[0];
-//            *height = *(rt_uint32_t *)&buffer[4];
             is_bmp = RT_TRUE;
         }
     } while(0);
@@ -164,8 +154,6 @@ static struct rtgui_image_palette* rtgui_image_bmp_load_palette(
 }
 
 static rt_bool_t rtgui_image_bmp_load(struct rtgui_image* image, struct rtgui_filerw* file, rt_bool_t load)
-//static rt_bool_t rtgui_image_bmp_load(struct rtgui_image* image,
-//    struct rtgui_filerw* file, rt_uint8_t scale, rt_bool_t load)
 {
     rt_uint8_t scale = 2;
     rt_uint8_t *wrkBuffer;
