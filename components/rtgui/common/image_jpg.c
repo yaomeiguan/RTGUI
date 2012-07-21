@@ -669,7 +669,7 @@ static UINT tjpgd_out_func(JDEC *jdec, void *bitmap, JRECT *rect)
             {
                 blit_line(line_buf, src, w * jpeg->byte_per_pixel);
                 jpeg->dc->engine->blit_line(jpeg->dc,
-                    jpeg->dst_x + rect->left, jpeg->dst_x + rect->left + w - 1,
+                    jpeg->dst_x + rect->left, jpeg->dst_x + rect->left + w,
                     jpeg->dst_y + rect->top + y,
                     line_buf);
                 src += rectWidth;
@@ -680,7 +680,7 @@ static UINT tjpgd_out_func(JDEC *jdec, void *bitmap, JRECT *rect)
             for (y = 0; y < h; y++)
             {
                 jpeg->dc->engine->blit_line(jpeg->dc,
-                    jpeg->dst_x + rect->left, jpeg->dst_x + rect->left + w - 1,
+                    jpeg->dst_x + rect->left, jpeg->dst_x + rect->left + w,
                     jpeg->dst_y + rect->top + y,
                     src);
                 src += rectWidth;
@@ -738,7 +738,7 @@ static rt_bool_t rtgui_image_jpeg_load(struct rtgui_image* image, struct rtgui_f
 //static rt_bool_t rtgui_image_jpeg_load(struct rtgui_image* image,
 //    struct rtgui_filerw* file, rt_uint8_t scale, rt_bool_t load)
 {
-    rt_uint8_t scale = 2;
+    rt_uint8_t scale = 0;
     rt_bool_t res = RT_FALSE;
     struct rtgui_image_jpeg *jpeg;
     JRESULT ret;
@@ -960,7 +960,7 @@ static void rtgui_image_jpeg_blit(struct rtgui_image* image,
                 for (y = 0; y < h; y++)
                 {
                     dc->engine->blit_line(dc,
-                        dst_rect->x1, dst_rect->x1 + w - 1,
+                        dst_rect->x1, dst_rect->x1 + w,
                         dst_rect->y1 + y,
                         src);
                     src += imageWidth;
