@@ -159,7 +159,7 @@ static struct rtgui_image_palette *rtgui_image_bmp_load_palette(
 
 static rt_bool_t rtgui_image_bmp_load(struct rtgui_image *image, struct rtgui_filerw *file, rt_bool_t load)
 {
-    rt_uint8_t scale = 0;
+    rt_uint8_t scale = 1;
     rt_uint8_t *wrkBuffer;
     struct rtgui_image_bmp *bmp;
     rt_uint32_t bmpHeaderSize;
@@ -561,6 +561,18 @@ static void rtgui_image_bmp_blit(struct rtgui_image *image, struct rtgui_dc *dc,
             {
                 break;
             }
+            /* the image is upside down. So we need to start from middle if the
+             * image is higher than the dst_rect. */
+            if (image->h > rtgui_rect_height(*dst_rect))
+            {
+                int hdelta = image->h - rtgui_rect_height(*dst_rect);
+                if (rtgui_filerw_seek(bmp->filerw, hdelta * (bmp->pitch + bmp->pad) * (1 << bmp->scale),
+                            RTGUI_FILE_SEEK_CUR) < 0)
+                {
+                    error = RT_TRUE;
+                    break;
+                }
+            }
 
             if (bmp->bit_per_pixel == 1)
             {
@@ -600,7 +612,7 @@ static void rtgui_image_bmp_blit(struct rtgui_image *image, struct rtgui_dc *dc,
 
             /* Process whole image */
             y = 0;
-            while (y < image->h)
+            while (y < h)
             {
                 x = 0;
                 readIndex = 0;
@@ -610,7 +622,7 @@ static void rtgui_image_bmp_blit(struct rtgui_image *image, struct rtgui_dc *dc,
                 while (readIndex < bmp->pitch)
                 {
                     /* Put progress indicator */
-                    rt_kprintf("\r%lu%%", y * 100UL / image->h);
+                    rt_kprintf("\r%lu%%", y * 100UL / h);
 
                     /* Read data to buffer */
                     readLength = (BMP_WORKING_BUFFER_SIZE > (bmp->pitch - readIndex)) ? \
@@ -626,18 +638,19 @@ static void rtgui_image_bmp_blit(struct rtgui_image *image, struct rtgui_dc *dc,
                     /* Process read buffer */
                     if (bmp->bit_per_pixel == 1)
                     {
-                        rt_uint8_t j;
-                        rtgui_color_t color;
-
                         for (loadIndex = skipLength; loadIndex < readLength; loadIndex += 1 << scale1)
                         {
+                            rt_uint8_t j;
                             for (j = 0; j < 8; j += 1 << scale2)
                             {
+                                rtgui_color_t color;
                                 color = image->palette->colors[(wrkBuffer[loadIndex] & (1 << (7 - j))) >> (7 - j)];
                                 rtgui_dc_draw_color_point(dc,
                                                           dst_rect->x1 + x++,
-                                                          dst_rect->y1 + image->h - y,
+                                                          dst_rect->y1 + h - y,
                                                           color);
+                                if (x >= w)
+                                    break;
                             }
                             if (scale1 && (readLength % (1 << scale1)))
                             {
@@ -647,18 +660,19 @@ static void rtgui_image_bmp_blit(struct rtgui_image *image, struct rtgui_dc *dc,
                     }
                     else if (bmp->bit_per_pixel == 4)
                     {
-                        rt_uint8_t j;
-                        rtgui_color_t color;
-
                         for (loadIndex = skipLength; loadIndex < readLength; loadIndex += 1 << scale1)
                         {
+                            rt_uint8_t j;
                             for (j = 0; j < 8; j += 1 << (2 + scale2))
                             {
+                                rtgui_color_t color;
                                 color = image->palette->colors[(wrkBuffer[loadIndex] & (0x0F << (4 - j))) >> (4 - j)];
                                 rtgui_dc_draw_color_point(dc,
                                                           dst_rect->x1 + x++,
-                                                          dst_rect->y1 + image->h - y,
+                                                          dst_rect->y1 + h - y,
                                                           color);
+                                if (x >= w)
+                                    break;
                             }
                         }
                         if (scale1 && (readLength % (1 << scale1)))
@@ -668,15 +682,16 @@ static void rtgui_image_bmp_blit(struct rtgui_image *image, struct rtgui_dc *dc,
                     }
                     else if (bmp->bit_per_pixel == 8)
                     {
-                        rtgui_color_t color;
-
                         for (loadIndex = skipLength; loadIndex < readLength; loadIndex += 1 << bmp->scale)
                         {
+                            rtgui_color_t color;
                             color = image->palette->colors[wrkBuffer[loadIndex]];
                             rtgui_dc_draw_color_point(dc,
                                                       dst_rect->x1 + x++,
-                                                      dst_rect->y1 + image->h - y,
+                                                      dst_rect->y1 + h - y,
                                                       color);
+                            if (x >= w)
+                                break;
                         }
                         if (readLength % (1 << bmp->scale))
                         {
@@ -710,9 +725,11 @@ static void rtgui_image_bmp_blit(struct rtgui_image *image, struct rtgui_dc *dc,
                             blit_line(temp, &wrkBuffer[loadIndex], bytePerPixel);
                             dc->engine->blit_line(dc,
                                                   dst_rect->x1 + x, dst_rect->x1 + x + 1,
-                                                  dst_rect->y1 + image->h - y,
+                                                  dst_rect->y1 + h - y,
                                                   temp);
                             x++;
+                            if (x >= w)
+                                break;
                         }
                         if (readLength % (1 << bmp->scale))
                         {
