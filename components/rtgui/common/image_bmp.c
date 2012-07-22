@@ -159,7 +159,7 @@ static struct rtgui_image_palette *rtgui_image_bmp_load_palette(
 
 static rt_bool_t rtgui_image_bmp_load(struct rtgui_image *image, struct rtgui_filerw *file, rt_bool_t load)
 {
-    rt_uint8_t scale = 1;
+    rt_uint8_t scale = 0;
     rt_uint8_t *wrkBuffer;
     struct rtgui_image_bmp *bmp;
     rt_uint32_t bmpHeaderSize;
@@ -555,6 +555,7 @@ static void rtgui_image_bmp_blit(struct rtgui_image *image, struct rtgui_dc *dc,
             rt_uint8_t skipLength;
             rt_uint16_t x, y;
             rt_int8_t scale1, scale2;
+            rt_uint16_t y_start = dst_rect->y1 + h - 1;
 
             /* Read the pixels.  Note that the bmp image is upside down */
             if (rtgui_filerw_seek(bmp->filerw, bmp->pixel_offset, RTGUI_FILE_SEEK_SET) < 0)
@@ -647,7 +648,7 @@ static void rtgui_image_bmp_blit(struct rtgui_image *image, struct rtgui_dc *dc,
                                 color = image->palette->colors[(wrkBuffer[loadIndex] & (1 << (7 - j))) >> (7 - j)];
                                 rtgui_dc_draw_color_point(dc,
                                                           dst_rect->x1 + x++,
-                                                          dst_rect->y1 + h - y,
+                                                          y_start - y,
                                                           color);
                                 if (x >= w)
                                     break;
@@ -669,7 +670,7 @@ static void rtgui_image_bmp_blit(struct rtgui_image *image, struct rtgui_dc *dc,
                                 color = image->palette->colors[(wrkBuffer[loadIndex] & (0x0F << (4 - j))) >> (4 - j)];
                                 rtgui_dc_draw_color_point(dc,
                                                           dst_rect->x1 + x++,
-                                                          dst_rect->y1 + h - y,
+                                                          y_start - y,
                                                           color);
                                 if (x >= w)
                                     break;
@@ -688,7 +689,7 @@ static void rtgui_image_bmp_blit(struct rtgui_image *image, struct rtgui_dc *dc,
                             color = image->palette->colors[wrkBuffer[loadIndex]];
                             rtgui_dc_draw_color_point(dc,
                                                       dst_rect->x1 + x++,
-                                                      dst_rect->y1 + h - y,
+                                                      y_start - y,
                                                       color);
                             if (x >= w)
                                 break;
@@ -725,7 +726,7 @@ static void rtgui_image_bmp_blit(struct rtgui_image *image, struct rtgui_dc *dc,
                             blit_line(temp, &wrkBuffer[loadIndex], bytePerPixel);
                             dc->engine->blit_line(dc,
                                                   dst_rect->x1 + x, dst_rect->x1 + x + 1,
-                                                  dst_rect->y1 + h - y,
+                                                  y_start - y,
                                                   temp);
                             x++;
                             if (x >= w)
