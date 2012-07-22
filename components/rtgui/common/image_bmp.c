@@ -159,7 +159,7 @@ static struct rtgui_image_palette *rtgui_image_bmp_load_palette(
 
 static rt_bool_t rtgui_image_bmp_load(struct rtgui_image *image, struct rtgui_filerw *file, rt_bool_t load)
 {
-    rt_uint8_t scale = 2;
+    rt_uint8_t scale = 0;
     rt_uint8_t *wrkBuffer;
     struct rtgui_image_bmp *bmp;
     rt_uint32_t bmpHeaderSize;
@@ -556,13 +556,6 @@ static void rtgui_image_bmp_blit(struct rtgui_image *image, struct rtgui_dc *dc,
             rt_uint16_t x, y;
             rt_int8_t scale1, scale2;
 
-            wrkBuffer = (rt_uint8_t *)rt_malloc(BMP_WORKING_BUFFER_SIZE);
-            if (wrkBuffer == RT_NULL)
-            {
-                rt_kprintf("BMP err: no mem (%d)\n", BMP_WORKING_BUFFER_SIZE);
-                break;
-            }
-
             /* Read the pixels.  Note that the bmp image is upside down */
             if (rtgui_filerw_seek(bmp->filerw, bmp->pixel_offset, RTGUI_FILE_SEEK_SET) < 0)
             {
@@ -594,6 +587,15 @@ static void rtgui_image_bmp_blit(struct rtgui_image *image, struct rtgui_dc *dc,
                     scale1 = 0;
                     scale2 = bmp->scale;
                 }
+            }
+
+            wrkBuffer = (rt_uint8_t *)rt_malloc(
+					(BMP_WORKING_BUFFER_SIZE > bmp->pitch) ? \
+					bmp->pitch : BMP_WORKING_BUFFER_SIZE);
+            if (wrkBuffer == RT_NULL)
+            {
+                rt_kprintf("BMP err: no mem (%d)\n", BMP_WORKING_BUFFER_SIZE);
+                break;
             }
 
             /* Process whole image */
