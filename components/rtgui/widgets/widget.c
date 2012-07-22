@@ -413,8 +413,7 @@ rt_bool_t rtgui_widget_onupdate_toplvl(struct rtgui_object *object, struct rtgui
 
 rt_bool_t rtgui_widget_event_handler(struct rtgui_object* object, rtgui_event_t* event)
 {
-	RT_ASSERT(object != RT_NULL);
-	RT_ASSERT(event != RT_NULL);
+	RTGUI_WIDGET_EVENT_HANDLER_PREPARE;
 
 	switch (event->type)
 	{
