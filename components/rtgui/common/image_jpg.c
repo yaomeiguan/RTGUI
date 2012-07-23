@@ -419,7 +419,7 @@ static void rtgui_image_jpeg_blit(struct rtgui_image *image, struct rtgui_dc *dc
     else
     {
         /* seek to the begin of file */
-        rtgui_filerw_seek(jpeg->filerw, 0, SEEK_SET);
+        rtgui_filerw_seek(jpeg->filerw, 0, RTGUI_FILE_SEEK_SET);
 
         /* decompress line and line */
         for (y = 0; y < image->h; y ++)
@@ -454,7 +454,7 @@ static rt_bool_t rtgui_image_jpeg_check(struct rtgui_filerw *file)
     in_scan = 0;
 
     /* seek to the begining of file */
-    rtgui_filerw_seek(file, 0, SEEK_SET);
+    rtgui_filerw_seek(file, 0, RTGUI_FILE_SEEK_SET);
 
     if (rtgui_filerw_read(file, magic, 2, 1))
     {
@@ -475,7 +475,7 @@ static rt_bool_t rtgui_image_jpeg_check(struct rtgui_filerw *file)
                 {
                     /* Extra padding in JPEG (legal) */
                     /* or this is data and we are scanning */
-                    rtgui_filerw_seek(file, -1, SEEK_CUR);
+                    rtgui_filerw_seek(file, -1, RTGUI_FILE_SEEK_CUR);
                 }
                 else if (magic[1] == 0xD9)
                 {
@@ -502,7 +502,7 @@ static rt_bool_t rtgui_image_jpeg_check(struct rtgui_filerw *file)
                     rt_uint32_t end;
                     start = rtgui_filerw_tell(file);
                     size = (magic[2] << 8) + magic[3];
-                    end = rtgui_filerw_seek(file, size - 2, SEEK_CUR);
+                    end = rtgui_filerw_seek(file, size - 2, RTGUI_FILE_SEEK_CUR);
                     if (end != start + size - 2) is_JPG = RT_FALSE;
                     if (magic[1] == 0xDA)
                     {
@@ -514,7 +514,7 @@ static rt_bool_t rtgui_image_jpeg_check(struct rtgui_filerw *file)
             }
         }
     }
-    rtgui_filerw_seek(file, start, SEEK_SET);
+    rtgui_filerw_seek(file, start, RTGUI_FILE_SEEK_SET);
 
     return is_JPG;
 }
@@ -728,7 +728,7 @@ static rt_bool_t rtgui_image_jpeg_check(struct rtgui_filerw *file)
             break;
         }
 
-        if (rtgui_filerw_seek(file, 0, SEEK_SET) == -1)
+        if (rtgui_filerw_seek(file, 0, RTGUI_FILE_SEEK_SET) == -1)
         {
             break;
         }
@@ -786,7 +786,7 @@ static rt_bool_t rtgui_image_jpeg_load(struct rtgui_image *image, struct rtgui_f
             break;
         }
 
-        if (rtgui_filerw_seek(jpeg->filerw, 0, SEEK_SET) == -1)
+        if (rtgui_filerw_seek(jpeg->filerw, 0, RTGUI_FILE_SEEK_SET) == -1)
         {
             break;
         }
