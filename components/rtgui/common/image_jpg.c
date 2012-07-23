@@ -662,6 +662,14 @@ static UINT tjpgd_out_func(JDEC *jdec, void *bitmap, JRECT *rect)
     {
         rtgui_blit_line_func blit_line = RT_NULL;
 
+        /* we decompress from top to bottom if the block is beyond the right
+         * boundary, just continue to next block. However, if the block is
+         * beyond the bottom boundary, we don't need to decompress the rest. */
+        if (rect->left > jpeg->dst_w)
+            return 1;
+        if (rect->top  > jpeg->dst_h)
+            return 0;
+
         w = rect->right < jpeg->dst_w ? rect->right : jpeg->dst_w;
         w = w - rect->left + 1;
         h = rect->bottom < jpeg->dst_h ? rect->bottom : jpeg->dst_h;
