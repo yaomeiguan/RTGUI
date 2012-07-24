@@ -14,7 +14,7 @@ static void app_lcd(void *parameter)
 {
     /* create application */
 	struct rtgui_app *app;
-    struct rtgui_rect rect1 = {0, 0, 320, 240};
+    struct rtgui_rect rect1 = {0, 0, 240, 320};
     struct rtgui_win *win_main;
 	struct rtgui_notebook* notebook;
     struct rtgui_button* btn;
