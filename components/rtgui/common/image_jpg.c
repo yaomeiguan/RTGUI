@@ -721,14 +721,14 @@ static rt_bool_t rtgui_image_jpeg_check(struct rtgui_filerw *file)
     JDEC tjpgd;
     void *pool;
 
+    if (!file)
+    {
+        return RT_FALSE;
+    }
+
     is_JPG = RT_FALSE;
     do
     {
-        if (!file)
-        {
-            break;
-        }
-
         pool = rt_malloc(TJPGD_WORKING_BUFFER_SIZE);
         if (pool == RT_NULL)
         {
