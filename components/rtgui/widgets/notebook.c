@@ -255,8 +255,6 @@ void rtgui_notebook_remove(struct rtgui_notebook* notebook, rt_uint16_t index)
 				sizeof(struct rtgui_notebook_tab) * notebook->count);
 		}
 
-		// FIXME: do we really want to destroy it?
-		rtgui_widget_destroy(tab.widget);
 		rtgui_free(tab.title);
 
 		if (notebook->current == index)
