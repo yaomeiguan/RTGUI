@@ -74,7 +74,7 @@ static void _rtgui_widget_destructor(rtgui_widget_t *widget)
 {
 	if (widget == RT_NULL) return;
 
-	if (widget->parent != RT_NULL)
+	if (widget->parent != RT_NULL && RTGUI_IS_CONTAINER(widget->parent))
 	{
 		/* remove widget from parent's children list */
 		rtgui_list_remove(&(RTGUI_CONTAINER(widget->parent)->children), &(widget->sibling));
