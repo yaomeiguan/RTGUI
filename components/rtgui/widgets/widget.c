@@ -537,6 +537,9 @@ rt_bool_t rtgui_widget_onshow(struct rtgui_object *object, struct rtgui_event *e
 {
 	struct rtgui_widget *widget = RTGUI_WIDGET(object);
 
+    if (!RTGUI_WIDGET_IS_HIDE(RTGUI_WIDGET(object)))
+        return RT_FALSE;
+
 	RTGUI_WIDGET_UNHIDE(widget);
 
 	if (widget->on_show != RT_NULL)
@@ -548,6 +551,9 @@ rt_bool_t rtgui_widget_onshow(struct rtgui_object *object, struct rtgui_event *e
 rt_bool_t rtgui_widget_onhide(struct rtgui_object *object, struct rtgui_event *event)
 {
 	struct rtgui_widget *widget = RTGUI_WIDGET(object);
+
+    if (RTGUI_WIDGET_IS_HIDE(RTGUI_WIDGET(object)))
+        return RT_FALSE;
 
 	/* hide this widget */
 	RTGUI_WIDGET_HIDE(widget);
