@@ -12,6 +12,7 @@
 #include <io.h> /* _findfirst and _findnext set errno iff they return -1 */
 #include <stdlib.h>
 #include <string.h>
+#include "dfs.h" /* for filesystem root */
 
 #ifdef __cplusplus
 extern "C"
@@ -26,9 +27,12 @@ struct DIR
     char                *name;  /* null-terminated char string */
 };
 
-DIR *opendir(const char *name)
+DIR *opendir(const char *_dir)
 {
     DIR *dir = 0;
+	char name[256];
+
+	sprintf(name, "%s%s", DFS_ROOT, _dir);
 
     if(name && name[0])
     {
