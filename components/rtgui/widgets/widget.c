@@ -537,9 +537,7 @@ rt_bool_t rtgui_widget_onshow(struct rtgui_object *object, struct rtgui_event *e
 {
 	struct rtgui_widget *widget = RTGUI_WIDGET(object);
 
-	/* update the clip info of widget */
 	RTGUI_WIDGET_UNHIDE(widget);
-	rtgui_widget_update_clip(widget);
 
 	if (widget->on_show != RT_NULL)
 		widget->on_show(RTGUI_OBJECT(widget), RT_NULL);
