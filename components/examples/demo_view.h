@@ -30,10 +30,5 @@ void demo_view_get_rect(rtgui_container_t* view, rtgui_rect_t *rect);
 void demo_view_get_logic_rect(rtgui_container_t* view, rtgui_rect_t *rect);
 void demo_view_show(void);
 
-/* 如果是标准版，可以调用这个函数获得一个自动布局引擎 */
-#ifndef RTGUI_USING_SMALL_SIZE
-rtgui_box_t* demo_view_create_box(rtgui_container_t* view, int orient);
-#endif
-
 #endif
 

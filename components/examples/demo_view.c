@@ -128,24 +128,3 @@ void demo_view_get_logic_rect(rtgui_container_t* container, rtgui_rect_t *rect)
 	rect->y1 += 45;
 	rect->y2 -= 35;
 }
-
-/* 当是标准版本时，这个函数用于返回自动布局引擎box控件 */
-#ifndef RTGUI_USING_SMALL_SIZE
-struct rtgui_box* demo_view_create_box(struct rtgui_container *container, int orient)
-{
-	rtgui_rect_t rect;
-	struct rtgui_box* box;
-
-	/* 获得视图的位置信息 */
-	rtgui_widget_get_rect(RTGUI_WIDGET(container), &rect);
-	rect.y1 += 45;
-	rect.y2 -= 25;
-
-	/* 创建一个自动布局引擎 */
-	box = rtgui_box_create(orient, 5);
-	/* 添加box控件到视图中 */
-	rtgui_container_add_child(container, RTGUI_WIDGET(box));
-
-	return box;
-}
-#endif
