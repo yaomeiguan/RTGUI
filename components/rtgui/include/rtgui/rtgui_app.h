@@ -1,7 +1,7 @@
 /*
- * File      : rtgui_application.h
+ * File      : rtgui_app.h
  * This file is part of RTGUI in RT-Thread RTOS
- * COPYRIGHT (C) 2006 - 2009, RT-Thread Development Team
+ * COPYRIGHT (C) 2006 - 2012, RT-Thread Development Team
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -11,6 +11,7 @@
  * Date           Author       Notes
  * 2012-01-13     Grissiom     first version
  */
+
 #ifndef __RTGUI_APPLICATION_H__
 #define __RTGUI_APPLICATION_H__
 

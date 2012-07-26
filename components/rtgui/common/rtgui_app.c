@@ -1,5 +1,5 @@
 /*
- * File      : rtgui_application.c
+ * File      : rtgui_app.c
  * This file is part of RTGUI in RT-Thread RTOS
  * COPYRIGHT (C) 2012, RT-Thread Development Team
  *
