@@ -11,7 +11,7 @@ void app1_entry(void* parameter)
 	if (application != RT_NULL)
 	{
 		rtgui_rect_t rect = {220, 100, 400, 300};
-		win = rtgui_win_create(RT_NULL, "Window #1", &rect, RTGUI_WIN_STYLE_DEFAULT | RTGUI_WIN_STYLE_ONTOP);
+		win = rtgui_win_create(RT_NULL, "Window #1", &rect, RTGUI_WIN_STYLE_DEFAULT);
 		rtgui_win_show(win, RT_TRUE);
 
 		rtgui_app_destroy(application);
