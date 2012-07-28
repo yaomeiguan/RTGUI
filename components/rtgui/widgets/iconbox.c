@@ -36,8 +36,11 @@ static void _rtgui_iconbox_destructor(rtgui_iconbox_t *iconbox)
 		iconbox->image = RT_NULL;
 	}
 
-	rt_free(iconbox->text);
-	iconbox->text = RT_NULL;
+	if (iconbox->text != RT_NULL)
+	{
+		rt_free(iconbox->text);
+		iconbox->text = RT_NULL;
+	}
 }
 
 DEFINE_CLASS_TYPE(iconbox, "iconbox", 
@@ -49,22 +52,13 @@ DEFINE_CLASS_TYPE(iconbox, "iconbox",
 rt_bool_t rtgui_iconbox_event_handler(struct rtgui_object* object, struct rtgui_event* event)
 {
 	struct rtgui_iconbox* iconbox;
-	RTGUI_WIDGET_EVENT_HANDLER_PREPARE
 
 	iconbox = RTGUI_ICONBOX(object);
 
 	switch (event->type)
 	{
 	case RTGUI_EVENT_PAINT:
-#ifndef RTGUI_USING_SMALL_SIZE
-		if (widget->on_draw != RT_NULL)
-			widget->on_draw(RTGUI_OBJECT(widget), event);
-		else
-#endif
-		{
-			rtgui_theme_draw_iconbox(iconbox);
-		}
-
+		rtgui_theme_draw_iconbox(iconbox);
 		break;
 	default:
 		return rtgui_widget_event_handler(object, event);
