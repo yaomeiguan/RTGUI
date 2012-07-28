@@ -143,6 +143,16 @@ __on_err:
 	return RT_NULL;
 }
 
+rtgui_win_t* rtgui_mainwin_create(struct rtgui_win *parent_window, const char* title, rt_uint16_t style)
+{
+	struct rtgui_rect rect;
+
+	/* get rect of main window */
+	rtgui_get_mainwin_rect(&rect);
+
+	return rtgui_win_create(parent_window, title, &rect, style);
+}
+
 static rt_bool_t _rtgui_win_deal_close(struct rtgui_win *win,
 									   struct rtgui_event *event,
 									   rt_bool_t force_close)
