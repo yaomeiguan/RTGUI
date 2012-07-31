@@ -176,39 +176,41 @@ void rtgui_theme_draw_button(rtgui_button_t* btn)
 
 	if (btn->flag & RTGUI_BUTTON_FLAG_PRESS)
 	{
+		/* fill button rect with background color */
+		rtgui_dc_fill_rect(dc, &rect);
+
 		if (btn->pressed_image != RT_NULL)
 		{
 			rtgui_rect_t image_rect;
 			image_rect.x1 = 0; image_rect.y1 = 0;
 			image_rect.x2 = btn->unpressed_image->w;
 			image_rect.y2 = btn->unpressed_image->h;
-			rtgui_rect_moveto_align(&rect, &image_rect, RTGUI_ALIGN_CENTER_HORIZONTAL | RTGUI_ALIGN_CENTER_VERTICAL);
+			rtgui_rect_moveto_align(&rect, &image_rect, RTGUI_ALIGN_CENTER);
 
 			rtgui_image_blit(btn->pressed_image, dc, &image_rect);
 		}
 		else
 		{
-			/* fill button rect with background color */
-			rtgui_dc_fill_rect(dc, &rect);
 			rtgui_dc_draw_border(dc, &rect, RTGUI_BORDER_SUNKEN);
 		}
 	}
 	else
 	{
+		/* fill button rect with background color */
+		rtgui_dc_fill_rect(dc, &rect);
+
 		if (btn->unpressed_image != RT_NULL)
 		{
 			rtgui_rect_t image_rect;
 			image_rect.x1 = 0; image_rect.y1 = 0;
 			image_rect.x2 = btn->unpressed_image->w;
 			image_rect.y2 = btn->unpressed_image->h;
-			rtgui_rect_moveto_align(&rect, &image_rect, RTGUI_ALIGN_CENTER_HORIZONTAL | RTGUI_ALIGN_CENTER_VERTICAL);
+			rtgui_rect_moveto_align(&rect, &image_rect, RTGUI_ALIGN_CENTER);
 
 			rtgui_image_blit(btn->unpressed_image, dc, &image_rect);
 		}
 		else
 		{
-			/* fill button rect with background color */
-			rtgui_dc_fill_rect(dc, &rect);
 			rtgui_dc_draw_border(dc, &rect, RTGUI_BORDER_RAISE);
 		}
 	}
@@ -333,6 +335,7 @@ void rtgui_theme_draw_iconbox(rtgui_iconbox_t* iconbox)
 {
 	struct rtgui_dc* dc;
 	struct rtgui_rect rect;
+	struct rtgui_rect text_rect;
 
 	/* begin drawing */
 	dc = rtgui_dc_begin_drawing(RTGUI_WIDGET(iconbox));
@@ -348,12 +351,16 @@ void rtgui_theme_draw_iconbox(rtgui_iconbox_t* iconbox)
 	if (iconbox->text_position == RTGUI_ICONBOX_TEXT_BELOW && iconbox->text != RT_NULL)
 	{
 		rect.y1 = iconbox->image->h + RTGUI_WIDGET_DEFAULT_MARGIN;
-		rtgui_dc_draw_text(dc, iconbox->text, &rect);
+		rtgui_font_get_metrics(rtgui_dc_get_gc(dc)->font, iconbox->text, &text_rect);
+		rtgui_rect_moveto_align(&rect, &text_rect, RTGUI_ALIGN_CENTER);
+		rtgui_dc_draw_text(dc, iconbox->text, &text_rect);
 	}
 	else if (iconbox->text_position == RTGUI_ICONBOX_TEXT_RIGHT && iconbox->text != RT_NULL)
 	{
 		rect.x1 = iconbox->image->w + RTGUI_WIDGET_DEFAULT_MARGIN;
-		rtgui_dc_draw_text(dc, iconbox->text, &rect);
+		rtgui_font_get_metrics(rtgui_dc_get_gc(dc)->font, iconbox->text, &text_rect);
+		rtgui_rect_moveto_align(&rect, &text_rect, RTGUI_ALIGN_CENTER);
+		rtgui_dc_draw_text(dc, iconbox->text, &text_rect);
 	}
 
 	/* end drawing */
