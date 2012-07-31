@@ -45,6 +45,11 @@ struct rtgui_box* rtgui_box_create(int orientation, int border_size)
 	return box;
 }
 
+void rtgui_box_destroy(struct rtgui_box* box)
+{
+	rtgui_object_destroy(RTGUI_OBJECT(box));
+}
+
 static void rtgui_box_layout_vertical(rtgui_box_t* box)
 {
 	rtgui_list_t *node;
