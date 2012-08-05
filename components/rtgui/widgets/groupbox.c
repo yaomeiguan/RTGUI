@@ -25,6 +25,8 @@ static void _rtgui_groupbox_constructor(rtgui_groupbox_t *box)
 	box->box = RT_NULL;
 	box->label = RT_NULL;
 	box->selected = RT_NULL;
+
+	box->on_selected = RT_NULL;
 }
 
 DEFINE_CLASS_TYPE(groupbox, "groupbox", 
@@ -42,25 +44,10 @@ rt_bool_t rtgui_groupbox_event_handler(struct rtgui_object *object, struct rtgui
 	{
 	case RTGUI_EVENT_PAINT:
 		{
-			struct rtgui_dc *dc;
-			struct rtgui_rect rect;
-
-			rtgui_widget_get_rect(RTGUI_WIDGET(object), &rect);
-			dc = rtgui_dc_begin_drawing(RTGUI_WIDGET(object));
-
-			rtgui_dc_fill_rect(dc, &rect);
-			rtgui_rect_inflate(&rect, -3);
-			rtgui_dc_draw_round_rect(dc, &rect, 3);
-
-			if (box->label != RT_NULL)
-			{
-				rtgui_dc_draw_text(dc, box->label, &rect);
-			}
+			rtgui_panel_event_handler(RTGUI_OBJECT(box), event);
 
 			/* dispatch paint event to child */
 			rtgui_container_dispatch_event(RTGUI_CONTAINER(box), event);
-
-			rtgui_dc_end_drawing(dc);
 		}
 		break;
 	default:
@@ -106,6 +93,8 @@ void rtgui_groupbox_destroy(rtgui_groupbox_t* groupbox)
 
 void rtgui_groupbox_select_widget(struct rtgui_groupbox *box, struct rtgui_widget *widget)
 {
+	struct rtgui_event event;
+
 	RT_ASSERT(box != RT_NULL);
 	RT_ASSERT(widget != RT_NULL);
 
@@ -114,12 +103,23 @@ void rtgui_groupbox_select_widget(struct rtgui_groupbox *box, struct rtgui_widge
 		if (box->selected != RT_NULL)
 		{
 			box->select_func(box->selected, RT_FALSE);
+			if (box->on_selected != RT_NULL)
+			{
+				RTGUI_EVENT_INIT(&event, RTGUI_EVENT_UNSELECTED);
+				box->on_selected(RTGUI_OBJECT(widget), &event);
+			}
 			rtgui_widget_update(widget);
 		}
 		box->selected = widget;
 	}
 
 	box->select_func(box->selected, RT_TRUE);
+
+	if (box->on_selected != RT_NULL)
+	{
+		RTGUI_EVENT_INIT(&event, RTGUI_EVENT_SELECTED);
+		box->on_selected(RTGUI_OBJECT(widget), &event);
+	}
 }
 
 struct rtgui_widget *rtgui_groupbox_get_selected(struct rtgui_groupbox *box)
@@ -135,4 +135,21 @@ void rtgui_groupbox_add_widget(struct rtgui_groupbox *box, struct rtgui_widget *
 	rtgui_container_add_child(RTGUI_CONTAINER(box), widget);
 	RTGUI_WIDGET_ALIGN(widget) = RTGUI_ALIGN_CENTER;
 	RTGUI_WIDGET_BACKGROUND(widget) = RTGUI_WIDGET_BACKGROUND(box);
+}
+
+void rtgui_groupbox_layout(struct rtgui_groupbox *box)
+{
+	if (RTGUI_PANEL(box)->border_style != RTGUI_BORDER_NONE)
+	{
+		rtgui_box_layout(box->box);
+	}
+	else
+	{
+		struct rtgui_rect extent;
+
+		RT_ASSERT(box != RT_NULL);
+		rtgui_widget_get_extent(RTGUI_WIDGET(box), &extent);
+		rtgui_rect_inflate(&extent, -RTGUI_WIDGET_DEFAULT_MARGIN);
+		rtgui_box_layout_rect(box->box, &extent);
+	}
 }

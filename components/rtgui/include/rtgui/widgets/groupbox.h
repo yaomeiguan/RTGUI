@@ -15,6 +15,7 @@
 #define __RTGUI_GROUPBOX_H__
 
 #include <rtgui/rtgui.h>
+#include <rtgui/event.h>
 #include <rtgui/widgets/panel.h>
 #include <rtgui/widgets/box.h>
 
@@ -47,24 +48,26 @@ struct rtgui_groupbox
 	struct rtgui_widget *selected;
 
 	widget_select_t select_func;
+	rtgui_event_handler_ptr on_selected;
 };
 typedef struct rtgui_groupbox rtgui_groupbox_t;
 
 rtgui_groupbox_t* rtgui_groupbox_create(const char* label, struct rtgui_rect *rect, int style, widget_select_t select_func);
 void rtgui_groupbox_destroy(rtgui_groupbox_t* groupbox);
 
+void rtgui_groupbox_layout(struct rtgui_groupbox *box);
+
 void rtgui_groupbox_add_widget(struct rtgui_groupbox *box, struct rtgui_widget *widget);
-
-rt_inline void rtgui_groupbox_layout(struct rtgui_groupbox *box)
-{
-	RT_ASSERT(box != RT_NULL);
-	rtgui_box_layout(box->box);
-}
-
 void rtgui_groupbox_select_widget(struct rtgui_groupbox *box, struct rtgui_widget *widget);
 struct rtgui_widget* rtgui_groupbox_get_selected(struct rtgui_groupbox *box);
 
 rt_bool_t rtgui_groupbox_event_handler(struct rtgui_object* object, struct rtgui_event* event);
+
+rt_inline void rtgui_groupbox_set_onselected(struct rtgui_groupbox* box, rtgui_event_handler_ptr on_selected)
+{
+	RT_ASSERT(box != RT_NULL);
+	box->on_selected = on_selected;
+}
 
 #endif
 
