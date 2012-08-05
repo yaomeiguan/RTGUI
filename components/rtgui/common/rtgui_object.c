@@ -188,6 +188,9 @@ void rtgui_object_set_event_handler(struct rtgui_object *object, rtgui_event_han
 
 rt_bool_t rtgui_object_event_handler(struct rtgui_object *object, struct rtgui_event* event)
 {
+	if (object->event_handler != rtgui_object_event_handler)
+		return object->event_handler(object, event);
+
 	return RT_FALSE;
 }
 
