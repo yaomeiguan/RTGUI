@@ -12,16 +12,16 @@ typedef void (*rtgui_user_func_t) (const void* value, const void* data);
 rtgui_hash_table_t* hash_table_create(rtgui_hash_func_t hash_func, rtgui_equal_func_t key_equal_func);
 void hash_table_destroy (rtgui_hash_table_t* hash_table);
 
-void* hash_table_find (rtgui_hash_table_t* hash_table, void* key);
-void hash_table_insert (rtgui_hash_table_t* hash_table, void* key, void* value);
-rt_bool_t hash_table_remove (rtgui_hash_table_t* hash_table, void* key);
+void* hash_table_find (rtgui_hash_table_t* hash_table, const void* key);
+void hash_table_insert (rtgui_hash_table_t* hash_table, const void* key, void* value);
+rt_bool_t hash_table_remove (rtgui_hash_table_t* hash_table, const void* key);
 
 void hash_table_foreach(rtgui_hash_table_t* hash_table, rtgui_user_func_t user_func, void* data);
 unsigned int hash_table_get_size (rtgui_hash_table_t* hash_table);
 
 /* Hash Functions
  */
-unsigned int direct_hash (void* v);
+unsigned int direct_hash (const void* v);
 
 #define HASH_TABLE_MIN_SIZE 11
 #define HASH_TABLE_MAX_SIZE 6247
@@ -87,8 +87,8 @@ static const unsigned int primes[] =
 static const unsigned int nprimes = sizeof (primes) / sizeof (primes[0]);
 
 static void hash_table_resize (rtgui_hash_table_t *hash_table);
-static rtgui_hash_node_t** hash_table_find_node (rtgui_hash_table_t *hash_table, void* key);
-static rtgui_hash_node_t* hash_node_create (void* key, void* value);
+static rtgui_hash_node_t** hash_table_find_node (rtgui_hash_table_t *hash_table, const void* key);
+static rtgui_hash_node_t* hash_node_create (const void* key, void* value);
 static void hash_node_destroy (rtgui_hash_node_t *hash_node);
 static void hash_nodes_destroy (rtgui_hash_node_t *hash_node);
 static unsigned int primes_closest (unsigned int num);
@@ -106,7 +106,7 @@ rt_inline unsigned int primes_closest (unsigned int num)
 }
 
 /* directly hash */
-unsigned int direct_hash (void* v)
+unsigned int direct_hash (const void* v)
 {
 	return (unsigned int)v;
 }
@@ -149,7 +149,7 @@ void hash_table_destroy (rtgui_hash_table_t *hash_table)
 	rt_free (hash_table);
 }
 
-static rtgui_hash_node_t** hash_table_find_node (rtgui_hash_table_t *hash_table, void* key)
+static rtgui_hash_node_t** hash_table_find_node (rtgui_hash_table_t *hash_table, const void* key)
 {
 	rtgui_hash_node_t **node;
 
@@ -165,7 +165,7 @@ static rtgui_hash_node_t** hash_table_find_node (rtgui_hash_table_t *hash_table,
 	return node;
 }
 
-void* hash_table_find (rtgui_hash_table_t* hash_table, void* key)
+void* hash_table_find (rtgui_hash_table_t* hash_table, const void* key)
 {
 	rtgui_hash_node_t *node;
 
@@ -178,7 +178,7 @@ void* hash_table_find (rtgui_hash_table_t* hash_table, void* key)
 	else return RT_NULL;
 }
 
-void hash_table_insert (rtgui_hash_table_t *hash_table, void* key, void* value)
+void hash_table_insert (rtgui_hash_table_t *hash_table, const void* key, void* value)
 {
 	rtgui_hash_node_t **node;
 
@@ -197,7 +197,7 @@ void hash_table_insert (rtgui_hash_table_t *hash_table, void* key, void* value)
 	}
 }
 
-rt_bool_t hash_table_remove (rtgui_hash_table_t *hash_table, void*  key)
+rt_bool_t hash_table_remove (rtgui_hash_table_t *hash_table, const void*  key)
 {
 	rtgui_hash_node_t **node, *dest;
 
