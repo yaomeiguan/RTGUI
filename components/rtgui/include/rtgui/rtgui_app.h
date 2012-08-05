@@ -78,6 +78,8 @@ rt_bool_t rtgui_app_event_handler(struct rtgui_object *obj, rtgui_event_t *event
 
 rt_base_t rtgui_app_run(struct rtgui_app *app);
 void rtgui_app_exit(struct rtgui_app *app, rt_uint16_t code);
+void rtgui_app_activate(struct rtgui_app *app);
+void rtgui_app_close(struct rtgui_app *app);
 
 void rtgui_app_set_onidle(rtgui_idle_func_t onidle);
 rtgui_idle_func_t rtgui_app_get_onidle(void);
