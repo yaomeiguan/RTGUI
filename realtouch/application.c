@@ -19,6 +19,8 @@ int rt_application_init()
 	}
 	/* re-set graphic device */
 	rtgui_graphic_set_device(device);
+	/* re-init mouse */
+	rtgui_mouse_init();
 
 	app_mgr_init();
 	rt_thread_delay(10);
