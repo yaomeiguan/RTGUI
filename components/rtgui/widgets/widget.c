@@ -108,8 +108,20 @@ void rtgui_widget_destroy(rtgui_widget_t* widget)
 
 void rtgui_widget_set_rect(rtgui_widget_t* widget, const rtgui_rect_t* rect)
 {
+	int delta_x, delta_y;
+
 	if (widget == RT_NULL || rect == RT_NULL) return;
 
+	/* move to a logic position if it's a container widget */
+	if (RTGUI_IS_CONTAINER(widget))
+	{
+		delta_x = rect->x1 - widget->extent.x1;
+		delta_y = rect->y1 - widget->extent.y1;
+
+		rtgui_widget_move_to_logic(widget, delta_x, delta_y);
+	}
+
+	/* update extent rectangle */
 	widget->extent = *rect;
 
 	/* reset mini width and height */
