@@ -1,6 +1,7 @@
 #include <rtthread.h>
 #include <rtgui/rtgui_app.h>
 #include <rtgui/widgets/window.h>
+#include <rtgui/widgets/label.h>
 
 void app1_entry(void* parameter)
 {
@@ -10,8 +11,16 @@ void app1_entry(void* parameter)
 	application = rtgui_app_create(rt_thread_self(), "ExApp1");
 	if (application != RT_NULL)
 	{
-		rtgui_rect_t rect = {220, 100, 400, 300};
-		win = rtgui_win_create(RT_NULL, "Window #1", &rect, RTGUI_WIN_STYLE_DEFAULT);
+		struct rtgui_label *label;
+		struct rtgui_box *box;
+
+		box = rtgui_box_create(RTGUI_VERTICAL, 10);
+		label = rtgui_label_create("Hello World");
+		win = rtgui_mainwin_create(RT_NULL, "MainWin", RTGUI_WIN_STYLE_MAINWIN);
+		rtgui_container_set_box(RTGUI_CONTAINER(win), box);
+		rtgui_container_add_child(RTGUI_CONTAINER(win), RTGUI_WIDGET(label));
+		rtgui_container_layout(RTGUI_CONTAINER(win));
+		
 		rtgui_win_show(win, RT_TRUE);
 
 		rtgui_app_destroy(application);

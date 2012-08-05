@@ -1,5 +1,7 @@
 #include "statusbar.h"
 #include <rtgui/dc.h>
+#include <rtgui/image.h>
+#include "xpm/start.xpm"
 
 static const rtgui_color_t _status_bar_pixels[] = 
 {
@@ -93,18 +95,43 @@ rt_bool_t statusbar_event_handler(struct rtgui_object* object, struct rtgui_even
 		{
 			struct rtgui_dc *dc;
 			struct rtgui_rect rect;
+			struct rtgui_image *image;
 
+			/* create start image */
+			image = rtgui_image_create_from_mem("xpm", (const rt_uint8_t*)start_xpm, sizeof(start_xpm), RT_FALSE);
 			rtgui_widget_get_rect(RTGUI_WIDGET(object), &rect);
 
 			dc = rtgui_dc_begin_drawing(RTGUI_WIDGET(object));
 			dc_draw_bar(dc, _status_bar_pixels, &rect, RTGUI_HORIZONTAL);
+			rtgui_image_blit(image, dc, &rect);
 
 			/* dispatch event */
 			rtgui_container_dispatch_event(RTGUI_CONTAINER(object), event);
 
 			rtgui_dc_end_drawing(dc);
+			rtgui_image_destroy(image);
 		}
 		break;
+
+	case RTGUI_EVENT_MOUSE_BUTTON:
+		{
+			struct rtgui_event_mouse* emouse = (struct rtgui_event_mouse*)event;
+			struct rtgui_rect start_rect;
+
+			rtgui_widget_get_extent(RTGUI_WIDGET(object), &start_rect);
+			start_rect.x2 = start_rect.x1 + 48;
+
+			/* it's not this widget event, clean status */
+			if (rtgui_rect_contains_point(&start_rect, emouse->x, emouse->y) == RT_EOK &&
+				emouse->button & (RTGUI_MOUSE_BUTTON_UP))
+			{
+				rtgui_app_activate(rtgui_app_self());
+				break;
+			}
+
+			return RT_TRUE;
+		}
+
 	default:
 		return rtgui_win_event_handler(object, event);
 	}
@@ -116,8 +143,6 @@ void statusbar_init(void)
 {
 	rtgui_rect_t rect;
 	struct rtgui_win* win;
-	struct rtgui_label* label;
-	struct rtgui_box* box;
 
 	/* get scree rect */
 	rtgui_get_screen_rect(&rect);
@@ -133,16 +158,6 @@ void statusbar_init(void)
 	/* set the rect information of main window */
 	rtgui_set_mainwin_rect(&rect);
 
-	box = rtgui_box_create(RTGUI_HORIZONTAL, 3);
-	rtgui_container_set_box(RTGUI_CONTAINER(win), box);
-
-	label = rtgui_label_create("12:00");
-	RTGUI_WIDGET_ALIGN(label) = RTGUI_ALIGN_CENTER;
-	RTGUI_WIDGET_FLAG(label) |= RTGUI_WIDGET_FLAG_TRANSPARENT;
-	rtgui_widget_set_miniwidth(RTGUI_WIDGET(label), 64);
-	rtgui_container_add_child(RTGUI_CONTAINER(win), RTGUI_WIDGET(label));
-
-	rtgui_container_layout(RTGUI_CONTAINER(win));
-
 	rtgui_win_show(win, RT_FALSE);	
 }
+
