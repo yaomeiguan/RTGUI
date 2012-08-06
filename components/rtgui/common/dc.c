@@ -290,6 +290,31 @@ void rtgui_dc_draw_text (struct rtgui_dc* dc, const char* text, struct rtgui_rec
 	rtgui_font_draw(font, dc, text, len, &text_rect);
 }
 
+void rtgui_dc_draw_text_stroke (struct rtgui_dc* dc, const char* text, struct rtgui_rect* rect,
+	rtgui_color_t color_stroke, rtgui_color_t color_core)
+{
+	int x, y;
+	rtgui_rect_t r;
+	rtgui_color_t fc;
+	
+	RT_ASSERT(dc != RT_NULL);
+	
+	fc = RTGUI_DC_FC(dc);
+	RTGUI_DC_FC(dc) = color_stroke;
+	for(x=-1; x<2; x++)
+	{
+		for(y=-1; y<2; y++)
+		{
+			r = *rect;
+			rtgui_rect_moveto(&r, x, y);
+			rtgui_dc_draw_text(dc, text, &r);
+		}
+	}
+	RTGUI_DC_FC(dc) = color_core;
+	rtgui_dc_draw_text(dc, text, rect);
+	RTGUI_DC_FC(dc) = fc;
+}
+
 /*
  * draw a monochrome color bitmap data
  */
