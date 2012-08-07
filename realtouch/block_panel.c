@@ -9,8 +9,8 @@ static void dc_render_block(struct rtgui_dc* dc, struct rtgui_rect *rect, int an
 	int rect_x[12];
 	int ri = 0;
 	rtgui_color_t line_color = RTGUI_RGB(215, 215, 215);
-	rtgui_color_t external_color = RTGUI_RGB(241, 241, 241);
-	rtgui_color_t angle_color = RTGUI_RGB(229, 229, 229);
+	// rtgui_color_t external_color = RTGUI_RGB(241, 241, 241);
+	// rtgui_color_t angle_color = RTGUI_RGB(229, 229, 229);
 	rtgui_color_t fg, bg;
 	struct rtgui_gc *gc;
 

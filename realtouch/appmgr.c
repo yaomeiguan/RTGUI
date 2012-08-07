@@ -5,6 +5,7 @@
 
 #include "apps_list.h"
 #include "block_panel.h"
+#include "statusbar.h"
 
 #include "xpm/home.xpm"
 #include "xpm/home_gray.xpm"

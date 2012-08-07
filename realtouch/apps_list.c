@@ -112,12 +112,9 @@ static rt_bool_t _handle_app_activate(struct rtgui_object* object, struct rtgui_
 
 rt_bool_t apps_list_event_handler(struct rtgui_object* object, struct rtgui_event* event)
 {
-	rt_bool_t result;
-
 	RT_ASSERT(object != RT_NULL);
 	RT_ASSERT(event  != RT_NULL);
 
-	result = RT_TRUE;
 	switch (event->type)
 	{
 	case RTGUI_EVENT_APP_CREATE:
@@ -206,7 +203,7 @@ static void _app_info_draw(struct rtgui_listctrl *list, struct rtgui_dc* dc, rtg
 	item_rect.x1 += app_default_icon->w + RTGUI_WIDGET_DEFAULT_MARGIN;
 
 	/* draw text */
-	rtgui_dc_draw_text(dc, item->app->name, &item_rect); item_rect.x1 += 60;
+	rtgui_dc_draw_text(dc, (const char*)item->app->name, &item_rect); item_rect.x1 += 60;
 
 	if (list->current_item == index)
 	{
