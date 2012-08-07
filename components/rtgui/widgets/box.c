@@ -58,11 +58,9 @@ static void rtgui_box_layout_vertical(struct rtgui_box* box, struct rtgui_rect* 
 	rt_int32_t next_x, next_y;
 	rt_int32_t total_height, space_height;
 	struct rtgui_event_resize size_event;
-	struct rtgui_widget *container_widget;
 	
 	/* prepare the resize event */
 	RTGUI_EVENT_RESIZE_INIT(&size_event);
-	container_widget = RTGUI_WIDGET(box->container);
 
 	/* find spaces */
 	space_count  = 0;
@@ -153,11 +151,9 @@ static void rtgui_box_layout_horizontal(struct rtgui_box* box, struct rtgui_rect
 	rt_int32_t next_x, next_y;
 	rt_int32_t total_width, space_width;
 	struct rtgui_event_resize size_event;
-	struct rtgui_widget *container_widget;
 
 	/* prepare the resize event */
 	RTGUI_EVENT_RESIZE_INIT(&size_event);
-	container_widget = RTGUI_WIDGET(box->container);
 
 	/* find spaces */
 	space_count = 0;

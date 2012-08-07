@@ -2,6 +2,7 @@
 #define __RTGUI_NOTEBOOK_H__
 
 #include <rtgui/rtgui.h>
+#include <rtgui/image.h>
 #include <rtgui/widgets/widget.h>
 
 DECLARE_CLASS_TYPE(notebook);
@@ -52,7 +53,7 @@ rt_inline void rtgui_notebook_set_tab_width(struct rtgui_notebook *notebook, rt_
 void rtgui_notebook_add(struct rtgui_notebook* notebook, const char* label, struct rtgui_widget* child);
 #ifdef RTGUI_USING_NOTEBOOK_IMAGE
 void rtgui_notebook_add_image(struct rtgui_notebook* notebook, const char* label, struct rtgui_widget* child, 
-							  struct rtgui_image *pressed_image, struct rtgui_image *unpressed_image);
+	struct rtgui_image *pressed_image, struct rtgui_image *unpressed_image);
 #endif
 void rtgui_notebook_remove(struct rtgui_notebook* notebook, rt_uint16_t index);
 struct rtgui_widget* rtgui_notebook_get_current(struct rtgui_notebook* notebook);

@@ -129,6 +129,7 @@ static void _rtgui_notebook_draw_bar(struct rtgui_notebook *notebook,
 				text_rect.y1 = image_rect.y2 +  RTGUI_WIDGET_DEFAULT_MARGIN;
 				text_rect.y2 = text_rect.y1 + text_height;
 			}
+			image = RT_NULL;
 #endif
 
 			rtgui_dc_draw_text(dc, notebook->childs[index].title, &text_rect);
@@ -136,7 +137,6 @@ static void _rtgui_notebook_draw_bar(struct rtgui_notebook *notebook,
 			/* move to next tab */
 			rect.x1 = rect.x2;
 			rect.x2 = rect.x1 + notebook->tab_w;
-			image = RT_NULL;
 		}
 	}
 	else
@@ -186,13 +186,13 @@ static void _rtgui_notebook_draw_bar(struct rtgui_notebook *notebook,
 				text_rect.y1 = image_rect.y2 +  RTGUI_WIDGET_DEFAULT_MARGIN;
 				text_rect.y2 = text_rect.y1 + text_height;
 			}
+			image = RT_NULL;
 #endif
 			rtgui_dc_draw_text(dc, notebook->childs[index].title, &text_rect);
 
 			/* move to next tab */
 			rect.y1 = rect.y2;
 			rect.y2 = rect.y1 + notebook->tab_h;
-			image = RT_NULL;
 		}
 
 	}
