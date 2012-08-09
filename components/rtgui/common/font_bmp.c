@@ -31,7 +31,7 @@ void rtgui_bitmap_font_draw_char(struct rtgui_font_bitmap* font, struct rtgui_dc
 {
 	rtgui_color_t bc;
 	const rt_uint8_t* font_ptr;
-	rt_uint16_t x, y, h, style;
+	rt_uint16_t x, y, w, h, style;
 	register rt_base_t i, j, k, word_bytes;
 
 	/* check first and last char */
@@ -54,14 +54,14 @@ void rtgui_bitmap_font_draw_char(struct rtgui_font_bitmap* font, struct rtgui_dc
 		word_bytes = ((font->char_width[ch - font->first_char] - 1)/8) + 1;
 		font_ptr = font->bmp + font->offset[ch - font->first_char];
 	}
-
+	w = (font->width  + x > rect->x2) ? rect->x2 - rect->x1 : font->width;
 	h = (font->height + y > rect->y2) ? rect->y2 - rect->y1 : font->height;
 
 	for (i = 0; i < h; i++)
 	{
 		for (j = 0; j < word_bytes; j++)
 		{
-			for (k = 0; k < 8; k++)
+			for (k = 0; k < w; k++)
 			{
 				if (((font_ptr[i * word_bytes + j] >> (7 - k)) & 0x01) != 0)
 				{

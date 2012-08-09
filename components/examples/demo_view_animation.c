@@ -121,7 +121,7 @@ rtgui_container_t *demo_view_animation()
 	if (container != RT_NULL)
 		rtgui_object_set_event_handler(RTGUI_OBJECT(container), animation_event_handler);
 
-	rtgui_font_get_metrics(RTGUI_WIDGET_FONT(RTGUI_WIDGET(container)), "·ÉÏßÂÒ·É", &text_rect);
+	rtgui_font_get_metrics(RTGUI_WIDGET_FONT(container), "·ÉÏßÂÒ·É", &text_rect);
 	rtgui_rect_moveto(&text_rect, 0, 45);
 	timer = rtgui_timer_create(2, RT_TIMER_FLAG_PERIODIC, timeout, (void*)container);
 

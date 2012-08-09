@@ -18,12 +18,14 @@ struct finsh_shell* shell;
 void finsh_system_init(void);
 
 #if !defined (RT_USING_NEWLIB) && !defined (RT_USING_MINILIBC)
+#ifndef _WIN32
 int strcmp (const char *s1, const char *s2)
 {
 	while (*s1 && *s1 == *s2) s1++, s2++;
 
 	return (*s1 - *s2);
 }
+#endif
 
 #ifdef RT_USING_HEAP
 char *strdup(const char *s)

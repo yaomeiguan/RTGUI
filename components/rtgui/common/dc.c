@@ -449,8 +449,8 @@ void rtgui_dc_draw_regular_polygon(struct rtgui_dc* dc, int x, int y, int r, int
 	* Pointer setup
 	*/
 
-	x_head = xx = (int *)rt_malloc(sizeof(int) * count);
-	y_head = yy = (int *)rt_malloc(sizeof(int) * count);
+	x_head = xx = (int *)rtgui_malloc(sizeof(int) * count);
+	y_head = yy = (int *)rtgui_malloc(sizeof(int) * count);
 
     for(i = 0; i < count; i++)
     {
@@ -470,8 +470,8 @@ void rtgui_dc_draw_regular_polygon(struct rtgui_dc* dc, int x, int y, int r, int
     
     rtgui_dc_draw_polygon(dc, (const int *)x_head, (const int *)y_head, count);  
 
-	rt_free(x_head);
-	rt_free(y_head);
+	rtgui_free(x_head);
+	rtgui_free(y_head);
 
 }
 

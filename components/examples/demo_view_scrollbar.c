@@ -37,7 +37,7 @@ rtgui_container_t *demo_view_scrollbar(void)
 	vbar = rtgui_scrollbar_create(RTGUI_VERTICAL, &rect);
 	rtgui_container_add_child(container, RTGUI_WIDGET(vbar));
 	rtgui_scrollbar_set_line_step(vbar, 1);
-	// RTGUI_WIDGET_DISABLE(RTGUI_WIDGET(vbar));
+	// RTGUI_WIDGET_DISABLE(vbar);
 
 	return container;
 }

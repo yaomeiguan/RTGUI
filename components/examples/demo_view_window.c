@@ -63,7 +63,7 @@ static void demo_normal_window_onbutton(struct rtgui_object* object, rtgui_event
             "第 %d 次显示", normal_window_show_count);
     rtgui_label_set_text(normal_window_label,
                          normal_window_label_text);
-    if (RTGUI_WIDGET_IS_HIDE(RTGUI_WIDGET(normal_window)))
+    if (RTGUI_WIDGET_IS_HIDE(normal_window))
         rtgui_win_show(normal_window, RT_FALSE);
     else
         rtgui_win_activate(normal_window);
@@ -203,17 +203,17 @@ static void demo_ntitlewin_onbutton(struct rtgui_object* object, rtgui_event_t* 
 		"no title", &rect, RTGUI_WIN_STYLE_NO_TITLE |
 						   RTGUI_WIN_STYLE_NO_BORDER |
 						   RTGUI_WIN_STYLE_DESTROY_ON_CLOSE);
-	RTGUI_WIDGET_BACKGROUND(RTGUI_WIDGET(win)) = white;
+	RTGUI_WIDGET_BACKGROUND(win) = white;
 
 	/* 创建一个文本标签 */
 	label = rtgui_label_create("无边框窗口");
-	rtgui_font_get_metrics(RTGUI_WIDGET_FONT(RTGUI_WIDGET(label)), "无边框窗口", &widget_rect);
+	rtgui_font_get_metrics(RTGUI_WIDGET_FONT(label), "无边框窗口", &widget_rect);
 	rtgui_rect_moveto_align(&rect, &widget_rect, RTGUI_ALIGN_CENTER_HORIZONTAL);
 	widget_rect.y1 += 20;
 	widget_rect.y2 += 20;
 	rtgui_widget_set_rect(RTGUI_WIDGET(label), &widget_rect);
 	rtgui_container_add_child(RTGUI_CONTAINER(win), RTGUI_WIDGET(label));
-	RTGUI_WIDGET_BACKGROUND(RTGUI_WIDGET(label)) = white;
+	RTGUI_WIDGET_BACKGROUND(label) = white;
 
 	/* 创建一个关闭按钮 */
 	widget_rect.x1 = 0;

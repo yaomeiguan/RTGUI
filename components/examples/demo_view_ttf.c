@@ -88,7 +88,7 @@ rtgui_container_t *demo_view_ttf()
 	container = demo_view("TTF 演示");
 	if (container != RT_NULL)
 	{
-		RTGUI_WIDGET_BACKGROUND(RTGUI_WIDGET(container)) = white;
+		RTGUI_WIDGET_BACKGROUND(container) = white;
 		/* 设置成自己的事件处理函数 */
 		rtgui_object_set_event_handler(RTGUI_OBJECT(container), ttf_event_handler);
 	}

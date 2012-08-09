@@ -38,7 +38,7 @@ static void _rtgui_win_constructor(rtgui_win_t *win)
 	win->focused_widget	= RT_NULL;
 
 	/* set window hide */
-	RTGUI_WIDGET_HIDE(RTGUI_WIDGET(win));
+	RTGUI_WIDGET_HIDE(win);
 
 	/* set window style */
 	win->style = RTGUI_WIN_STYLE_DEFAULT;
@@ -69,7 +69,7 @@ static void _rtgui_win_destructor(rtgui_win_t* win)
 	}
 
 	/* release field */
-	rt_free(win->title);
+	rtgui_free(win->title);
 }
 
 static rt_bool_t _rtgui_win_create_in_server(struct rtgui_win *win)
@@ -313,7 +313,7 @@ void rtgui_win_hiden(struct rtgui_win* win)
 {
 	RT_ASSERT(win != RT_NULL);
 
-	if (!RTGUI_WIDGET_IS_HIDE(RTGUI_WIDGET(win)) &&
+	if (!RTGUI_WIDGET_IS_HIDE(win) &&
 		win->flag & RTGUI_WIN_FLAG_CONNECTED)
 	{
 		/* send hidden message to server */
@@ -446,7 +446,7 @@ rt_bool_t rtgui_win_event_handler(struct rtgui_object* object, struct rtgui_even
 	break;
 
 	case RTGUI_EVENT_WIN_ACTIVATE:
-		if (RTGUI_WIDGET_IS_HIDE(RTGUI_WIDGET(win)))
+		if (RTGUI_WIDGET_IS_HIDE(win))
 		{
 			/* activate a hide window */
 			return RT_TRUE;

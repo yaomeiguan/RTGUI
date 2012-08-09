@@ -117,7 +117,7 @@ struct rtgui_container *demo_view_buffer_animation(void)
 	if (container!= RT_NULL)
 		rtgui_object_set_event_handler(RTGUI_OBJECT(container), animation_event_handler);
 
-	rtgui_font_get_metrics(RTGUI_WIDGET_FONT(RTGUI_WIDGET(container)), "缓冲动画", &text_rect);
+	rtgui_font_get_metrics(RTGUI_WIDGET_FONT(container), "缓冲动画", &text_rect);
 	if (dc_buffer == RT_NULL)
 	{
 		rtgui_rect_t rect;
@@ -127,7 +127,7 @@ struct rtgui_container *demo_view_buffer_animation(void)
 
 		/* 创建 DC Buffer，长 50，宽 50 */
 		dc_buffer = rtgui_dc_buffer_create(rtgui_rect_width(rect), rtgui_rect_height(rect));
-		RTGUI_DC_FC(dc_buffer) = RTGUI_WIDGET_BACKGROUND(RTGUI_WIDGET(container));
+		RTGUI_DC_FC(dc_buffer) = RTGUI_WIDGET_BACKGROUND(container);
 		rtgui_dc_fill_rect(dc_buffer, &rect);
 		RTGUI_DC_FC(dc_buffer) = black;
 		rect.x1 = 1; rect.y1 = 1;

@@ -9,3 +9,4 @@ build/
 executables/
 *.pdb
 *.idb
+vcproj

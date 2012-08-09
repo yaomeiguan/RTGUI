@@ -27,7 +27,7 @@ rtgui_container_t* demo_view_checkbox(void)
 	/* 创建一个checkbox控件 */
 	checkbox = rtgui_checkbox_create("Red",RT_TRUE);
 	/* 设置前景色为红色 */
-	RTGUI_WIDGET_FOREGROUND(RTGUI_WIDGET(checkbox)) = red;
+	RTGUI_WIDGET_FOREGROUND(checkbox) = red;
 	/* 设置checkbox的位置 */
 	rtgui_widget_set_rect(RTGUI_WIDGET(checkbox), &rect);
 	rtgui_container_add_child(container, RTGUI_WIDGET(checkbox));
@@ -41,7 +41,7 @@ rtgui_container_t* demo_view_checkbox(void)
 	/* 创建一个checkbox控件 */
 	checkbox = rtgui_checkbox_create("Blue",RT_TRUE);
 	/* 设置前景色为蓝色 */
-	RTGUI_WIDGET_FOREGROUND(RTGUI_WIDGET(checkbox)) = blue;
+	RTGUI_WIDGET_FOREGROUND(checkbox) = blue;
 	/* 设置checkbox的位置 */
 	rtgui_widget_set_rect(RTGUI_WIDGET(checkbox), &rect);
 	rtgui_container_add_child(container, RTGUI_WIDGET(checkbox));
@@ -56,7 +56,7 @@ rtgui_container_t* demo_view_checkbox(void)
 	checkbox = rtgui_checkbox_create("12 font",RT_TRUE);
 	/* 设置字体为12点阵 */
 	font = rtgui_font_refer("asc", 12);
-	RTGUI_WIDGET_FONT(RTGUI_WIDGET(checkbox)) = font;
+	RTGUI_WIDGET_FONT(checkbox) = font;
 	/* 设置checkbox的位置 */
 	rtgui_widget_set_rect(RTGUI_WIDGET(checkbox), &rect);
 	rtgui_container_add_child(container, RTGUI_WIDGET(checkbox));
@@ -71,7 +71,7 @@ rtgui_container_t* demo_view_checkbox(void)
 	checkbox = rtgui_checkbox_create("16 font",RT_TRUE);
 	/* 设置字体为16点阵 */
 	font = rtgui_font_refer("asc", 16);
-	RTGUI_WIDGET_FONT(RTGUI_WIDGET(checkbox)) = font;
+	RTGUI_WIDGET_FONT(checkbox) = font;
 	/* 设置checkbox的位置 */
 	rtgui_widget_set_rect(RTGUI_WIDGET(checkbox), &rect);
 	rtgui_container_add_child(container, RTGUI_WIDGET(checkbox));

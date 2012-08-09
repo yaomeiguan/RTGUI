@@ -28,7 +28,7 @@ void _onidle(struct rtgui_object *object, rtgui_event_t *event)
 	draw_rect.y2 = RAND(draw_rect.y1, rect.y2);
 
 	color = RTGUI_RGB(rand() % 255, rand() % 255, rand() % 255);
-	RTGUI_WIDGET_BACKGROUND(RTGUI_WIDGET(container)) = color;
+	RTGUI_WIDGET_BACKGROUND(container) = color;
 
 	rtgui_dc_fill_rect(dc, &draw_rect);
 

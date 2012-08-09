@@ -217,6 +217,37 @@ void rtgui_widget_get_rect(rtgui_widget_t* widget, rtgui_rect_t *rect)
 	}
 }
 
+/**
+ * set widget draw style
+ */
+void rtgui_widget_set_border(rtgui_widget_t* widget, rt_uint32_t style)
+{
+	RT_ASSERT(widget != RT_NULL);
+
+	widget->border_style = style;
+	switch(style)
+	{
+	case RTGUI_BORDER_NONE:
+		widget->border = 0;
+		break;
+	case RTGUI_BORDER_SIMPLE:
+	case RTGUI_BORDER_UP:
+	case RTGUI_BORDER_DOWN:
+		widget->border = 1;
+		break;
+	case RTGUI_BORDER_STATIC:
+	case RTGUI_BORDER_RAISE:
+	case RTGUI_BORDER_SUNKEN:
+	case RTGUI_BORDER_BOX:
+	case RTGUI_BORDER_EXTRA:
+		widget->border = 2;
+		break;
+	default:
+		widget->border = 2;
+		break;
+	}
+}
+
 void rtgui_widget_set_onfocus(rtgui_widget_t* widget, rtgui_event_handler_ptr handler)
 {
 	RT_ASSERT(widget != RT_NULL);
@@ -549,7 +580,7 @@ rt_bool_t rtgui_widget_onshow(struct rtgui_object *object, struct rtgui_event *e
 {
 	struct rtgui_widget *widget = RTGUI_WIDGET(object);
 
-    if (!RTGUI_WIDGET_IS_HIDE(RTGUI_WIDGET(object)))
+    if (!RTGUI_WIDGET_IS_HIDE(object))
         return RT_FALSE;
 
 	RTGUI_WIDGET_UNHIDE(widget);
@@ -564,7 +595,7 @@ rt_bool_t rtgui_widget_onhide(struct rtgui_object *object, struct rtgui_event *e
 {
 	struct rtgui_widget *widget = RTGUI_WIDGET(object);
 
-    if (RTGUI_WIDGET_IS_HIDE(RTGUI_WIDGET(object)))
+    if (RTGUI_WIDGET_IS_HIDE(object))
         return RT_FALSE;
 
 	/* hide this widget */
