@@ -273,10 +273,11 @@ static rt_bool_t rtgui_textbox_onkey(struct rtgui_object* widget, rtgui_event_t*
 	}
 	else if(ekbd->key == RTGUIK_BACKSPACE)
 	{/* delete front character */
-
-		if(box->position == length - 1)
+		if(box->position == 0)
+			return RT_FALSE;
+		else if(box->position == length)
 		{
-			box->text[box->position] = '\0';
+			box->text[box->position-1] = '\0';
 			box->position --;
 		}
 		else if(box->position != 0)
