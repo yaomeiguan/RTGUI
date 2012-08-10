@@ -346,8 +346,16 @@ static void _rtgui_filelist_view_destructor(struct rtgui_filelist_view *view)
     /* delete all file items */
     rtgui_filelist_view_clear(view);
 	/* delete current directory and pattern */
-	rtgui_free(view->current_directory); view->current_directory = RT_NULL;
-	rtgui_free(view->pattern); view->pattern = RT_NULL;
+	if (view->current_directory != RT_NULL)
+	{
+		rt_free(view->current_directory); 
+		view->current_directory = RT_NULL;
+	}
+	if (view->pattern != RT_NULL) 
+	{
+		rt_free(view->pattern); 
+		view->pattern = RT_NULL;
+	}
 
 	/* delete image */
 	rtgui_image_destroy(file_image);
@@ -693,7 +701,7 @@ static void rtgui_filelist_view_clear(rtgui_filelist_view_t* view)
 		item = &(view->items[index]);
 
 		/* release item name */
-		rtgui_free(item->name);
+		rt_free(item->name);
 		item->name = RT_NULL;
 	}
 
@@ -726,7 +734,7 @@ void rtgui_filelist_view_set_directory(rtgui_filelist_view_t* view, const char* 
 		if (dir == RT_NULL)  goto __return;
 
 		/* current directory exists, set it */
-		if (view->current_directory != RT_NULL) rtgui_free(view->current_directory);
+		if (view->current_directory != RT_NULL) rt_free(view->current_directory);
 		view->current_directory = rt_strdup(directory);
 
 		do

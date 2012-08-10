@@ -69,7 +69,8 @@ static void _rtgui_win_destructor(rtgui_win_t* win)
 	}
 
 	/* release field */
-	rtgui_free(win->title);
+	if (win->title != RT_NULL)
+		rt_free(win->title);
 }
 
 static rt_bool_t _rtgui_win_create_in_server(struct rtgui_win *win)

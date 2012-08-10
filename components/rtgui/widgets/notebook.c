@@ -45,7 +45,7 @@ static void _rtgui_notebook_destructor(struct rtgui_notebook *notebook)
 		for (index = 0; index < notebook->count; index ++)
 		{
 			rtgui_widget_destroy(notebook->childs[index].widget);
-			rtgui_free(notebook->childs[index].title);
+			rt_free(notebook->childs[index].title);
 		}
 
 		rtgui_free(notebook->childs);
@@ -466,7 +466,7 @@ void rtgui_notebook_remove(struct rtgui_notebook* notebook, rt_uint16_t index)
 				sizeof(struct rtgui_notebook_tab) * notebook->count);
 		}
 
-		rtgui_free(tab.title);
+		rt_free(tab.title);
 
 		if (need_update)
 		{

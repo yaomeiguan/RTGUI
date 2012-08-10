@@ -28,7 +28,8 @@ static void _rtgui_label_constructor(rtgui_label_t *label)
 static void _rtgui_label_destructor(rtgui_label_t *label)
 {
 	/* release text memory */
-	rtgui_free(label->text);
+	if (label->text)
+		rt_free(label->text);
 	label->text = RT_NULL;
 }
 

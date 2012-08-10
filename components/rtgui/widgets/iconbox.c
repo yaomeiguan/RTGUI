@@ -38,7 +38,7 @@ static void _rtgui_iconbox_destructor(rtgui_iconbox_t *iconbox)
 
 	if (iconbox->text != RT_NULL)
 	{
-		rtgui_free(iconbox->text);
+		rt_free(iconbox->text);
 		iconbox->text = RT_NULL;
 	}
 }

@@ -41,7 +41,7 @@ static void _rtgui_app_destructor(struct rtgui_app *app)
 {
 	RT_ASSERT(app != RT_NULL);
 
-	rtgui_free(app->name);
+	rt_free(app->name);
 	app->name = RT_NULL;
 }
 
