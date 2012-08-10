@@ -34,7 +34,11 @@ DECLARE_CLASS_TYPE(edit);
 #define RTGUI_EDIT_CARET			0x01
 #define RTGUI_EDIT_VSCROLL			0x02
 #define RTGUI_EDIT_HSCROLL			0x04
-
+#define RTGUI_EDIT_SHIFT			0x10
+#define RTGUI_EDIT_CTRL				0x20
+#define RTGUI_EDIT_ALT				0x40
+#define RTGUI_EDIT_CAPSLOCK			0x80
+#define RTGUI_EDIT_NUMLOCK			0x100
 
 struct edit_update
 {
