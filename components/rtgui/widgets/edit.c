@@ -629,6 +629,85 @@ static void rtgui_edit_onmouse(struct rtgui_edit* edit, struct rtgui_event_mouse
 	}		
 }
 
+rt_inline static rt_uint16_t query_shift_code(rt_uint16_t key)
+{
+	if(key >= RTGUIK_a && key <= RTGUIK_z)
+		return (key - ('a'-'A'));
+	else
+	{
+		switch (key)
+		{
+		case '1': return '!';
+		case '2': return '@';
+		case '3': return '#';
+		case '4': return '$';
+		case '5': return '%';
+		case '6': return '^';
+		case '7': return '&';
+		case '8': return '*';
+		case '9': return '(';
+		case '0': return ')';
+		case '-': return '_';
+		case '=': return '+';
+		case '\\':return '|';
+		case ';': return ':';
+		case '\'':return '"';
+		case ',': return '<';
+		case '.': return '>';
+		case '/': return '?';
+		case '`': return '~';
+		}
+	}
+	return key;
+}
+
+rt_inline static rt_uint16_t query_caps_code(rt_uint16_t key)
+{
+	if(key >= RTGUIK_a && key <= RTGUIK_z)
+		return (key - ('a'-'A'));
+	return key;
+}
+
+rt_inline static rt_bool_t is_small_keyboard(rt_uint16_t *key)
+{
+	if(*key >= RTGUIK_KP0 && *key <= RTGUIK_KP9)
+	{
+		*key = *key - (RTGUIK_KP0 - RTGUIK_0);
+		return RT_TRUE;
+	}
+	else if(*key == RTGUIK_KP_PERIOD)
+	{
+		*key = '.';
+		return RT_TRUE;
+	}
+	else if(*key == RTGUIK_KP_DIVIDE)
+	{
+		*key = '/';
+		return RT_TRUE;
+	}
+	else if(*key == RTGUIK_KP_MULTIPLY)
+	{
+		*key = '*';
+		return RT_TRUE;
+	}
+	else if(*key == RTGUIK_KP_MINUS)
+	{
+		*key = '-';
+		return RT_TRUE;
+	}
+	else if(*key == RTGUIK_KP_PLUS)
+	{
+		*key = '+';
+		return RT_TRUE;
+	}
+	else if(*key == RTGUIK_KP_ENTER)
+	{
+		*key = RTGUIK_RETURN;
+		return RT_TRUE;
+	}
+	return RT_FALSE;
+}
+
 void kbd_event_set_key(struct rtgui_event_kbd *ekbd, rt_uint16_t key)
 {
 	RTGUI_EVENT_KBD_INIT(ekbd);
@@ -650,9 +729,20 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 	RT_ASSERT(edit != RT_NULL);
 	RT_ASSERT(ekbd != RT_NULL);
 
-	/* handle the key at down time and nothing to do with up */
 	if (RTGUI_KBD_IS_UP(ekbd))
+	{	/* reset function key */
+		if(ekbd->key == RTGUIK_RCTRL || ekbd->key == RTGUIK_LCTRL)
+			edit->flag &= ~RTGUI_EDIT_CTRL;
+		else if(ekbd->key == RTGUIK_RALT || ekbd->key == RTGUIK_LALT)
+			edit->flag &= ~RTGUI_EDIT_ALT;
+		else if(ekbd->key == RTGUIK_RSHIFT || ekbd->key == RTGUIK_LSHIFT)
+			edit->flag &= ~RTGUI_EDIT_SHIFT;
+		else if(ekbd->key == RTGUIK_CAPSLOCK)
+			edit->flag &= ~RTGUI_EDIT_CAPSLOCK;
+		else if(ekbd->key == RTGUIK_NUMLOCK)
+			edit->flag &= ~RTGUI_EDIT_NUMLOCK;
 		return RT_TRUE;
+	}
 	
 	line = rtgui_edit_get_line_by_index(edit, edit->upleft.y + edit->visual.y);
 	if(line == RT_NULL) 
@@ -660,15 +750,28 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 
 	/* rt_kprintf("key=%04X ",ekbd->key); */
 	if(ekbd->key == RTGUIK_RCTRL || ekbd->key == RTGUIK_LCTRL)
-	{	/* reserved */
+	{	/* use CTRL key */
+		edit->flag |= RTGUI_EDIT_CTRL;
 		return RT_FALSE;
 	}
 	else if(ekbd->key == RTGUIK_RALT || ekbd->key == RTGUIK_LALT)
-	{	/* reserved */
+	{	/* use ALT key */
+		edit->flag |= RTGUI_EDIT_ALT;
 		return RT_FALSE;
 	}
 	else if(ekbd->key == RTGUIK_RSHIFT || ekbd->key == RTGUIK_LSHIFT)
-	{	/* reserved */
+	{	/* use SHIFT key */
+		edit->flag |= RTGUI_EDIT_SHIFT;
+		return RT_FALSE;
+	}
+	else if(ekbd->key == RTGUIK_CAPSLOCK)
+	{
+		edit->flag |= RTGUI_EDIT_CAPSLOCK;
+		return RT_FALSE;
+	}
+	else if(ekbd->key == RTGUIK_NUMLOCK)
+	{
+		edit->flag |= RTGUI_EDIT_NUMLOCK;
 		return RT_FALSE;
 	}
 	else if(ekbd->key == RTGUIK_DELETE)
@@ -708,7 +811,7 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 				rtgui_edit_onkey(object, (rtgui_event_t*)&event_kbd);
 				rtgui_edit_delete_line(edit, line);
 
-				edit->update.start = edit->visual; /* update start.y is change */
+				edit->update.start = edit->visual; /* update.start.y is changed */
 				if(edit->max_rows-edit->upleft.y > edit->row_per_page)
 				{
 					update_end_line = rtgui_edit_get_line_by_index(edit, edit->upleft.y+edit->row_per_page);
@@ -857,18 +960,26 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 			edit->visual.x --;
 		else
 		{
-			struct rtgui_event_kbd event_kbd;
-			struct edit_line* first_line;
-			first_line = rtgui_edit_get_line_by_index(edit, edit->upleft.y + edit->visual.y);
-			if(first_line != RT_NULL)
-			{	/* it is head line */
-				if(first_line == edit->head) return RT_FALSE;
+			if(edit->upleft.x > 0)
+			{
+				edit->upleft.x --;
+				update_type = EDIT_ONDRAW;
 			}
-			/* move the caret to the prev line end */
-			kbd_event_set_key(&event_kbd, RTGUIK_UP);
-			rtgui_edit_onkey(object, (rtgui_event_t*)&event_kbd);
-			kbd_event_set_key(&event_kbd, RTGUIK_END);
-			rtgui_edit_onkey(object, (rtgui_event_t*)&event_kbd);
+			else
+			{	
+				struct rtgui_event_kbd event_kbd;
+				struct edit_line* first_line;
+				first_line = rtgui_edit_get_line_by_index(edit, edit->upleft.y + edit->visual.y);
+				if(first_line != RT_NULL)
+				{	/* it is head line */
+					if(first_line == edit->head) return RT_FALSE;
+				}
+				/* move the caret to the prev line end */
+				kbd_event_set_key(&event_kbd, RTGUIK_UP);
+				rtgui_edit_onkey(object, (rtgui_event_t*)&event_kbd);
+				kbd_event_set_key(&event_kbd, RTGUIK_END);
+				rtgui_edit_onkey(object, (rtgui_event_t*)&event_kbd);
+			}
 		}
 	}
 	else if(ekbd->key == RTGUIK_RIGHT)
@@ -981,6 +1092,12 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		{	/* it's may print character */
 			update_type = EDIT_UPDATE;
 			edit->update.start = edit->visual;
+			
+			if(edit->flag & RTGUI_EDIT_SHIFT)
+				ekbd->key = query_shift_code(ekbd->key);
+			if(edit->flag & RTGUI_EDIT_CAPSLOCK)
+				ekbd->key = query_caps_code(ekbd->key);
+
 			if(line->len < line->zsize-1)
 			{
 				int ofs = edit->upleft.x + edit->visual.x;
@@ -1013,9 +1130,19 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 				rtgui_edit_onkey(object, event); /* reentry */
 			}
 		}
+		else
+		{
+			/* Is small keyboard ? */
+			if(edit->flag & RTGUI_EDIT_NUMLOCK)
+			{
+				if(is_small_keyboard(&ekbd->key))
+					rtgui_edit_onkey(object, event);
+				/* small keyboard another value reserved */
+			}
+		}
 	}
-//_edit_update_len:
 	line->len = rtgui_edit_line_strlen(line->text); 
+
 _edit_exit:
 	if(edit->flag & RTGUI_EDIT_CARET)
 	{
