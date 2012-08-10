@@ -19,7 +19,6 @@
 
 static void rtgui_edit_draw_caret(struct rtgui_edit *edit);
 static void rtgui_edit_timeout(struct rtgui_timer* timer, void* parameter);
-static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* event);
 static rt_bool_t rtgui_edit_onfocus(struct rtgui_object* object, rtgui_event_t* event);
 static rt_bool_t rtgui_edit_onunfocus(struct rtgui_object* object, rtgui_event_t* event);
 static rt_bool_t rtgui_edit_hscroll_handle(struct rtgui_widget* widget, rtgui_event_t* event);
@@ -33,7 +32,6 @@ void _rtgui_edit_constructor(struct rtgui_edit *edit)
 	rtgui_object_set_event_handler(RTGUI_OBJECT(edit), rtgui_edit_event_handler);
 	rtgui_widget_set_onfocus(RTGUI_WIDGET(edit), rtgui_edit_onfocus);
 	rtgui_widget_set_onunfocus(RTGUI_WIDGET(edit), rtgui_edit_onunfocus);
-	rtgui_widget_set_onkey(RTGUI_WIDGET(edit),rtgui_edit_onkey);
 	
 	RTGUI_WIDGET_FOREGROUND(edit) = black;
 	RTGUI_WIDGET_BACKGROUND(edit) = white;
@@ -1399,7 +1397,9 @@ rt_bool_t rtgui_edit_event_handler(struct rtgui_object* object, rtgui_event_t* e
 #ifndef RTGUI_USING_SMALL_SIZE
 		if(widget->on_key != RT_NULL)
 			widget->on_key(object, event);
+		else
 #endif
+		rtgui_edit_onkey(object, event);
 		return RT_TRUE;
 
 	default:

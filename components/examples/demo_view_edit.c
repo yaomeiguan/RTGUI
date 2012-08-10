@@ -17,7 +17,7 @@ rtgui_container_t* demo_view_edit(void)
 	struct rtgui_edit* edit;
 
 	/* 先创建一个演示用的视图 */
-	container = demo_view("TextBox View");
+	container = demo_view("Edit View");
 
 	edit = rtgui_edit_create(container, 10, 35, 220, 200);
 	rtgui_edit_set_text(edit, 
