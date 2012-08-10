@@ -27,8 +27,12 @@
 #endif
 
 static rtgui_rect_t _mainwin_rect;
+static struct rt_mutex _screen_lock;
+
 void rtgui_system_server_init()
 {
+	rt_mutex_init(&_screen_lock, "screen", RT_IPC_FLAG_FIFO);
+
 	/* the graphic device driver must be set before initialization */
 	RT_ASSERT(rtgui_graphic_driver_get_default() != RT_NULL);
 
@@ -306,7 +310,7 @@ FINSH_FUNCTION_EXPORT(list_guimem, display memory information);
 /************************************************************************/
 
 #ifdef _WIN32
-//#define RTGUI_EVENT_DEBUG
+#define RTGUI_EVENT_DEBUG
 #endif
 
 #ifdef RTGUI_EVENT_DEBUG
@@ -720,3 +724,14 @@ void rtgui_get_screen_rect(struct rtgui_rect *rect)
 {
 	rtgui_graphic_driver_get_rect(rtgui_graphic_driver_get_default(), rect);
 }
+
+void rtgui_screen_lock(rt_int32_t timeout)
+{
+	rt_mutex_take(&_screen_lock, timeout);
+}
+
+void rtgui_screen_unlock(void)
+{
+	rt_mutex_release(&_screen_lock);
+}
+

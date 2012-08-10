@@ -49,6 +49,8 @@ struct rtgui_dc* rtgui_dc_begin_drawing(rtgui_widget_t* owner)
 {
 	RT_ASSERT(owner != RT_NULL);
 
+	rtgui_screen_lock(RT_WAITING_FOREVER);
+
 	if ((rtgui_region_is_flat(&owner->clip) == RT_EOK) &&
 		rtgui_rect_is_equal(&(owner->extent), &(owner->clip.extents)) == RT_EOK)
 		return rtgui_dc_hw_create(owner);
@@ -59,6 +61,7 @@ struct rtgui_dc* rtgui_dc_begin_drawing(rtgui_widget_t* owner)
 void rtgui_dc_end_drawing(struct rtgui_dc* dc)
 {
 	dc->engine->fini(dc);
+	rtgui_screen_unlock();
 }
 
 const struct rtgui_dc_engine dc_client_engine =

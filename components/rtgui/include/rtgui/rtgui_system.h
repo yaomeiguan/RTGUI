@@ -58,6 +58,9 @@ void rtgui_set_mainwin_rect(struct rtgui_rect *rect);
 void rtgui_get_mainwin_rect(struct rtgui_rect *rect);
 void rtgui_get_screen_rect(struct rtgui_rect *rect);
 
+void rtgui_screen_lock(rt_int32_t timeout);
+void rtgui_screen_unlock(void);
+
 struct rtgui_event;
 rt_err_t rtgui_send(rt_thread_t tid, struct rtgui_event* event, rt_size_t event_size);
 rt_err_t rtgui_send_urgent(rt_thread_t tid, struct rtgui_event* event, rt_size_t event_size);
