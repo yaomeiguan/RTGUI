@@ -59,16 +59,16 @@ void rtgui_bitmap_font_draw_char(struct rtgui_font_bitmap* font, struct rtgui_dc
 
 	for(i = 0; i < h; i++)
 	{
-		rt_uint8_t ch;
+		rt_uint8_t chr;
 		const rt_uint8_t *ptr = font_ptr + i * word_bytes;
 		for(j = 0; j < w; j++)
 		{
-			if(j % 8 == 0)ch = *ptr++;
-			if(ch & 0x80)
+			if(j % 8 == 0)chr = *ptr++;
+			if(chr & 0x80)
 				rtgui_dc_draw_point(dc, j + x, i + y);
 			else if (style & RTGUI_TEXTSTYLE_DRAW_BACKGROUND)
 				rtgui_dc_draw_color_point(dc, j + x, i + y, bc);
-			ch <<= 1;
+			chr <<= 1;
 		}
 	}
 }
