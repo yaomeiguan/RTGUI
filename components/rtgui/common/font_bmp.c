@@ -32,7 +32,7 @@ void rtgui_bitmap_font_draw_char(struct rtgui_font_bitmap* font, struct rtgui_dc
 	rtgui_color_t bc;
 	const rt_uint8_t* font_ptr;
 	rt_uint16_t x, y, w, h, style;
-	register rt_base_t i, j, k, word_bytes;
+	register rt_base_t i, j, /*k,*/ word_bytes;
 
 	/* check first and last char */
 	if (ch < font->first_char || ch > font->last_char) return;
@@ -57,22 +57,18 @@ void rtgui_bitmap_font_draw_char(struct rtgui_font_bitmap* font, struct rtgui_dc
 	w = (font->width  + x > rect->x2) ? rect->x2 - rect->x1 : font->width;
 	h = (font->height + y > rect->y2) ? rect->y2 - rect->y1 : font->height;
 
-	for (i = 0; i < h; i++)
+	for(i = 0; i < h; i++)
 	{
-		for (j = 0; j < word_bytes; j++)
+		rt_uint8_t ch;
+		const rt_uint8_t *ptr = font_ptr + i * word_bytes;
+		for(j = 0; j < w; j++)
 		{
-			for (k = 0; k < w; k++)
-			{
-				if (((font_ptr[i * word_bytes + j] >> (w - k)) & 0x01) != 0)
-				{
-					/* draw a pixel */
-					rtgui_dc_draw_point(dc, k + w * j + x, i + y);
-				}
-				else if (style & RTGUI_TEXTSTYLE_DRAW_BACKGROUND)
-				{
-					rtgui_dc_draw_color_point(dc, k + w * j + x, i + y, bc);
-				}
-			}
+			if(j % 8 == 0)ch = *ptr++;
+			if(ch & 0x80)
+				rtgui_dc_draw_point(dc, j + x, i + y);
+			else if (style & RTGUI_TEXTSTYLE_DRAW_BACKGROUND)
+				rtgui_dc_draw_color_point(dc, j + x, i + y, bc);
+			ch <<= 1;
 		}
 	}
 }
