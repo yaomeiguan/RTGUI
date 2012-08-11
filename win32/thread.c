@@ -3,6 +3,36 @@
 
 #include <SDL/SDL.h>
 
+#include <windows.h>
+const DWORD MS_VC_EXCEPTION=0x406D1388;
+
+#pragma pack(push,8)
+typedef struct tagTHREADNAME_INFO
+{
+	DWORD dwType; // Must be 0x1000.
+	LPCSTR szName; // Pointer to name (in user addr space).
+	DWORD dwThreadID; // Thread ID (-1=caller thread).
+	DWORD dwFlags; // Reserved for future use, must be zero.
+} THREADNAME_INFO;
+#pragma pack(pop)
+
+void SetThreadName(DWORD dwThreadID, char* threadName)
+{
+	THREADNAME_INFO info;
+	info.dwType = 0x1000;
+	info.szName = threadName;
+	info.dwThreadID = dwThreadID;
+	info.dwFlags = 0;
+
+	__try
+	{
+		RaiseException( MS_VC_EXCEPTION, 0, sizeof(info)/sizeof(ULONG_PTR), (ULONG_PTR*)&info );
+	}
+	__except(EXCEPTION_EXECUTE_HANDLER)
+	{
+	}
+}
+
 #ifdef THREAD_DEBUG
 #define DBG_MSG(x)	rt_kprintf x
 #else
@@ -121,13 +151,15 @@ int host_thread_entry(void* parameter)
 	thread->host_thread = SDL_ThreadID();
 	thread->stat = RT_THREAD_READY;
 
-	/* execute thread entry */
-	thread->entry(thread->parameter);
-
 	DBG_MSG(("create thread:%s, sdl_tid: %d, tid: 0x%p\n",
 		thread->name,
 		thread->host_thread,
 		thread->tid));
+
+	SetThreadName(GetCurrentThreadId(), thread->name);
+
+	/* execute thread entry */
+	thread->entry(thread->parameter);
 
 	return 0;
 }

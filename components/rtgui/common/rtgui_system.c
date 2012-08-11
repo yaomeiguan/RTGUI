@@ -734,4 +734,3 @@ void rtgui_screen_unlock(void)
 {
 	rt_mutex_release(&_screen_lock);
 }
-
