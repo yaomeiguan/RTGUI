@@ -63,14 +63,14 @@ void rtgui_bitmap_font_draw_char(struct rtgui_font_bitmap* font, struct rtgui_dc
 		{
 			for (k = 0; k < w; k++)
 			{
-				if (((font_ptr[i * word_bytes + j] >> (7 - k)) & 0x01) != 0)
+				if (((font_ptr[i * word_bytes + j] >> (w - k)) & 0x01) != 0)
 				{
 					/* draw a pixel */
-					rtgui_dc_draw_point(dc, k + 8 * j + x, i + y);
+					rtgui_dc_draw_point(dc, k + w * j + x, i + y);
 				}
 				else if (style & RTGUI_TEXTSTYLE_DRAW_BACKGROUND)
 				{
-					rtgui_dc_draw_color_point(dc, k + 8 * j + x, i + y, bc);
+					rtgui_dc_draw_color_point(dc, k + w * j + x, i + y, bc);
 				}
 			}
 		}
