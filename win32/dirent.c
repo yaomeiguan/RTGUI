@@ -98,6 +98,10 @@ struct dirent *readdir(DIR *dir)
         {
             result         = &dir->result;
             result->d_name = dir->info.name;
+			if (dir->info.attrib & _A_SUBDIR)
+				result->d_type = DFS_DT_DIR;
+			else
+				result->d_type = DFS_DT_REG;
         }
     }
     else

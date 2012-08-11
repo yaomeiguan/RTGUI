@@ -18,8 +18,14 @@ extern "C"
 
 typedef struct DIR DIR;
 
+/* Dirent types */
+#define DFS_DT_UNKNOWN	0x00
+#define DFS_DT_REG		0x01
+#define DFS_DT_DIR		0x02
+
 struct dirent
 {
+	int d_type;
     char *d_name;
 };
 
