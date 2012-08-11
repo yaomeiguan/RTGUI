@@ -494,7 +494,7 @@ rt_bool_t rtgui_widget_event_handler(struct rtgui_object* object, rtgui_event_t*
 #endif
 	}
 
-	return RT_FALSE;
+	return rtgui_object_event_handler(object, event);
 }
 
 /*
