@@ -250,7 +250,11 @@ void rtgui_edit_destroy(struct rtgui_edit* edit)
 rt_inline rt_size_t rtgui_edit_alloc_len(rt_size_t n, rt_size_t m)
 {
 	if(n > m) return n;
+#ifndef RTGUI_USING_SMALL_SIZE
 	return rtgui_edit_alloc_len(n*2, m);
+#else
+	return rtgui_edit_alloc_len(n+16, m);
+#endif
 }
 
 /**
@@ -776,21 +780,56 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 	}
 	else if(ekbd->key == RTGUIK_DELETE)
 	{	/* delete latter character */
-		if(edit->visual.x == line->len - 1)
+		int ofs = edit->upleft.x + edit->visual.x;
+		if(ofs > line->len - 1 || (ofs==0 && line->len==0))
+		{	/* will the next line marges into the current line */
+			struct edit_line* next_line = line->next;
+			if(next_line != RT_NULL)
+			{
+				struct edit_line *update_end_line;
+				
+				update_type = EDIT_UPDATE;
+				edit->update.start = edit->visual;
+
+				rtgui_edit_connect_line(edit, line, next_line);
+				rtgui_edit_delete_line(edit, next_line);
+
+				if(edit->max_rows-edit->upleft.y > edit->row_per_page)
+				{
+					update_end_line = rtgui_edit_get_line_by_index(edit, edit->upleft.y+edit->row_per_page);
+					if(update_end_line != RT_NULL)
+					{
+						edit->update.end.x = edit->col_per_page;
+						edit->update.end.y = edit->upleft.y + edit->row_per_page;
+					}
+				}
+				else
+				{
+					int update_end_index = rtgui_edit_get_index_by_line(edit, edit->tail);
+					edit->update.end.x = edit->col_per_page;
+					edit->update.end.y = update_end_index+1;
+				}
+			}
+			line->len = rtgui_edit_line_strlen(line->text);
+			goto _edit_exit;
+		}
+		else if(ofs == line->len - 1)
 		{
-			line->text[edit->visual.x] = '\0';
+			line->text[ofs] = '\0';
 		}
 		else
 		{
 			char *c;
 			/* remove character */
-			for(c = &line->text[edit->visual.x]; c[1] != '\0'; c++)
+			for(c = &line->text[ofs]; c[1] != '\0'; c++)
 				*c = c[1];
 			*c = '\0';
 		}
 		update_type = EDIT_UPDATE;
 		edit->update.start = edit->visual;
-		edit->update.end.x = line->len;
+		edit->update.end.x = line->len-edit->upleft.x;
+		if (edit->update.end.x > edit->col_per_page)
+			edit->update.end.x = edit->col_per_page;
 		edit->update.end.y = edit->visual.y;
 	}
 	else if(ekbd->key == RTGUIK_BACKSPACE)
@@ -1275,7 +1314,7 @@ void rtgui_edit_update(struct rtgui_edit *edit)
 			r.y1 = rect.y1 + i * edit->font_height;
 			r.y2 = r.y1 + edit->font_height;
 			cpy_len = edit->update.end.x - edit->update.start.x;
-			src = line->text + edit->update.start.x;
+			src = line->text + edit->update.start.x + edit->upleft.x;
 		}
 		else 
 		{
