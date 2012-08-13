@@ -296,6 +296,7 @@ rt_bool_t rtgui_edit_append_line(struct rtgui_edit* edit, const char *text)
 		edit->head = line;
 		edit->tail = line;
 		line->prev = RT_NULL;
+		edit->first_line = line;
 		return RT_TRUE;
 	}
 	while(node->next != RT_NULL) node = node->next;
