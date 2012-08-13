@@ -633,7 +633,7 @@ static void rtgui_edit_onmouse(struct rtgui_edit* edit, struct rtgui_event_mouse
 	}		
 }
 
-rt_inline static rt_uint16_t query_shift_code(rt_uint16_t key)
+rt_inline rt_uint16_t query_shift_code(rt_uint16_t key)
 {
 	if(key >= RTGUIK_a && key <= RTGUIK_z)
 		return (key - ('a'-'A'));
@@ -665,14 +665,14 @@ rt_inline static rt_uint16_t query_shift_code(rt_uint16_t key)
 	return key;
 }
 
-rt_inline static rt_uint16_t query_caps_code(rt_uint16_t key)
+rt_inline rt_uint16_t query_caps_code(rt_uint16_t key)
 {
 	if(key >= RTGUIK_a && key <= RTGUIK_z)
 		return (key - ('a'-'A'));
 	return key;
 }
 
-rt_inline static rt_bool_t is_small_keyboard(rt_uint16_t *key)
+rt_inline rt_bool_t is_small_keyboard(rt_uint16_t *key)
 {
 	if(*key >= RTGUIK_KP0 && *key <= RTGUIK_KP9)
 	{
