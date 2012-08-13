@@ -119,6 +119,10 @@ static void demo_autowin_onbutton(struct rtgui_object* object, rtgui_event_t* ev
 {
 	struct rtgui_rect rect ={50, 50, 200, 200};
 
+    /* don't create the window twice */
+    if (msgbox)
+        return;
+
 	msgbox = rtgui_win_create(main_win, "Information",
             &rect, RTGUI_WIN_STYLE_DEFAULT | RTGUI_WIN_STYLE_DESTROY_ON_CLOSE);
 	if (msgbox == RT_NULL)
