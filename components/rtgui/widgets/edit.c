@@ -1603,7 +1603,14 @@ rt_bool_t rtgui_edit_readin_file(struct rtgui_edit *edit, const char *filename)
 		{
 			if(num >= size - 1)
 				text = rt_realloc(text, rtgui_edit_alloc_len(size, num));
-			*(text + num++) = ch;
+			if(ch == 0x09) //Tab
+			{
+				len = edit->tabsize - num%edit->tabsize;
+				while(len--)
+					*(text + num++) = ' ';
+			}
+			else
+				*(text + num++) = ch;
 			if(ch == 0x0A)
 			{
 				rtgui_edit_append_line(edit, text);
