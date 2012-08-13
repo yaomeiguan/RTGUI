@@ -1498,7 +1498,6 @@ void rtgui_edit_set_text(struct rtgui_edit* edit, const char* text)
 		if(begin < ptr)
 			rtgui_edit_append_line(edit, begin);
 	}
-	edit->first_line = edit->head;
 	
 #ifdef RTGUI_EDIT_USING_SCROLL
 	if(edit->hscroll != RT_NULL)
