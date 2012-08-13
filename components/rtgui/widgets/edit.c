@@ -1089,6 +1089,18 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		else
 			edit->visual.x = line->len;
 	}
+	else if(ekbd->key == RTGUIK_TAB)
+	{
+		int space_nums;
+		struct rtgui_event_kbd event_kbd;
+		/* using spaces to replace TAB */
+		space_nums = edit->tabsize - (edit->upleft.x+edit->visual.x) % edit->tabsize;
+		while(space_nums--)
+		{
+			kbd_event_set_key(&event_kbd, RTGUIK_SPACE);
+			rtgui_edit_onkey(object, (rtgui_event_t*)&event_kbd);
+		}
+	}
 	else if(ekbd->key == RTGUIK_RETURN)
 	{
 		struct edit_line *update_end_line;
