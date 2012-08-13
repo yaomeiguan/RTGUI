@@ -1575,3 +1575,73 @@ rt_bool_t rtgui_edit_event_handler(struct rtgui_object* object, rtgui_event_t* e
 	return RT_FALSE;
 }
 
+/** 
+ * File access component, General File Access Interface
+ */
+
+rt_bool_t rtgui_edit_readin_file(struct rtgui_edit *edit, const char *filename)
+{
+	int fd, num=0, read_bytes, size ,len=0;
+	char *text ,ch;
+
+	fd = open(filename, O_RDONLY, 0);
+	if (fd < 0)
+	{
+		return RT_FALSE;
+	}
+	
+	while(edit->max_rows > 0)
+		rtgui_edit_delete_line(edit, edit->head);
+	edit->max_rows = 0;
+
+	size = edit->bzsize;
+	text = rtgui_malloc(size);
+	if(text == RT_NULL) return RT_FALSE;
+	
+	do {
+		if ( (read_bytes = read(fd, &ch, 1)) > 0 )
+		{
+			if(num >= size - 1)
+				text = rt_realloc(text, rtgui_edit_alloc_len(size, num));
+			*(text + num++) = ch;
+			if(ch == 0x0A)
+			{
+				rtgui_edit_append_line(edit, text);
+				num = 0;
+			}
+			
+		}
+	} while(read_bytes);
+	
+	close(fd);
+	rtgui_free(text);
+	rtgui_edit_ondraw(edit);
+
+	return RT_TRUE;
+}
+
+rt_bool_t rtgui_edit_saveas_file(struct rtgui_edit *edit, const char *filename)
+{
+	int fd;
+	char ch_tailed = 0x0A;
+	struct edit_line *line;
+
+	fd = open(filename, O_WRONLY | O_CREAT, 0);
+	if (fd < 0)
+	{
+		return RT_FALSE;
+	}
+	
+	line = edit->head;
+	while(line)
+	{
+		write(fd, line->text, line->len);
+		if(line != edit->tail)
+			write(fd, &ch_tailed, 1);
+		line = line->next;
+	}
+	
+	close(fd);
+
+	return RT_TRUE;
+}

@@ -17,8 +17,25 @@
 #include <rtgui/widgets/widget.h>
 #include <rtgui/widgets/container.h>
 
+#ifdef _WIN32
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <io.h>
+#else
+#include <dfs_posix.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+#ifdef _WIN32
+#define open	_open
+#define close	_close
+#define read	_read
+#define write	_write
+#define unlink	_unlink
 #endif
 
 DECLARE_CLASS_TYPE(edit);
@@ -102,6 +119,8 @@ void rtgui_edit_ondraw(struct rtgui_edit *edit);
 rt_bool_t rtgui_edit_event_handler(struct rtgui_object* object, rtgui_event_t* event);
 void rtgui_edit_set_text(struct rtgui_edit *edit, const char* text);
 
+rt_bool_t rtgui_edit_readin_file(struct rtgui_edit *edit, const char *filename);
+rt_bool_t rtgui_edit_saveas_file(struct rtgui_edit *edit, const char *filename);
 
 #ifdef __cplusplus
 }
