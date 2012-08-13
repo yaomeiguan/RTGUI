@@ -69,7 +69,7 @@ struct edit_line
 	rt_uint32_t len;
 	struct edit_line *prev;
 	struct edit_line *next;
-	char *text;
+	rt_uint8_t *text;
 };
 
 struct rtgui_edit
@@ -93,7 +93,7 @@ struct rtgui_edit
 	rtgui_color_t *caret;
 	rtgui_rect_t  caret_rect;
 	struct edit_update update;
-	char          *update_buf; /* speed up renewal process */
+	rt_uint8_t    *update_buf; /* speed up renewal process */
 	
 	struct edit_line  *head;
 	struct edit_line  *tail;

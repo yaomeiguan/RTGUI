@@ -263,7 +263,7 @@ rt_inline rt_size_t rtgui_edit_alloc_len(rt_size_t n, rt_size_t m)
  */
 rt_inline rt_size_t rtgui_edit_line_strlen(const char *s)
 {
-	const char *sc;
+	const rt_uint8_t *sc;
 	/* ascii text end of 0x0A or 0x0D-0x0A*/
 	for(sc = s; *sc != 0x0D && *sc != 0x0A && *sc != 0x00; ++sc);  
 	return sc - s;
@@ -820,7 +820,7 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		}
 		else
 		{
-			char *c;
+			rt_uint8_t *c;
 			/* remove character */
 			for(c = &line->text[ofs]; c[1] != '\0'; c++)
 				*c = c[1];
@@ -879,7 +879,7 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		}
 		else if(edit->visual.x != 0)
 		{	/* remove current character */
-			char *c;
+			rt_uint8_t *c;
 			/* remove character */
 			for(c = &line->text[edit->visual.x - 1]; c[1] != '\0'; c++)
 			{
@@ -1326,7 +1326,7 @@ void rtgui_edit_update(struct rtgui_edit *edit)
 	rt_uint32_t i,cpy_len=0,prev_len;
 	rtgui_rect_t rect, r;
 	struct rtgui_dc *dc;
-	char *src;
+	rt_uint8_t *src;
 	
 	RT_ASSERT(edit != RT_NULL);
 	
@@ -1509,7 +1509,7 @@ void rtgui_edit_ondraw(struct rtgui_edit *edit)
 /* set edit text */
 void rtgui_edit_set_text(struct rtgui_edit* edit, const char* text)
 {
-	const char *begin, *ptr;
+	const rt_uint8_t *begin, *ptr;
 	int hscroll_flag=0;
 	int vscroll_flag=0;
 
@@ -1634,14 +1634,17 @@ rt_bool_t rtgui_edit_event_handler(struct rtgui_object* object, rtgui_event_t* e
 rt_bool_t rtgui_edit_readin_file(struct rtgui_edit *edit, const char *filename)
 {
 	int fd, num=0, read_bytes, size ,len=0;
-	char *text ,ch;
+	rt_uint8_t *text ,ch;
 
 	fd = open(filename, O_RDONLY, 0);
 	if (fd < 0)
 	{
 		return RT_FALSE;
 	}
-	
+	/** 
+	 * If it was in the debug of the win32, If system code is not GBK,
+	 * Will read to garbled code when using the function read documents.
+	 */
 	while(edit->max_rows > 0)
 		rtgui_edit_delete_line(edit, edit->head);
 	edit->max_rows = 0;
@@ -1652,7 +1655,7 @@ rt_bool_t rtgui_edit_readin_file(struct rtgui_edit *edit, const char *filename)
 	
 	do {
 		if ( (read_bytes = read(fd, &ch, 1)) > 0 )
-		{
+		{	/* rt_kprintf("ch=%02X ",ch); DEBUG */
 			if(num >= size - 1)
 				text = rt_realloc(text, rtgui_edit_alloc_len(size, num));
 			if(ch == 0x09) //Tab
