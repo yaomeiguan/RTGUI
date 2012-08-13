@@ -997,7 +997,22 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 	else if(ekbd->key == RTGUIK_LEFT)
 	{	/* move to prev char */
 		if(edit->visual.x > 0)
-			edit->visual.x --;
+		{
+			if(edit->upleft.x+edit->visual.x >= 2)
+			{
+				rt_uint8_t ch_dbl;
+				ch_dbl = *(line->text + edit->upleft.x + edit->visual.x - 2);
+				if(ch_dbl >= 0x80)
+					edit->visual.x -= 2;
+				else
+				{
+					edit->upleft.x -= (2-edit->visual.x);
+					edit->visual.x = 0;
+				}
+			}
+			else
+				edit->visual.x --;
+		}
 		else
 		{
 			if(edit->upleft.x > 0)
@@ -1029,7 +1044,20 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 			if(edit->upleft.x+edit->col_per_page <= line->len)
 			{
 				if(edit->visual.x < edit->col_per_page-1)
-					edit->visual.x ++;
+				{
+					if((line->len-edit->upleft.x-edit->visual.x) >= 2)
+					{
+						rt_uint8_t ch_dbl;
+						ch_dbl = *(line->text + edit->upleft.x + edit->visual.x);
+						/* if it is double byte coding */
+						if(ch_dbl >= 0x80)
+							edit->visual.x += 2;
+						else
+							edit->visual.x ++;
+					}
+					else
+						edit->visual.x ++;
+				}
 				else if(edit->visual.x == edit->col_per_page-1)
 				{
 					if(edit->upleft.x+edit->col_per_page < line->len)
@@ -1052,7 +1080,19 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		else
 		{
 			if(edit->visual.x < line->len)
-				edit->visual.x ++;
+			{
+				if((line->len-edit->upleft.x-edit->visual.x) >= 2)			
+				{
+					rt_uint8_t ch_dbl;
+					ch_dbl = *(line->text + edit->upleft.x + edit->visual.x);
+					if(ch_dbl >= 0x80)
+						edit->visual.x += 2;
+					else
+						edit->visual.x ++;
+				}
+				else
+					edit->visual.x ++;
+			}
 			else
 			{
 				struct rtgui_event_kbd event_kbd;

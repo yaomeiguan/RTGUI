@@ -82,6 +82,7 @@ rtgui_container_t* demo_view_edit(void)
 						"rtgui_edit_insert_line\n"
 						"rtgui_edit_delete_line\n"
 						"rtgui_edit_connect_line\n"
+						"Ë«×Ö½Ú²âÊÔ\n"
 						"a\n"
 						"b\n"
 						"c\n"
