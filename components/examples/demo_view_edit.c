@@ -64,6 +64,18 @@ void demo_edit_saveas_file(struct rtgui_object *object, struct rtgui_event *even
     rtgui_edit_saveas_file(edit, filename);
 }
 
+void demo_edit_get_mem(struct rtgui_object* object, struct rtgui_event* event)
+{
+	rtgui_button_t *button;
+	struct rtgui_edit *edit;
+
+	RT_ASSERT(object != RT_NULL);
+
+	button = RTGUI_BUTTON(object);
+	edit = RTGUI_EDIT( RTGUI_WIDGET(button)->user_data );
+	rt_kprintf("edit mem consume: %d\n", rtgui_edit_get_mem_consume(edit));
+}
+
 rt_bool_t demo_edit_event_handler(struct rtgui_object* object, struct rtgui_event *event)
 {
 	rt_bool_t result;
@@ -150,6 +162,18 @@ rtgui_container_t *demo_view_edit(void)
 
 	RTGUI_WIDGET(edit)->user_data = (rt_uint32_t)label;
 	rtgui_object_set_event_handler(RTGUI_OBJECT(edit), demo_edit_event_handler);
+	
+	/* 创建一个按钮, 读取EDIT的内存消耗 */
+	demo_view_get_rect(container, &rect);
+	rect.x1 += 150;
+	rect.x2 = rect.x1 + 80;
+	rect.y1 -= 42;
+	rect.y2 = rect.y1 + 20;
+	button = rtgui_button_create("Get Mem");
+	rtgui_widget_set_rect(RTGUI_WIDGET(button), &rect);
+	rtgui_container_add_child(container, RTGUI_WIDGET(button));
+	rtgui_button_set_onbutton(button, demo_edit_get_mem);
+	RTGUI_WIDGET(button)->user_data = (rt_uint32_t)edit;
 
     return container;
 }

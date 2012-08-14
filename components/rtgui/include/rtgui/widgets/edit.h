@@ -119,6 +119,7 @@ void rtgui_edit_ondraw(struct rtgui_edit *edit);
 rt_bool_t rtgui_edit_event_handler(struct rtgui_object* object, rtgui_event_t* event);
 void rtgui_edit_set_text(struct rtgui_edit *edit, const char* text);
 rtgui_point_t rtgui_edit_get_current_point(struct rtgui_edit *edit);
+rt_uint32_t rtgui_edit_get_mem_consume(struct rtgui_edit *edit);
 rt_bool_t rtgui_edit_readin_file(struct rtgui_edit *edit, const char *filename);
 rt_bool_t rtgui_edit_saveas_file(struct rtgui_edit *edit, const char *filename);
 

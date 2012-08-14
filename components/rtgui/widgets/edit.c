@@ -1741,6 +1741,27 @@ rtgui_point_t rtgui_edit_get_current_point(struct rtgui_edit *edit)
 	return p;
 }
 
+rt_uint32_t rtgui_edit_get_mem_consume(struct rtgui_edit *edit)
+{
+	rt_uint32_t mem_size;
+	struct edit_line *line;
+
+	mem_size = sizeof(struct rtgui_edit);
+	mem_size += edit->col_per_page + 1; /* update_buf */
+	if(edit->head != RT_NULL)
+	{
+		line = edit->head;
+		while(line)
+		{
+			mem_size += line->zsize;
+			mem_size += sizeof(struct edit_line);
+			line = line->next;
+		}
+	}
+
+	return mem_size;
+}
+
 /** 
  * File access component, General File Access Interface
  */
