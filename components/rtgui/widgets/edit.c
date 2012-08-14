@@ -561,6 +561,70 @@ rt_uint32_t rtgui_edit_get_index_by_line(struct rtgui_edit *edit, struct edit_li
 	return index;
 }
 
+enum {
+	EDIT_IDENT_DIR_BOTH,
+	EDIT_IDENT_DIR_LEFT,
+	EDIT_IDENT_DIR_RIGHT
+};
+/*
+* identify a byte is double byte
+* @param dir set direction.
+* @param *p record the position of the effective.
+* @return RT_TRUE is Got it, else not found.
+*/
+static rt_bool_t identify_double_byte(struct rtgui_edit *edit, struct edit_line *line, 
+									  rt_uint32_t dir, rt_uint32_t *p)
+{
+	int index, effe_nums;
+
+	RT_ASSERT(edit != RT_NULL);
+	RT_ASSERT(line != RT_NULL);
+
+	if(dir == EDIT_IDENT_DIR_BOTH)
+	{
+	}
+	else if(dir == EDIT_IDENT_DIR_LEFT)
+	{
+		if(edit->upleft.x == 0 && edit->visual.x == 0)
+			return RT_FALSE;
+		index = edit->upleft.x + edit->visual.x;
+		effe_nums = 0;
+		while(index--)
+		{
+			if(*(line->text + index) >= 0x80)
+				effe_nums ++;
+			else
+				break;
+		}
+		if(effe_nums > 0)
+		{
+			*p = 2-effe_nums%2;
+			return RT_TRUE;
+		}
+	}
+	else if(dir == EDIT_IDENT_DIR_RIGHT)
+	{
+		if(edit->upleft.x + edit->visual.x == line->len)
+			return RT_FALSE;
+		index = edit->upleft.x + edit->visual.x;
+		effe_nums = 0;
+		while(index < line->len)
+		{
+			if(*(line->text + index) >= 0x80)
+				effe_nums ++;
+			else
+				break;
+			index ++;
+		}
+		if(effe_nums > 0)
+		{
+			*p = 2-effe_nums%2;
+			return RT_TRUE;
+		}
+	}
+	return RT_FALSE;
+}
+
 static void rtgui_edit_onmouse(struct rtgui_edit* edit, struct rtgui_event_mouse* emouse)
 {
 	rtgui_rect_t rect;
@@ -998,18 +1062,9 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 	{	/* move to prev char */
 		if(edit->visual.x > 0)
 		{
-			if(edit->upleft.x+edit->visual.x >= 2)
-			{
-				rt_uint8_t ch_dbl;
-				ch_dbl = *(line->text + edit->upleft.x + edit->visual.x - 2);
-				if(ch_dbl >= 0x80)
-					edit->visual.x -= 2;
-				else
-				{
-					edit->upleft.x -= (2-edit->visual.x);
-					edit->visual.x = 0;
-				}
-			}
+			rt_uint32_t tmp_pos=0;
+			if(identify_double_byte(edit, line, EDIT_IDENT_DIR_LEFT, &tmp_pos))
+				edit->visual.x -= tmp_pos;
 			else
 				edit->visual.x --;
 		}
@@ -1045,16 +1100,9 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 			{
 				if(edit->visual.x < edit->col_per_page-1)
 				{
-					if((line->len-edit->upleft.x-edit->visual.x) >= 2)
-					{
-						rt_uint8_t ch_dbl;
-						ch_dbl = *(line->text + edit->upleft.x + edit->visual.x);
-						/* if it is double byte coding */
-						if(ch_dbl >= 0x80)
-							edit->visual.x += 2;
-						else
-							edit->visual.x ++;
-					}
+					rt_uint32_t tmp_pos=0;
+					if(identify_double_byte(edit, line, EDIT_IDENT_DIR_RIGHT, &tmp_pos))
+						edit->visual.x += tmp_pos;
 					else
 						edit->visual.x ++;
 				}
@@ -1081,15 +1129,9 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		{
 			if(edit->visual.x < line->len)
 			{
-				if((line->len-edit->upleft.x-edit->visual.x) >= 2)			
-				{
-					rt_uint8_t ch_dbl;
-					ch_dbl = *(line->text + edit->upleft.x + edit->visual.x);
-					if(ch_dbl >= 0x80)
-						edit->visual.x += 2;
-					else
-						edit->visual.x ++;
-				}
+				rt_uint32_t tmp_pos=0;
+				if(identify_double_byte(edit, line, EDIT_IDENT_DIR_RIGHT, &tmp_pos))
+					edit->visual.x += tmp_pos;
 				else
 					edit->visual.x ++;
 			}
@@ -1642,8 +1684,9 @@ rt_bool_t rtgui_edit_readin_file(struct rtgui_edit *edit, const char *filename)
 		return RT_FALSE;
 	}
 	/** 
-	 * If it was in the debug of the win32, If system code is not GBK,
+	 * If it was in the debug of the win32, If document encode is UTF-8 or Unicode,
 	 * Will read to garbled code when using the function read documents.
+	 * You can Change of the document contains the source code for ANSI. 
 	 */
 	while(edit->max_rows > 0)
 		rtgui_edit_delete_line(edit, edit->head);
@@ -1672,6 +1715,11 @@ rt_bool_t rtgui_edit_readin_file(struct rtgui_edit *edit, const char *filename)
 				num = 0;
 			}
 			
+		}
+		else if(num > 0)
+		{	/* last line does not exist the end operator */
+			*(text + num) = '\0';
+			rtgui_edit_append_line(edit, text);
 		}
 	} while(read_bytes);
 	
