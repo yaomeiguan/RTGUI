@@ -1002,10 +1002,25 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 				update_type = EDIT_ONDRAW;
 			}
 			else if(prev_line->len - edit->upleft.x < edit->col_per_page)
-				edit->visual.x = prev_line->len - edit->upleft.x;
+			{
+				if(edit->visual.x > prev_line->len - edit->upleft.x)
+					edit->visual.x = prev_line->len - edit->upleft.x;
+				else
+				{
+					rt_uint32_t tmp_pos=0;
+					if(identify_double_byte(edit, prev_line, EDIT_IDENT_DIR_LEFT, &tmp_pos))
+						edit->visual.x -= (2-tmp_pos);
+				}
+			}
 		}
 		else if(edit->visual.x > prev_line->len)
 			edit->visual.x = prev_line->len;
+		else if(prev_line->len >= 2)
+		{
+			rt_uint32_t tmp_pos=0;
+			if(identify_double_byte(edit, prev_line, EDIT_IDENT_DIR_LEFT, &tmp_pos))
+				edit->visual.x -= (2-tmp_pos);
+		}
 
 #ifdef RTGUI_EDIT_USING_SCROLL		
 		/* update vscroll */
@@ -1060,10 +1075,25 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 				update_type = EDIT_ONDRAW;
 			}
 			else if(next_line->len - edit->upleft.x < edit->col_per_page)
-				edit->visual.x = next_line->len - edit->upleft.x;
+			{
+				if(edit->visual.x > next_line->len - edit->upleft.x)
+					edit->visual.x = next_line->len - edit->upleft.x;
+				else
+				{
+					rt_uint32_t tmp_pos=0;
+					if(identify_double_byte(edit, next_line, EDIT_IDENT_DIR_LEFT, &tmp_pos))
+						edit->visual.x -= (2-tmp_pos);
+				}
+			}
 		}
 		else if(edit->visual.x > next_line->len)
 			edit->visual.x = next_line->len;
+		else if(next_line->len >= 2)
+		{
+			rt_uint32_t tmp_pos=0;
+			if(identify_double_byte(edit, next_line, EDIT_IDENT_DIR_LEFT, &tmp_pos))
+				edit->visual.x -= (2-tmp_pos);
+		}
 
 #ifdef RTGUI_EDIT_USING_SCROLL		
 		/* update vscroll */
