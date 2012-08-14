@@ -989,8 +989,16 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		{
 			if(prev_line->len <= edit->upleft.x)
 			{
-				edit->upleft.x = 0;
-				edit->visual.x = prev_line->len;
+				if(prev_line->len <= edit->col_per_page)
+				{
+					edit->upleft.x = 0;
+					edit->visual.x = prev_line->len;
+				}
+				else
+				{
+					edit->upleft.x = prev_line->len - (edit->col_per_page-1);
+					edit->visual.x = edit->col_per_page-1;
+				}
 				update_type = EDIT_ONDRAW;
 			}
 			else if(prev_line->len - edit->upleft.x < edit->col_per_page)
@@ -1039,8 +1047,16 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		{
 			if(next_line->len <= edit->upleft.x)
 			{
-				edit->upleft.x = 0;
-				edit->visual.x = next_line->len;
+				if(next_line->len <= edit->col_per_page)
+				{
+					edit->upleft.x = 0;
+					edit->visual.x = next_line->len;
+				}
+				else
+				{
+					edit->upleft.x = next_line->len - (edit->col_per_page-1);
+					edit->visual.x = edit->col_per_page-1;
+				}
 				update_type = EDIT_ONDRAW;
 			}
 			else if(next_line->len - edit->upleft.x < edit->col_per_page)
