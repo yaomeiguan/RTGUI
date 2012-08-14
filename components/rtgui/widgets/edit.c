@@ -981,7 +981,7 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		}
 		
 		/* The position of the recount X */
-		prev_line = line->prev;
+		prev_line = rtgui_edit_get_line_by_index(edit, edit->upleft.y+edit->visual.y);
 		if(prev_line == RT_NULL)
 			return RT_FALSE;
 
@@ -1031,7 +1031,7 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		}
 		
 		/* adjust next line end position */
-		next_line = line->next;
+		next_line = rtgui_edit_get_line_by_index(edit, edit->upleft.y+edit->visual.y);
 		if(next_line == RT_NULL)	
 			return RT_FALSE;
 		
@@ -1369,7 +1369,6 @@ void rtgui_edit_update(struct rtgui_edit *edit)
 	rtgui_rect_t rect, r;
 	struct rtgui_dc *dc;
 	rt_uint8_t *src;
-	struct edit_line *line;
 	
 	RT_ASSERT(edit != RT_NULL);
 	
@@ -1385,10 +1384,10 @@ void rtgui_edit_update(struct rtgui_edit *edit)
 	}
 	
 	prev_len = edit->col_per_page;
-	i = edit->upleft.y + edit->update.start.y;
-	line = rtgui_edit_get_line_by_index(edit, i);
 	for(i=edit->update.start.y; i<=edit->update.end.y; i++)
 	{
+		struct edit_line *line = rtgui_edit_get_line_by_index(edit, edit->upleft.y + i);
+
 		if(i > edit->upleft.y+edit->row_per_page) break;
 		if(line == RT_NULL) 
 		{	/* when use "RTGUIK_BACKSPACE" backspace forward,
@@ -1456,7 +1455,6 @@ void rtgui_edit_update(struct rtgui_edit *edit)
 		rtgui_dc_fill_rect(dc, &r);
 		rtgui_dc_draw_text(dc, edit->update_buf, &r);
 		prev_len = line->len;
-		line = line->next;
 	}
 	
 	rtgui_dc_end_drawing(dc);
