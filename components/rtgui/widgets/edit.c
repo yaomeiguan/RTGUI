@@ -645,6 +645,7 @@ static void rtgui_edit_onmouse(struct rtgui_edit* edit, struct rtgui_event_mouse
 			if(emouse->button & RTGUI_MOUSE_BUTTON_DOWN)
 			{
 				struct edit_line *line;
+				rt_uint32_t tmp_pos=0;
 				
 				edit->visual.x = x;
 				edit->visual.y = y;
@@ -655,7 +656,8 @@ static void rtgui_edit_onmouse(struct rtgui_edit* edit, struct rtgui_event_mouse
 				
 				if(edit->visual.x > line->len)
 					edit->visual.x = line->len;
-				
+				if(identify_double_byte(edit, line, EDIT_IDENT_DIR_LEFT, &tmp_pos))
+					edit->visual.x -= (2-tmp_pos);
 				if(edit->flag & RTGUI_EDIT_CARET)
 				{
 					if(edit->caret_timer != RT_NULL)
