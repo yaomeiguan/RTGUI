@@ -938,19 +938,23 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		/* delete front character */
 		if(edit->visual.x == line->len)
 		{
-			line->text[edit->visual.x-1] = '\0';
-			edit->visual.x --;
+			rt_uint32_t tmp_pos=1;
+			identify_double_byte(edit, line, EDIT_IDENT_DIR_LEFT, &tmp_pos);
+			line->text[edit->visual.x-tmp_pos] = '\0';
+			edit->visual.x -= tmp_pos;
 		}
 		else if(edit->visual.x != 0)
 		{	/* remove current character */
 			rt_uint8_t *c;
+			rt_uint32_t tmp_pos=1;
+			identify_double_byte(edit, line, EDIT_IDENT_DIR_LEFT, &tmp_pos);
 			/* remove character */
-			for(c = &line->text[edit->visual.x - 1]; c[1] != '\0'; c++)
+			for(c = &line->text[edit->visual.x - tmp_pos]; c[tmp_pos] != '\0'; c++)
 			{
-				*c = c[1];
+				*c = c[tmp_pos];
 			}
 			*c = '\0';
-			edit->visual.x --;
+			edit->visual.x -= tmp_pos;
 		}
 		/* adjusted line buffer length */
 		if(rtgui_edit_alloc_len(edit->bzsize, line->len+2) < line->zsize)
