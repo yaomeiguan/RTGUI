@@ -1188,9 +1188,6 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 	{
 		struct edit_line *update_end_line;
 		struct rtgui_event_kbd event_kbd;
-		
-		update_type = EDIT_UPDATE;
-		edit->update.start = edit->visual;
 	
 		/* insert a new line buffer */
 		rtgui_edit_insert_line(edit, line, line->text + edit->upleft.x + edit->visual.x);
@@ -1198,8 +1195,10 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		line->len = rtgui_edit_line_strlen(line->text);
 		
 		/* adjust update line end position */
-		if((edit->max_rows-edit->upleft.y) >= edit->row_per_page)
+		if((edit->max_rows-edit->upleft.y) > edit->row_per_page)
 		{	
+			update_type = EDIT_UPDATE;
+			edit->update.start = edit->visual;
 			update_end_line = rtgui_edit_get_line_by_index(edit, edit->upleft.y+edit->row_per_page-1);
 			if(update_end_line != RT_NULL)
 			{
@@ -1207,11 +1206,18 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 				edit->update.end.y = edit->upleft.y + edit->row_per_page;
 			}
 		}
-		else
+		else if((edit->max_rows-edit->upleft.y) < edit->row_per_page)
 		{
 			int update_end_index = rtgui_edit_get_index_by_line(edit, edit->tail);
+			update_type = EDIT_UPDATE;
+			edit->update.start = edit->visual;
 			edit->update.end.x = edit->tail->len;
 			edit->update.end.y = update_end_index;
+		} 
+		else
+		{
+			/* nothing */
+			/* it will be adjusted upleft.y when entering DOWN case */
 		}
 		
 		/* move the caret to the next line head */
