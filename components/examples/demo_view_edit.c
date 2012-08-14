@@ -8,6 +8,7 @@
 #include <rtgui/dc.h>
 #include <rtgui/rtgui_system.h>
 #include <rtgui/widgets/edit.h>
+#include <rtgui/widgets/label.h>
 #include <rtgui/widgets/button.h>
 
 void demo_edit_readin_file(struct rtgui_object *object, struct rtgui_event *event)
@@ -63,12 +64,30 @@ void demo_edit_saveas_file(struct rtgui_object *object, struct rtgui_event *even
     rtgui_edit_saveas_file(edit, filename);
 }
 
+rt_bool_t demo_edit_event_handler(struct rtgui_object* object, struct rtgui_event *event)
+{
+	rt_bool_t result;
+	char buf[32];
+	rtgui_point_t p;
+	struct rtgui_edit *edit = RTGUI_EDIT(object);
+	struct rtgui_label *label = (struct rtgui_label*)RTGUI_WIDGET(edit)->user_data;
+
+	result = rtgui_edit_event_handler(object, event);
+
+	p = rtgui_edit_get_current_point(edit);
+	rt_sprintf(buf, "TRACK: line:%d, col:%d", p.x, p.y);
+	rtgui_label_set_text(label, buf);
+	
+	return result;
+}
+
 /* 创建用于演示edit控件的视图 */
 rtgui_container_t *demo_view_edit(void)
 {
     rtgui_rect_t rect;
     rtgui_container_t *container;
     struct rtgui_edit *edit;
+	struct rtgui_label *label;
     struct rtgui_button *button;
 
     /* 先创建一个演示用的视图 */
@@ -116,6 +135,21 @@ rtgui_container_t *demo_view_edit(void)
     rtgui_button_set_onbutton(button, demo_edit_saveas_file);
     /* 使用user_data传递edit指针 */
     RTGUI_WIDGET(button)->user_data = (rt_uint32_t)edit;
+
+	/* 创建一个标签, 显示EDIT的主要参数 */
+	demo_view_get_rect(container, &rect);
+	rect.x1 += 10;
+	rect.x2 = rect.x1 + 220;
+	rect.y1 += 225;
+	rect.y2 = rect.y1 + 18;
+	label = rtgui_label_create("TRACK:");
+	RTGUI_WIDGET_TEXTALIGN(label) = RTGUI_ALIGN_LEFT | RTGUI_ALIGN_CENTER_VERTICAL;
+	RTGUI_WIDGET_FOREGROUND(label) = blue;
+	rtgui_widget_set_rect(RTGUI_WIDGET(label), &rect);
+	rtgui_container_add_child(container, RTGUI_WIDGET(label));
+
+	RTGUI_WIDGET(edit)->user_data = (rt_uint32_t)label;
+	rtgui_object_set_event_handler(RTGUI_OBJECT(edit), demo_edit_event_handler);
 
     return container;
 }

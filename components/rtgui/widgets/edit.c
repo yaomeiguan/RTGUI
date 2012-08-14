@@ -1729,6 +1729,18 @@ rt_bool_t rtgui_edit_event_handler(struct rtgui_object* object, rtgui_event_t* e
 	return RT_FALSE;
 }
 
+rtgui_point_t rtgui_edit_get_current_point(struct rtgui_edit *edit)
+{
+	rtgui_point_t p;
+
+	RT_ASSERT(edit != RT_NULL);
+
+	p.x = edit->upleft.x + edit->visual.x;
+	p.y = edit->upleft.y + edit->visual.y;
+
+	return p;
+}
+
 /** 
  * File access component, General File Access Interface
  */
