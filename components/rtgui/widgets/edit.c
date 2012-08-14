@@ -885,9 +885,11 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		else
 		{
 			rt_uint8_t *c;
+			rt_uint32_t tmp_pos=1;
+			identify_double_byte(edit, line, EDIT_IDENT_DIR_RIGHT, &tmp_pos);
 			/* remove character */
-			for(c = &line->text[ofs]; c[1] != '\0'; c++)
-				*c = c[1];
+			for(c = &line->text[ofs]; c[tmp_pos] != '\0'; c++)
+				*c = c[tmp_pos];
 			*c = '\0';
 		}
 		update_type = EDIT_UPDATE;
