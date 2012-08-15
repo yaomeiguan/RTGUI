@@ -61,6 +61,8 @@ void _rtgui_edit_constructor(struct rtgui_edit *edit)
 	rtgui_font_get_metrics(RTGUI_WIDGET_FONT(edit), "H", &font_rect);
 	edit->font_width = rtgui_rect_width(font_rect);
 	edit->font_height = rtgui_rect_height(font_rect);
+
+	edit->dbl_buf = rtgui_dc_buffer_create(edit->font_width*2+1, edit->font_height+1);
 	
 	edit->head = RT_NULL;
 	edit->tail = RT_NULL;
@@ -88,6 +90,8 @@ void _rtgui_edit_deconstructor(struct rtgui_edit *edit)
 	edit->caret = RT_NULL;
 	if(edit->update_buf != RT_NULL)
 		rtgui_free(edit->update_buf);
+
+	rtgui_dc_destory(edit->dbl_buf);
 }
 
 DEFINE_CLASS_TYPE(edit, "edit",
@@ -1570,6 +1574,20 @@ void rtgui_edit_ondraw(struct rtgui_edit *edit)
 				edit->visual.x = 0;
 				identify_double_byte(edit, line, EDIT_IDENT_DIR_LEFT, &tmp_pos);
 				ofs = tmp_pos % 2;
+				if(ofs == 1)
+				{	/* use dc_buffer draw the left half of double byte */
+					rt_uint8_t dbl_bmp[3];
+					rtgui_point_t pot = {edit->font_width, 0};
+					rtgui_rect_t r = {0, 0, edit->font_width*2, edit->font_height};
+					dbl_bmp[0] = *(str-1);
+					dbl_bmp[1] = *str;
+					dbl_bmp[2] = '\0';
+					RTGUI_DC_BC(edit->dbl_buf) = RTGUI_WIDGET_BACKGROUND(edit);
+					rtgui_dc_fill_rect(edit->dbl_buf, &r);
+					RTGUI_DC_FC(edit->dbl_buf) = RTGUI_WIDGET_FOREGROUND(edit);
+					rtgui_dc_draw_text(edit->dbl_buf, dbl_bmp, &r);
+					rtgui_dc_blit(edit->dbl_buf, &pot, dc, &rect);
+				}
 				rect.x1 += ofs * edit->font_width;
 				rtgui_dc_draw_text(dc, line->text+edit->upleft.x+ofs, &rect);
 				rect.x1 -= ofs * edit->font_width;

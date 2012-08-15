@@ -94,6 +94,7 @@ struct rtgui_edit
 	rtgui_rect_t  caret_rect;
 	struct edit_update update;
 	rt_uint8_t    *update_buf; /* speed up renewal process */
+	struct rtgui_dc *dbl_buf;
 	
 	struct edit_line  *head;
 	struct edit_line  *tail;
