@@ -1116,11 +1116,9 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 	{	/* move to prev char */
 		if(edit->visual.x > 0)
 		{
-			rt_uint32_t tmp_pos=0;
-			if(identify_double_byte(edit, line, EDIT_IDENT_DIR_LEFT, &tmp_pos))
-				edit->visual.x -= tmp_pos;
-			else
-				edit->visual.x --;
+			rt_uint32_t tmp_pos=1;
+			identify_double_byte(edit, line, EDIT_IDENT_DIR_LEFT, &tmp_pos);
+			edit->visual.x -= tmp_pos;
 		}
 		else
 		{
@@ -1154,11 +1152,9 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 			{
 				if(edit->visual.x < edit->col_per_page-1)
 				{
-					rt_uint32_t tmp_pos=0;
-					if(identify_double_byte(edit, line, EDIT_IDENT_DIR_RIGHT, &tmp_pos))
-						edit->visual.x += tmp_pos;
-					else
-						edit->visual.x ++;
+					rt_uint32_t tmp_pos=1;
+					identify_double_byte(edit, line, EDIT_IDENT_DIR_RIGHT, &tmp_pos);
+					edit->visual.x += tmp_pos;
 				}
 				else if(edit->visual.x == edit->col_per_page-1)
 				{
@@ -1183,11 +1179,9 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		{
 			if(edit->visual.x < line->len)
 			{
-				rt_uint32_t tmp_pos=0;
-				if(identify_double_byte(edit, line, EDIT_IDENT_DIR_RIGHT, &tmp_pos))
-					edit->visual.x += tmp_pos;
-				else
-					edit->visual.x ++;
+				rt_uint32_t tmp_pos=1;
+				identify_double_byte(edit, line, EDIT_IDENT_DIR_RIGHT, &tmp_pos);
+				edit->visual.x += tmp_pos;
 			}
 			else
 			{
