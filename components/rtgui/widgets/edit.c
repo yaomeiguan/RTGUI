@@ -1567,8 +1567,21 @@ void rtgui_edit_ondraw(struct rtgui_edit *edit)
 		rect.y2 = rect.y1 + edit->item_height;
 		while(line)
 		{
+			rt_uint32_t tmp_pos=0, ofs;
+			rt_uint8_t *str = line->text+edit->upleft.x;
+
 			if(edit->upleft.x < line->len)
-				rtgui_dc_draw_text(dc, line->text+edit->upleft.x, &rect);
+			{
+				rtgui_point_t p = edit->visual; /* backup */
+				edit->visual.x = 0;
+				identify_double_byte(edit, line, EDIT_IDENT_DIR_LEFT, &tmp_pos);
+				ofs = tmp_pos % 2;
+				rect.x1 += ofs * edit->font_width;
+				rtgui_dc_draw_text(dc, line->text+edit->upleft.x+ofs, &rect);
+				rect.x1 -= ofs * edit->font_width;
+				edit->visual = p; /* restore */
+			}
+
 			line = line->next;
 			rect.y1 += edit->item_height;
 			if((rect.y1 + edit->item_height) < r.y2)
