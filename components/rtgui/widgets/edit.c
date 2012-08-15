@@ -660,6 +660,14 @@ static void rtgui_edit_onmouse(struct rtgui_edit* edit, struct rtgui_event_mouse
 				
 				if(edit->visual.x > line->len)
 					edit->visual.x = line->len;
+				if(edit->upleft.x > 0)
+				{
+					if(edit->upleft.x >= line->len)
+						edit->upleft.x = 0;
+					else
+						edit->visual.x -= edit->upleft.x;
+					rtgui_edit_ondraw(edit);
+				}
 				if(identify_double_byte(edit, line, EDIT_IDENT_DIR_LEFT, &tmp_pos))
 					edit->visual.x -= (2-tmp_pos);
 				if(edit->flag & RTGUI_EDIT_CARET)
