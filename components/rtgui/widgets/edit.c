@@ -1131,12 +1131,20 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 			rt_uint32_t tmp_pos=1;
 			identify_double_byte(edit, line, EDIT_IDENT_DIR_LEFT, &tmp_pos);
 			edit->visual.x -= tmp_pos;
+			if(edit->visual.x == -1)
+			{
+				edit->visual.x = 0;
+				edit->upleft.x --;
+				update_type = EDIT_ONDRAW;
+			}
 		}
 		else
 		{
 			if(edit->upleft.x > 0)
 			{
-				edit->upleft.x --;
+				rt_uint32_t tmp_pos=1;
+				identify_double_byte(edit, line, EDIT_IDENT_DIR_LEFT, &tmp_pos);
+				edit->upleft.x -= tmp_pos;
 				update_type = EDIT_ONDRAW;
 			}
 			else
