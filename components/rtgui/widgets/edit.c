@@ -1593,8 +1593,12 @@ void rtgui_edit_ondraw(struct rtgui_edit *edit)
 				if(ofs == 1)
 				{	/* use dc_buffer draw the left half of double byte */
 					rt_uint8_t dbl_bmp[3];
-					rtgui_point_t pot = {edit->font_width, 0};
-					rtgui_rect_t r = {0, 0, edit->font_width*2, edit->font_height};
+					rtgui_point_t pot = {0};
+					rtgui_rect_t r = {0};
+
+					pot.x = edit->font_width;
+					r.x2 = edit->font_width*2;
+					r.y2 = edit->font_height;
 					dbl_bmp[0] = *(str-1);
 					dbl_bmp[1] = *str;
 					dbl_bmp[2] = '\0';
