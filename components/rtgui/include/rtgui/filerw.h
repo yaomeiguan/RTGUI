@@ -40,6 +40,7 @@ int rtgui_filerw_write(struct rtgui_filerw* context, const void* buffer, rt_size
 int rtgui_filerw_tell (struct rtgui_filerw* context);
 int rtgui_filerw_eof  (struct rtgui_filerw* context);
 int rtgui_filerw_close(struct rtgui_filerw* context);
+int rtgui_filerw_unlink(const char *filename);
 
 /* get memory data from filerw memory object */
 const rt_uint8_t* rtgui_filerw_mem_getdata(struct rtgui_filerw* context);

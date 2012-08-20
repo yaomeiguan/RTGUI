@@ -57,7 +57,7 @@ void demo_edit_saveas_file(struct rtgui_object *object, struct rtgui_event *even
     {
         rtgui_filerw_close(file);
         /* 如果是在win32中调试, 请手工删除该文件吧, NT中文件是只读的,unlink删除不掉 */
-        if (unlink(filename) == -1)
+        if (rtgui_filerw_unlink(filename) == -1)
             rt_kprintf("Could not delete %s\n", filename);
     }
 
