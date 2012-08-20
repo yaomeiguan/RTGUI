@@ -881,6 +881,7 @@ void screenshot(const char *filename)
 	rt_uint16_t *line_buf;
 	rt_uint16_t color, tmp;
 #endif
+	rt_uint16_t *pixel_buf;
 
 	file = rtgui_filerw_create_file(filename, "wb");
 	if(file == RT_NULL)
@@ -901,6 +902,18 @@ void screenshot(const char *filename)
 		return;
 	}
 #endif
+	if(grp->framebuffer == RT_NULL)
+	{
+		pixel_buf = rt_malloc(pitch);
+		if(pixel_buf == RT_NULL)
+		{
+			rt_kprintf("no memory!\n");
+#ifdef RGB_CONVERT_TO_BGR
+			rt_free(line_buf);
+#endif
+			return;
+		}
+	}
 	rtgui_image_bmp_header_cfg(&bhr, w, h, grp->bits_per_pixel);
 
 	rtgui_filerw_write(file, &bhr, sizeof(struct rtgui_image_bmp_header), 1);
@@ -914,30 +927,53 @@ void screenshot(const char *filename)
 		mask = 0x001F; /* Blue Mask */
 		rtgui_filerw_write(file, &mask, 4, 1);
 	}
-
-	src = (rt_uint16_t*)grp->framebuffer;
-	src += w * h;
-	for(i=0; i<h; i++)
+	
+	if(grp->framebuffer != RT_NULL)
 	{
-		src -= w;
-#ifdef RGB_CONVERT_TO_BGR
-		for(j=0; j<w; j++)
+		src = (rt_uint16_t*)grp->framebuffer;
+		src += w * h;
+		for(i=0; i<h; i++)
 		{
-			tmp = *(src + j);
-			color  = (tmp & 0x001F)<<11;
-			color += (tmp & 0x07E0);
-			color += (tmp & 0xF800)>>11;
+			src -= w;
+#ifdef RGB_CONVERT_TO_BGR
+			for(j=0; j<w; j++)
+			{
+				tmp = *(src + j);
+				color  = (tmp & 0x001F)<<11;
+				color += (tmp & 0x07E0);
+				color += (tmp & 0xF800)>>11;
 
-			*(line_buf + i) = color;
-		}
-		rtgui_filerw_write(file, line_buf, pitch, 1);
+				*(line_buf + i) = color;
+			}
+			rtgui_filerw_write(file, line_buf, pitch, 1);
 #else
-		rtgui_filerw_write(file, src, pitch, 1);
+			rtgui_filerw_write(file, src, pitch, 1);
 #endif
+		}
 	}
+	else
+	{
+		rtgui_color_t pixel_color;
+		int x;
+		for(i=h-1; i>=0; i--)
+		{
+			x = 0;
+			if(i%10==0)rt_kprintf(">",i);
+			while(x < w)
+			{
+				grp->ops->get_pixel(&pixel_color, x, i);
+				*(pixel_buf+x) = rtgui_color_to_565p(pixel_color);
+				x++;
+			}
+			rtgui_filerw_write(file, pixel_buf, pitch, 1);
+		}
+	}
+	
 #ifdef RGB_CONVERT_TO_BGR
 	rt_free(line_buf);
 #endif
+	if(grp->framebuffer == RT_NULL)
+		rt_free(pixel_buf);
 	rt_kprintf("bmp create succeed.\n");
 	rtgui_filerw_close(file);
 }
