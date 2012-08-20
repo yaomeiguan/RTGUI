@@ -18,12 +18,15 @@
 #include <rtgui/rtgui_system.h>
 #include <rtgui/filerw.h>
 
+extern int isprint(unsigned char ch); /* Quote from shell.c */
 static void rtgui_edit_draw_caret(struct rtgui_edit *edit);
 static void rtgui_edit_timeout(struct rtgui_timer* timer, void* parameter);
 static rt_bool_t rtgui_edit_onfocus(struct rtgui_object* object, rtgui_event_t* event);
 static rt_bool_t rtgui_edit_onunfocus(struct rtgui_object* object, rtgui_event_t* event);
+#ifdef RTGUI_EDIT_USING_SCROLL
 static rt_bool_t rtgui_edit_hscroll_handle(struct rtgui_widget* widget, rtgui_event_t* event);
 static rt_bool_t rtgui_edit_vscroll_handle(struct rtgui_widget* widget, rtgui_event_t* event);
+#endif
 
 void _rtgui_edit_constructor(struct rtgui_edit *edit)
 {
@@ -252,7 +255,7 @@ void rtgui_edit_destroy(struct rtgui_edit* edit)
  *
  * @return get a proper standard values 
  */
-rt_inline rt_size_t rtgui_edit_alloc_len(rt_size_t n, rt_size_t m)
+rt_inline rt_int16_t rtgui_edit_alloc_len(rt_int16_t n, rt_int16_t m)
 {
 	if(n > m) return n;
 #ifndef RTGUI_USING_SMALL_SIZE
@@ -266,9 +269,9 @@ rt_inline rt_size_t rtgui_edit_alloc_len(rt_size_t n, rt_size_t m)
  * please use it to replace rt_strlen
  * especially in reading the source file.
  */
-rt_inline rt_size_t rtgui_edit_line_strlen(const char *s)
+rt_inline rt_int16_t rtgui_edit_line_strlen(const char *s)
 {
-	const rt_uint8_t *sc;
+	const char *sc;
 	/* ascii text end of 0x0A or 0x0D-0x0A*/
 	for(sc = s; *sc != 0x0D && *sc != 0x0A && *sc != 0x00; ++sc);  
 	return sc - s;
@@ -276,7 +279,7 @@ rt_inline rt_size_t rtgui_edit_line_strlen(const char *s)
 
 rt_bool_t rtgui_edit_append_line(struct rtgui_edit* edit, const char *text)
 {
-	rt_size_t len;
+	rt_int16_t len;
 	struct edit_line *line, *node;
 
 	RT_ASSERT(edit != RT_NULL);
@@ -316,7 +319,7 @@ rt_bool_t rtgui_edit_append_line(struct rtgui_edit* edit, const char *text)
 
 rt_bool_t rtgui_edit_insert_line(struct rtgui_edit *edit, struct edit_line *p, char *text)
 {
-	rt_size_t len;
+	rt_int16_t len;
 	struct edit_line *line;
 
 	RT_ASSERT(edit != RT_NULL);
@@ -405,7 +408,7 @@ rt_bool_t rtgui_edit_delete_line(struct rtgui_edit* edit, struct edit_line *line
 
 rt_bool_t rtgui_edit_connect_line(struct rtgui_edit* edit, struct edit_line *line, struct edit_line *connect)
 {
-	rt_size_t len1,len2;
+	rt_int16_t len1,len2;
 	
 	RT_ASSERT(edit != RT_NULL);
 	RT_ASSERT(line != RT_NULL);
@@ -578,7 +581,7 @@ enum {
 * @return RT_TRUE is Got it, else not found.
 */
 static rt_bool_t identify_double_byte(struct rtgui_edit *edit, struct edit_line *line, 
-									  rt_uint32_t dir, rt_uint32_t *p)
+									  rt_uint32_t dir, rt_int16_t *p)
 {
 	int index, effe_nums;
 
@@ -650,7 +653,7 @@ static void rtgui_edit_onmouse(struct rtgui_edit* edit, struct rtgui_event_mouse
 			if(emouse->button & RTGUI_MOUSE_BUTTON_DOWN)
 			{
 				struct edit_line *line;
-				rt_uint32_t tmp_pos=0;
+				rt_int16_t tmp_pos=0;
 				
 				edit->visual.x = x;
 				edit->visual.y = y;
@@ -899,8 +902,8 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		}
 		else
 		{
-			rt_uint8_t *c;
-			rt_uint32_t tmp_pos=1;
+			char *c;
+			rt_int16_t tmp_pos=1;
 			identify_double_byte(edit, line, EDIT_IDENT_DIR_RIGHT, &tmp_pos);
 			/* remove character */
 			for(c = &line->text[ofs]; c[tmp_pos] != '\0'; c++)
@@ -955,15 +958,15 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		/* delete front character */
 		if(edit->visual.x == line->len)
 		{
-			rt_uint32_t tmp_pos=1;
+			rt_int16_t tmp_pos=1;
 			identify_double_byte(edit, line, EDIT_IDENT_DIR_LEFT, &tmp_pos);
 			line->text[edit->visual.x-tmp_pos] = '\0';
 			edit->visual.x -= tmp_pos;
 		}
 		else if(edit->visual.x != 0)
 		{	/* remove current character */
-			rt_uint8_t *c;
-			rt_uint32_t tmp_pos=1;
+			char *c;
+			rt_int16_t tmp_pos=1;
 			identify_double_byte(edit, line, EDIT_IDENT_DIR_LEFT, &tmp_pos);
 			/* remove character */
 			for(c = &line->text[edit->visual.x - tmp_pos]; c[tmp_pos] != '\0'; c++)
@@ -1028,7 +1031,7 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 					edit->visual.x = prev_line->len - edit->upleft.x;
 				else
 				{
-					rt_uint32_t tmp_pos=0;
+					rt_int16_t tmp_pos=0;
 					if(identify_double_byte(edit, prev_line, EDIT_IDENT_DIR_LEFT, &tmp_pos))
 						edit->visual.x -= (2-tmp_pos);
 				}
@@ -1038,7 +1041,7 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 			edit->visual.x = prev_line->len;
 		else if(prev_line->len >= 2)
 		{
-			rt_uint32_t tmp_pos=0;
+			rt_int16_t tmp_pos=0;
 			if(identify_double_byte(edit, prev_line, EDIT_IDENT_DIR_LEFT, &tmp_pos))
 				edit->visual.x -= (2-tmp_pos);
 		}
@@ -1101,7 +1104,7 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 					edit->visual.x = next_line->len - edit->upleft.x;
 				else
 				{
-					rt_uint32_t tmp_pos=0;
+					rt_int16_t tmp_pos=0;
 					if(identify_double_byte(edit, next_line, EDIT_IDENT_DIR_LEFT, &tmp_pos))
 						edit->visual.x -= (2-tmp_pos);
 				}
@@ -1111,7 +1114,7 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 			edit->visual.x = next_line->len;
 		else if(next_line->len >= 2)
 		{
-			rt_uint32_t tmp_pos=0;
+			rt_int16_t tmp_pos=0;
 			if(identify_double_byte(edit, next_line, EDIT_IDENT_DIR_LEFT, &tmp_pos))
 				edit->visual.x -= (2-tmp_pos);
 		}
@@ -1129,7 +1132,7 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 	{	/* move to prev char */
 		if(edit->visual.x > 0)
 		{
-			rt_uint32_t tmp_pos=1;
+			rt_int16_t tmp_pos=1;
 			identify_double_byte(edit, line, EDIT_IDENT_DIR_LEFT, &tmp_pos);
 			edit->visual.x -= tmp_pos;
 			if(edit->visual.x == -1)
@@ -1143,7 +1146,7 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		{
 			if(edit->upleft.x > 0)
 			{
-				rt_uint32_t tmp_pos=1;
+				rt_int16_t tmp_pos=1;
 				identify_double_byte(edit, line, EDIT_IDENT_DIR_LEFT, &tmp_pos);
 				edit->upleft.x -= tmp_pos;
 				update_type = EDIT_ONDRAW;
@@ -1173,7 +1176,7 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 			{
 				if(edit->visual.x < edit->col_per_page-1)
 				{
-					rt_uint32_t tmp_pos=1;
+					rt_int16_t tmp_pos=1;
 					identify_double_byte(edit, line, EDIT_IDENT_DIR_RIGHT, &tmp_pos);
 					edit->visual.x += tmp_pos;
 				}
@@ -1200,7 +1203,7 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 		{
 			if(edit->visual.x < line->len)
 			{
-				rt_uint32_t tmp_pos=1;
+				rt_int16_t tmp_pos=1;
 				identify_double_byte(edit, line, EDIT_IDENT_DIR_RIGHT, &tmp_pos);
 				edit->visual.x += tmp_pos;
 			}
@@ -1297,7 +1300,7 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 	}
 	else
 	{
-		if(isprint(ekbd->key))
+		if(isprint((unsigned char)ekbd->key))
 		{	/* it's may print character */
 			update_type = EDIT_UPDATE;
 			edit->update.start = edit->visual;
@@ -1322,7 +1325,7 @@ static rt_bool_t rtgui_edit_onkey(struct rtgui_object* object, rtgui_event_t* ev
 					for(c = &line->text[line->len]; c != &line->text[ofs]; c--)
 						*c = *(c-1);
 				}
-				line->text[ofs] = ekbd->key;
+				line->text[ofs] = (char)ekbd->key;
 				if(edit->visual.x < edit->col_per_page-1)
 					edit->visual.x ++;
 				line->text[line->len+1] = '\0';
@@ -1440,10 +1443,10 @@ static rt_bool_t rtgui_edit_vscroll_handle(struct rtgui_widget* widget, rtgui_ev
 /* local area update */
 void rtgui_edit_update(struct rtgui_edit *edit)
 {
-	rt_uint32_t i,cpy_len=0,prev_len;
+	rt_int16_t i,cpy_len=0,prev_len;
 	rtgui_rect_t rect, r;
 	struct rtgui_dc *dc;
-	rt_uint8_t *src;
+	char *src;
 	
 	RT_ASSERT(edit != RT_NULL);
 	
@@ -1539,8 +1542,10 @@ void rtgui_edit_ondraw(struct rtgui_edit *edit)
 {
 	rtgui_rect_t rect, r;
 	struct rtgui_dc *dc;
+#ifdef RTGUI_EDIT_USING_SCROLL
 	int hscroll_flag=0;
 	int vscroll_flag=0;
+#endif
 
 	RT_ASSERT(edit != RT_NULL);
 
@@ -1582,8 +1587,8 @@ void rtgui_edit_ondraw(struct rtgui_edit *edit)
 		rect.y2 = rect.y1 + edit->item_height;
 		while(line)
 		{
-			rt_uint32_t tmp_pos=0, ofs;
-			rt_uint8_t *str = line->text+edit->upleft.x;
+			rt_int16_t tmp_pos=0, ofs;
+			char *str = line->text+edit->upleft.x;
 
 			if(edit->upleft.x < line->len)
 			{
@@ -1593,7 +1598,7 @@ void rtgui_edit_ondraw(struct rtgui_edit *edit)
 				ofs = tmp_pos % 2;
 				if(ofs == 1)
 				{	/* use dc_buffer draw the left half of double byte */
-					rt_uint8_t dbl_bmp[3];
+					char dbl_bmp[3];
 					rtgui_point_t pot = {0};
 					rtgui_rect_t r = {0};
 
@@ -1657,9 +1662,11 @@ void rtgui_edit_ondraw(struct rtgui_edit *edit)
 /* set edit text */
 void rtgui_edit_set_text(struct rtgui_edit* edit, const char* text)
 {
-	const rt_uint8_t *begin, *ptr;
+	const char *begin, *ptr;
+#ifdef RTGUI_EDIT_USING_SCROLL
 	int hscroll_flag=0;
 	int vscroll_flag=0;
+#endif
 
 	RT_ASSERT(edit != RT_NULL);
 
@@ -1727,11 +1734,12 @@ void rtgui_edit_set_text(struct rtgui_edit* edit, const char* text)
 	{
 		rtgui_edit_adjust_scroll(edit->vscroll);
 	}
-#endif
+
 	if(hscroll_flag || vscroll_flag)
 	{
 		rtgui_widget_update_clip(RTGUI_WIDGET(edit));
 	}
+#endif
 }
 
 rt_bool_t rtgui_edit_event_handler(struct rtgui_object* object, rtgui_event_t* event)
@@ -1816,7 +1824,7 @@ rt_bool_t rtgui_edit_readin_file(struct rtgui_edit *edit, const char *filename)
 {
 	struct rtgui_filerw *filerw;
 	int num=0, read_bytes, size ,len=0;
-	rt_uint8_t *text ,ch;
+	char *text ,ch;
 
 	filerw = rtgui_filerw_create_file(filename, "rb");
 	if (filerw == RT_NULL) return RT_FALSE;
