@@ -16,6 +16,7 @@
 #include <rtgui/widgets/edit.h>
 #include <rtgui/widgets/scrollbar.h>
 #include <rtgui/rtgui_system.h>
+#include <rtgui/filerw.h>
 
 static void rtgui_edit_draw_caret(struct rtgui_edit *edit);
 static void rtgui_edit_timeout(struct rtgui_timer* timer, void* parameter);
@@ -1813,14 +1814,12 @@ rt_uint32_t rtgui_edit_get_mem_consume(struct rtgui_edit *edit)
 
 rt_bool_t rtgui_edit_readin_file(struct rtgui_edit *edit, const char *filename)
 {
-	int fd, num=0, read_bytes, size ,len=0;
+	struct rtgui_filerw *filerw;
+	int num=0, read_bytes, size ,len=0;
 	rt_uint8_t *text ,ch;
 
-	fd = open(filename, O_RDONLY, 0);
-	if (fd < 0)
-	{
-		return RT_FALSE;
-	}
+	filerw = rtgui_filerw_create_file(filename, "rb");
+	if (filerw == RT_NULL) return RT_FALSE;
 	/** 
 	 * If it was in the debug of the win32, If document encode is UTF-8 or Unicode,
 	 * Will read to garbled code when using the function read documents.
@@ -1835,7 +1834,7 @@ rt_bool_t rtgui_edit_readin_file(struct rtgui_edit *edit, const char *filename)
 	if(text == RT_NULL) return RT_FALSE;
 	
 	do {
-		if ( (read_bytes = read(fd, &ch, 1)) > 0 )
+		if ( (read_bytes = rtgui_filerw_read(filerw, &ch, 1, 1)) > 0 )
 		{	/* rt_kprintf("ch=%02X ",ch); DEBUG */
 			if(num >= size - 1)
 				text = rt_realloc(text, rtgui_edit_alloc_len(size, num));
@@ -1861,7 +1860,7 @@ rt_bool_t rtgui_edit_readin_file(struct rtgui_edit *edit, const char *filename)
 		}
 	} while(read_bytes);
 	
-	close(fd);
+	rtgui_filerw_close(filerw);
 	rtgui_free(text);
 	rtgui_edit_ondraw(edit);
 
@@ -1870,26 +1869,23 @@ rt_bool_t rtgui_edit_readin_file(struct rtgui_edit *edit, const char *filename)
 
 rt_bool_t rtgui_edit_saveas_file(struct rtgui_edit *edit, const char *filename)
 {
-	int fd;
+	struct rtgui_filerw *filerw;
 	char ch_tailed = 0x0A;
 	struct edit_line *line;
 
-	fd = open(filename, O_WRONLY | O_CREAT, 0);
-	if (fd < 0)
-	{
-		return RT_FALSE;
-	}
+	filerw = rtgui_filerw_create_file(filename, "wb");
+	if (filerw == RT_NULL) return RT_FALSE;
 	
 	line = edit->head;
 	while(line)
 	{
-		write(fd, line->text, line->len);
+		rtgui_filerw_write(filerw, line->text, line->len, 1);
 		if(line != edit->tail)
-			write(fd, &ch_tailed, 1);
+			rtgui_filerw_write(filerw, &ch_tailed, 1, 1);
 		line = line->next;
 	}
 	
-	close(fd);
+	rtgui_filerw_close(filerw);
 
 	return RT_TRUE;
 }

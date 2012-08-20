@@ -81,7 +81,7 @@ static struct rtgui_image_engine* rtgui_image_get_engine(const char* type)
 	return RT_NULL;
 }
 
-#if defined(RTGUI_USING_DFS_FILERW) || defined(RTGUI_USING_STDIO_FILERW)
+#if defined(RTGUI_USING_DFS_FILERW)
 struct rtgui_image_engine* rtgui_image_get_engine_by_filename(const char* fn)
 {
 	struct rtgui_list_node *node;

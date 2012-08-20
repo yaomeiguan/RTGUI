@@ -6,6 +6,7 @@
 
 #include "demo_view.h"
 #include <rtgui/dc.h>
+#include <rtgui/filerw.h>
 #include <rtgui/rtgui_system.h>
 #include <rtgui/widgets/edit.h>
 #include <rtgui/widgets/label.h>
@@ -16,7 +17,7 @@ void demo_edit_readin_file(struct rtgui_object *object, struct rtgui_event *even
     rtgui_button_t *button;
     struct rtgui_edit *edit;
     const char *filename = "/test_readin.txt";
-    int fd;
+    struct rtgui_filerw *file;
 
     RT_ASSERT(object != RT_NULL);
     button = RTGUI_BUTTON(object);
@@ -24,15 +25,15 @@ void demo_edit_readin_file(struct rtgui_object *object, struct rtgui_event *even
     edit = RTGUI_EDIT(RTGUI_WIDGET(button)->user_data);
 
     /* 判断文件是否存在 */
-    fd = open(filename, O_RDONLY, 0);
-    if (fd < 0)
+    file = rtgui_filerw_create_file(filename, "rb");
+    if (file == RT_NULL)
     {
         /* 不存在存在,则创建它 */
         rt_kprintf("file:\"%s\" does not exist!\n", filename);
 
         return;
     }
-    close(fd);
+    rtgui_filerw_close(file);
 
     rt_kprintf("read-in file:\"%s\"\n", filename);
     rtgui_edit_readin_file(edit, filename);
@@ -43,7 +44,7 @@ void demo_edit_saveas_file(struct rtgui_object *object, struct rtgui_event *even
     rtgui_button_t *button;
     struct rtgui_edit *edit;
     const char* filename = "/test_saveas.txt";
-    int fd;
+    struct rtgui_filerw *file;
 
     RT_ASSERT(object != RT_NULL);
     button = RTGUI_BUTTON(object);
@@ -51,10 +52,10 @@ void demo_edit_saveas_file(struct rtgui_object *object, struct rtgui_event *even
     edit = RTGUI_EDIT(RTGUI_WIDGET(button)->user_data);
 
     /* 判断文件是否存在, 如果存在则删除之 */
-    fd = open(filename, O_RDONLY, 0);
-    if (fd > 0)
+    file = rtgui_filerw_create_file(filename, "rb");
+    if (file != RT_NULL)
     {
-        close(fd);
+        rtgui_filerw_close(file);
         /* 如果是在win32中调试, 请手工删除该文件吧, NT中文件是只读的,unlink删除不掉 */
         if (unlink(filename) == -1)
             rt_kprintf("Could not delete %s\n", filename);

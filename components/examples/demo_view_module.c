@@ -10,7 +10,7 @@
 #include <string.h>
 
 #ifdef RT_USING_MODULE
-#if defined(RTGUI_USING_DFS_FILERW) || defined(RTGUI_USING_STDIO_FILERW)
+#if defined(RTGUI_USING_DFS_FILERW)
 static rtgui_container_t *_view = RT_NULL;
 
 /* 打开按钮的回调函数 */

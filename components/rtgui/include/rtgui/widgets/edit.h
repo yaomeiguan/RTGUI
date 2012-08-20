@@ -17,25 +17,8 @@
 #include <rtgui/widgets/widget.h>
 #include <rtgui/widgets/container.h>
 
-#ifdef _WIN32
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <io.h>
-#else
-#include <dfs_posix.h>
-#endif
-
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#ifdef _WIN32
-#define open	_open
-#define close	_close
-#define read	_read
-#define write	_write
-#define unlink	_unlink
 #endif
 
 DECLARE_CLASS_TYPE(edit);
