@@ -47,7 +47,7 @@
 	#define RTGUI_MEM_TRACE
 	#define RTGUI_USING_WINMOVE
 	#define RTGUI_USING_NOTEBOOK_IMAGE
-
+	// #define RTGUI_USING_HZ_FILE
 #else
 	/* native running under RT-Thread */
 	#ifndef RT_USING_DFS
