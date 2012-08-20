@@ -882,7 +882,7 @@ void bmp_create(const char *filename)
 	rt_uint16_t color, tmp;
 #endif
 
-	file = rtgui_filerw_create_file(filename, "rb");
+	file = rtgui_filerw_create_file(filename, "wb");
 	if(file == RT_NULL)
 	{
 		rt_kprintf("create file failed\n");
@@ -941,6 +941,10 @@ void bmp_create(const char *filename)
 	rt_kprintf("bmp create succeed.\n");
 	rtgui_filerw_close(file);
 }
+#ifdef RT_USING_FINSH
+#include <finsh.h>
+FINSH_FUNCTION_EXPORT(bmp_create, screenshot: bmp_create(filename));
+#endif
 
 void rtgui_image_bmp_init()
 {
