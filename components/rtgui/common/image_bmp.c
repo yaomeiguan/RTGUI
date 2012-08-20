@@ -943,7 +943,7 @@ void screenshot(const char *filename)
 }
 #ifdef RT_USING_FINSH
 #include <finsh.h>
-FINSH_FUNCTION_EXPORT(screenshot, screenshot: screenshot(filename));
+FINSH_FUNCTION_EXPORT(screenshot, usage: screenshot(filename));
 #endif
 
 void rtgui_image_bmp_init()
