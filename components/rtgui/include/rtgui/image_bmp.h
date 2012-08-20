@@ -39,8 +39,6 @@ struct rtgui_image_bmp_header
 	rt_uint32_t biClrImportant;
 };
 
-#pragma pack(pop, 2)
-
 void rtgui_image_bmp_init(void);
 
 #endif

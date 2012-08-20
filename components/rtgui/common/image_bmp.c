@@ -868,7 +868,7 @@ void rtgui_image_bmp_header_cfg(struct rtgui_image_bmp_header *bhr, rt_int32_t w
  * Grab screen and save as a BMP file
  * MACRO RGB_CONVERT_TO_BGR: If the pixel of colors is BGR mode, defined it.
  */
-void bmp_create(const char *filename)
+void screenshot(const char *filename)
 {
 	struct rtgui_filerw *file;
 	int w, h, i, pitch;
@@ -943,7 +943,7 @@ void bmp_create(const char *filename)
 }
 #ifdef RT_USING_FINSH
 #include <finsh.h>
-FINSH_FUNCTION_EXPORT(bmp_create, screenshot: bmp_create(filename));
+FINSH_FUNCTION_EXPORT(screenshot, usage: screenshot(filename));
 #endif
 
 void rtgui_image_bmp_init()
