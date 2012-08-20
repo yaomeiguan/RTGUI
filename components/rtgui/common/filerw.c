@@ -17,6 +17,7 @@
 
 #ifdef RTGUI_USING_DFS_FILERW
 #ifdef _WIN32
+#pragma warning(disable: 4996)
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -242,7 +243,11 @@ struct rtgui_filerw* rtgui_filerw_create_file(const char* filename, const char* 
 	RT_ASSERT(filename != RT_NULL);
 
 	rw = RT_NULL;
+#ifdef _WIN32
+	fd = _open(filename, parse_mode(mode), 0);
+#else
 	fd = open(filename, parse_mode(mode), 0);
+#endif
 
 	if ( fd >= 0 )
 	{
@@ -343,5 +348,9 @@ int rtgui_filerw_close(struct rtgui_filerw* context)
 
 int rtgui_filerw_unlink(const char *filename)
 {
+#ifdef _WIN32
+	return _unlink(filename);
+#else
 	return unlink(filename);
+#endif
 }
