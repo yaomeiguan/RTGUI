@@ -921,18 +921,16 @@ void screenshot(const char *filename)
 		return;
 	}
 #endif
-	if(grp->framebuffer == RT_NULL)
+	pixel_buf = rt_malloc(WRITE_CLUSTER_SIZE);
+	if(pixel_buf == RT_NULL)
 	{
-		pixel_buf = rt_malloc(WRITE_CLUSTER_SIZE);
-		if(pixel_buf == RT_NULL)
-		{
-			rt_kprintf("no memory!\n");
+		rt_kprintf("no memory!\n");
 #ifdef RGB_CONVERT_TO_BGR
-			rt_free(line_buf);
+		rt_free(line_buf);
 #endif
-			return;
-		}
+		return;
 	}
+
 	rtgui_image_bmp_header_cfg(&bhr, w, h, grp->bits_per_pixel);
 
 	bmp_align_write(file, pixel_buf, (char*)&bhr, 
@@ -997,8 +995,7 @@ void screenshot(const char *filename)
 #ifdef RGB_CONVERT_TO_BGR
 	rt_free(line_buf);
 #endif
-	if(grp->framebuffer == RT_NULL)
-		rt_free(pixel_buf);
+	rt_free(pixel_buf);
 	rt_kprintf("bmp create succeed.\n");
 	rtgui_filerw_close(file);
 }
