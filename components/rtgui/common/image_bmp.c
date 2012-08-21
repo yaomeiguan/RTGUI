@@ -927,7 +927,7 @@ void screenshot(const char *filename)
 		mask = 0x001F; /* Blue Mask */
 		rtgui_filerw_write(file, &mask, 4, 1);
 	}
-	
+	rtgui_screen_lock(RT_WAITING_FOREVER);
 	if(grp->framebuffer != RT_NULL)
 	{
 		src = (rt_uint16_t*)grp->framebuffer;
@@ -968,7 +968,7 @@ void screenshot(const char *filename)
 			rtgui_filerw_write(file, pixel_buf, pitch, 1);
 		}
 	}
-	
+	rtgui_screen_unlock();
 #ifdef RGB_CONVERT_TO_BGR
 	rt_free(line_buf);
 #endif
