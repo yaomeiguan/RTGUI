@@ -16,15 +16,6 @@
 #include <rtgui/rtgui_system.h>
 
 #ifdef RTGUI_USING_DFS_FILERW
-#ifdef _WIN32
-#pragma warning(disable: 4996)
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <io.h>
-#else
-#include <dfs_posix.h>
-#endif
 
 /* standard file read/write */
 struct rtgui_filerw_stdio
