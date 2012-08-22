@@ -987,10 +987,10 @@ void screenshot(const char *filename)
 				x++;
 			}
 		}
-		/* write The tail of the last */
-		if(write_count < WRITE_CLUSTER_SIZE)
-			rtgui_filerw_write(file, pixel_buf, write_count, 1);
 	}
+	/* write The tail of the last */
+	if(write_count < WRITE_CLUSTER_SIZE)
+		rtgui_filerw_write(file, pixel_buf, write_count, 1);
 	rtgui_screen_unlock();
 #ifdef RGB_CONVERT_TO_BGR
 	rt_free(line_buf);
