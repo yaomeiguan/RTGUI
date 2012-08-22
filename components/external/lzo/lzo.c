@@ -14,7 +14,7 @@
 #ifdef RT_USING_FINSH
 #include <finsh.h>
 #endif
-
+#define RT_USING_LZO
 #if defined(RT_USING_LZO)
 
 /* the worst of allocation */
@@ -24,6 +24,24 @@
     lzo_align_t __LZO_MMODEL var [ ((size) + (sizeof(lzo_align_t) - 1)) / sizeof(lzo_align_t) ]
 
 static HEAP_ALLOC(wrkmem, LZO1X_1_MEM_COMPRESS);
+
+char* parse_lzo_error_code(int error_code)
+{
+	switch(error_code)
+	{
+	case LZO_E_ERROR:                 return "error";
+	case LZO_E_OUT_OF_MEMORY:         return "out of memory";
+	case LZO_E_NOT_COMPRESSIBLE:      return "not compressible";
+	case LZO_E_INPUT_OVERRUN:         return "input overrun";
+	case LZO_E_OUTPUT_OVERRUN:        return "output overrun";
+	case LZO_E_LOOKBEHIND_OVERRUN:    return "lookbehind overrun";
+	case LZO_E_EOF_NOT_FOUND:         return "eof not found";
+	case LZO_E_INPUT_NOT_CONSUMED:    return "input not consumed";
+	case LZO_E_NOT_YET_IMPLEMENTED:   return "not yet implemented";    /* [not used right now] */
+	case LZO_E_INVALID_ARGUMENT:      return "invalid argument";
+	default: return "none";
+	}
+}
 
 int lzo(char *srcfile, char *destfile)
 {
@@ -46,9 +64,8 @@ int lzo(char *srcfile, char *destfile)
 	file = rtgui_filerw_create_file(srcfile, "rb");
 	if(file == RT_NULL) 
 	{
-		rt_free(in);
-		rt_free(out);
-		return -1;
+		result = -1;
+		goto _exit;
 	}
 	rtgui_filerw_read(file, in, in_len, 1); 
 	rtgui_filerw_close(file);
@@ -56,27 +73,28 @@ int lzo(char *srcfile, char *destfile)
 	result = lzo1x_1_compress(in, in_len, out, &out_len, wrkmem);
 	if(result != LZO_E_OK)
 	{
-		rt_kprintf("internal error - compression failed: %d\n", result);
-		rt_free(in);
-		rt_free(out);
-		return -1;
+		rt_kprintf("internal error - compression failed: \nerr_code:(%d) %s, %s.\n", 
+			result, parse_lzo_error_code(result), "Please use the binary access");
+		goto _exit;
 	}
+
 	file = rtgui_filerw_create_file(destfile, "wb");
 	if(file == RT_NULL)
 	{
-		rt_free(in);
-		rt_free(out);
-		return -1;
+		result = -1;
+		goto _exit;
 	}
-	rtgui_filerw_write(file, &in_len, sizeof(in_len), 1);	/* source file len */
+	
+	rtgui_filerw_write(file, &in_len, sizeof(lzo_uint), 1);	/* source file len */
 	rtgui_filerw_write(file, out, out_len, 1); 
 	rtgui_filerw_close(file);
+	rt_kprintf("compress lzo ok!\n");
+	result = 0;
 
+_exit:
 	rt_free(in);
 	rt_free(out);
-
-	rt_kprintf("compress lzo ok!\n");
-	return 0;
+	return result;
 }
 #ifdef RT_USING_FINSH
 FINSH_FUNCTION_EXPORT(lzo, compress a file. usage:lzo(src, dest));
@@ -107,31 +125,31 @@ int lzode(char *srcfile, char *destfile)
 
 	rtgui_filerw_read(file, in, in_len, 1); 
 	rtgui_filerw_close(file);
-rt_kprintf("1.in_len=%d, out_len=%d\n",in_len,out_len);
-	result = lzo1x_decompress(in, in_len, out, &out_len, wrkmem);
+
+	result = lzo1x_decompress(in, in_len, out, &out_len, RT_NULL);
 	if(result != LZO_E_OK)
 	{
-		rt_kprintf("internal error - decompression failed: %d\n", result);
-		rt_free(in);
-		rt_free(out);
-		return -1;
+		rt_kprintf("internal error - decompression failed: \nerr_code:(%d) %s, %s.\n", 
+			result, parse_lzo_error_code(result), "Please use the binary access");
+		goto _exit;
 	}
-rt_kprintf("2.\n");
+
 	file = rtgui_filerw_create_file(destfile, "wb");
 	if(file == RT_NULL)
 	{
-		rt_free(in);
-		rt_free(out);
-		return -1;
+		result = -1;
+		goto _exit;
 	}
 	rtgui_filerw_write(file, out, out_len, 1);
 	rtgui_filerw_close(file);
-rt_kprintf("3.\n");
-	rt_free(in);
-	rt_free(out);
 
 	rt_kprintf("decompress lzo ok!\n");
-	return 0;
+	result = 0;
+
+_exit:
+	rt_free(in);
+	rt_free(out);
+	return result;
 }
 #ifdef RT_USING_FINSH
 FINSH_FUNCTION_EXPORT(lzode, decompress a file. usage:lzode(src, dest));

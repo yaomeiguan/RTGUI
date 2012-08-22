@@ -4013,7 +4013,7 @@ match_next:
             *op++ = *ip++;
             if (t > 1) { *op++ = *ip++; if (t > 2) { *op++ = *ip++; } }
 #endif
-            t = *ip++; 
+            t = *ip++;
         } while (TEST_IP && TEST_OP);
     }
 
