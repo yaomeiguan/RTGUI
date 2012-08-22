@@ -215,7 +215,7 @@ static int parse_mode(const char *mode)
     switch (*mode)
 	{
     case 0: return f;
-    case 'b': break;
+    case 'b': f|=O_BINARY;break;
     case 'r': f=O_RDONLY; break;
     case 'w': f=O_WRONLY|O_CREAT|O_TRUNC; break;
     case 'a': f=O_WRONLY|O_CREAT|O_APPEND; break;
