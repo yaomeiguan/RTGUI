@@ -107,6 +107,7 @@ rt_bool_t auto_window_close(struct rtgui_object *object, struct rtgui_event *eve
 
         timer = RT_NULL;
     }
+    msgbox = RT_NULL;
 
     return RT_TRUE;
 }
