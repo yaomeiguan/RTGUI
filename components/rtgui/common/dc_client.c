@@ -109,7 +109,7 @@ struct rtgui_dc* rtgui_dc_client_create(rtgui_widget_t* owner)
 
 	/* adjudge owner */
 	if (owner == RT_NULL || owner->toplevel == RT_NULL) return RT_NULL;
-	if (!RTGUI_IS_TOPLEVEL(owner->toplevel)) return RT_NULL;
+	if (!RTGUI_IS_WIN(owner->toplevel)) return RT_NULL;
 
 	dc = RTGUI_WIDGET_DC(owner);
 	/* set init visible as true */
@@ -130,7 +130,7 @@ struct rtgui_dc* rtgui_dc_client_create(rtgui_widget_t* owner)
 
 	if (RTGUI_IS_WINTITLE(owner->toplevel))
 	{
-		rtgui_toplevel_t* top = RTGUI_TOPLEVEL(owner->toplevel);
+		struct rtgui_win* top = RTGUI_WIN(owner->toplevel);
 		top->drawing ++;
 
 		if (top->drawing == 1)
@@ -153,7 +153,7 @@ struct rtgui_dc* rtgui_dc_client_create(rtgui_widget_t* owner)
 	}
 	else if (RTGUI_IS_WIN(owner->toplevel))
 	{
-		rtgui_toplevel_t* top = RTGUI_TOPLEVEL(owner->toplevel);
+		struct rtgui_win* top = RTGUI_WIN(owner->toplevel);
 		top->drawing ++;
 
 		if (top->drawing == 1)
@@ -190,7 +190,7 @@ static rt_bool_t rtgui_dc_client_fini(struct rtgui_dc* dc)
 	if (RTGUI_IS_WINTITLE(owner->toplevel))
 	{
 		/* update title extent */
-		rtgui_toplevel_t* top = RTGUI_TOPLEVEL(owner->toplevel);
+		struct rtgui_win* top = RTGUI_WIN(owner->toplevel);
 
 		top->drawing --;
 		if ((top->drawing == 0) && RTGUI_WIDGET_IS_DC_VISIBLE(owner))
@@ -218,7 +218,7 @@ static rt_bool_t rtgui_dc_client_fini(struct rtgui_dc* dc)
 	else if (RTGUI_IS_APP(owner->toplevel) ||
 		RTGUI_IS_WIN(owner->toplevel))
 	{
-		rtgui_toplevel_t* top = RTGUI_TOPLEVEL(owner->toplevel);
+		struct rtgui_win* top = RTGUI_WIN(owner->toplevel);
 		top->drawing --;
 
 		if ((top->drawing == 0) && RTGUI_WIDGET_IS_DC_VISIBLE(owner))
