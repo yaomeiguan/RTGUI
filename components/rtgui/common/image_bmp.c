@@ -864,6 +864,24 @@ void rtgui_image_bmp_header_cfg(struct rtgui_image_bmp_header *bhr, rt_int32_t w
 	}
 }
 
+#define WRITE_CLUSTER_SIZE	2048
+void bmp_align_write(struct rtgui_filerw *file, char *dest, char *src, rt_int32_t len, rt_int32_t *count)
+{
+	rt_int32_t len_bak = len;
+
+	while(len)
+	{
+		if(*count >= WRITE_CLUSTER_SIZE)
+		{
+			rtgui_filerw_write(file, dest, WRITE_CLUSTER_SIZE, 1);
+			*count = 0;
+		}
+		*(dest + *count) = *(src + (len_bak-len));
+		len --;
+		(*count) ++;
+	}
+}
+
 /*
  * Grab screen and save as a BMP file
  * MACRO RGB_CONVERT_TO_BGR: If the pixel of colors is BGR mode, defined it.
@@ -881,7 +899,8 @@ void screenshot(const char *filename)
 	rt_uint16_t *line_buf;
 	rt_uint16_t color, tmp;
 #endif
-	rt_uint16_t *pixel_buf;
+	char *pixel_buf;
+	rt_int32_t write_count=0;
 
 	file = rtgui_filerw_create_file(filename, "wb");
 	if(file == RT_NULL)
@@ -902,32 +921,31 @@ void screenshot(const char *filename)
 		return;
 	}
 #endif
-	if(grp->framebuffer == RT_NULL)
+	pixel_buf = rt_malloc(WRITE_CLUSTER_SIZE);
+	if(pixel_buf == RT_NULL)
 	{
-		pixel_buf = rt_malloc(pitch);
-		if(pixel_buf == RT_NULL)
-		{
-			rt_kprintf("no memory!\n");
+		rt_kprintf("no memory!\n");
 #ifdef RGB_CONVERT_TO_BGR
-			rt_free(line_buf);
+		rt_free(line_buf);
 #endif
-			return;
-		}
+		return;
 	}
+
 	rtgui_image_bmp_header_cfg(&bhr, w, h, grp->bits_per_pixel);
 
-	rtgui_filerw_write(file, &bhr, sizeof(struct rtgui_image_bmp_header), 1);
+	bmp_align_write(file, pixel_buf, (char*)&bhr, 
+		sizeof(struct rtgui_image_bmp_header), &write_count);
 
 	if(bhr.biCompression == BI_BITFIELDS)
 	{
 		mask = 0xF800; /* Red Mask */
-		rtgui_filerw_write(file, &mask, 4, 1);
+		bmp_align_write(file, pixel_buf, (char*)&mask, 4, &write_count);
 		mask = 0x07E0; /* Green Mask */
-		rtgui_filerw_write(file, &mask, 4, 1);
+		bmp_align_write(file, pixel_buf, (char*)&mask, 4, &write_count);
 		mask = 0x001F; /* Blue Mask */
-		rtgui_filerw_write(file, &mask, 4, 1);
+		bmp_align_write(file, pixel_buf, (char*)&mask, 4, &write_count);
 	}
-	
+	rtgui_screen_lock(RT_WAITING_FOREVER);
 	if(grp->framebuffer != RT_NULL)
 	{
 		src = (rt_uint16_t*)grp->framebuffer;
@@ -945,15 +963,16 @@ void screenshot(const char *filename)
 
 				*(line_buf + i) = color;
 			}
-			rtgui_filerw_write(file, line_buf, pitch, 1);
+			bmp_align_write(file, pixel_buf, (char*)line_buf, pitch, &write_count);
 #else
-			rtgui_filerw_write(file, src, pitch, 1);
+			bmp_align_write(file, pixel_buf, (char*)src, pitch, &write_count);
 #endif
 		}
 	}
 	else
 	{
 		rtgui_color_t pixel_color;
+		rt_uint16_t write_color;
 		int x;
 		for(i=h-1; i>=0; i--)
 		{
@@ -962,18 +981,21 @@ void screenshot(const char *filename)
 			while(x < w)
 			{
 				grp->ops->get_pixel(&pixel_color, x, i);
-				*(pixel_buf+x) = rtgui_color_to_565p(pixel_color);
+				write_color = rtgui_color_to_565p(pixel_color);
+				bmp_align_write(file, pixel_buf, (char*)&write_color, 
+					sizeof(rt_uint16_t), &write_count);
 				x++;
 			}
-			rtgui_filerw_write(file, pixel_buf, pitch, 1);
 		}
 	}
-	
+	/* write The tail of the last */
+	if(write_count < WRITE_CLUSTER_SIZE)
+		rtgui_filerw_write(file, pixel_buf, write_count, 1);
+	rtgui_screen_unlock();
 #ifdef RGB_CONVERT_TO_BGR
 	rt_free(line_buf);
 #endif
-	if(grp->framebuffer == RT_NULL)
-		rt_free(pixel_buf);
+	rt_free(pixel_buf);
 	rt_kprintf("bmp create succeed.\n");
 	rtgui_filerw_close(file);
 }

@@ -16,15 +16,6 @@
 #include <rtgui/rtgui_system.h>
 
 #ifdef RTGUI_USING_DFS_FILERW
-#ifdef _WIN32
-#pragma warning(disable: 4996)
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <io.h>
-#else
-#include <dfs_posix.h>
-#endif
 
 /* standard file read/write */
 struct rtgui_filerw_stdio
@@ -224,7 +215,11 @@ static int parse_mode(const char *mode)
     switch (*mode)
 	{
     case 0: return f;
-    case 'b': break;
+#ifdef _WIN32
+    case 'b': f|=O_BINARY;break;
+#else
+	case 'b': break;
+#endif
     case 'r': f=O_RDONLY; break;
     case 'w': f=O_WRONLY|O_CREAT|O_TRUNC; break;
     case 'a': f=O_WRONLY|O_CREAT|O_APPEND; break;

@@ -14,6 +14,16 @@
 #ifndef __RTGUI_FILERW_H__
 #define __RTGUI_FILERW_H__
 
+#ifdef _WIN32
+#pragma warning(disable: 4996)
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <io.h>
+#else
+#include <dfs_posix.h>
+#endif
+
 #include <rtgui/rtgui.h>
 
 #define RTGUI_FILE_SEEK_SET	0
