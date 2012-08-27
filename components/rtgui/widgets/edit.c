@@ -164,6 +164,7 @@ void rtgui_edit_adjust_scroll(rtgui_scrollbar_t *bar)
 		rtgui_widget_set_rect(bar,&rect);
 	}
 }
+RTM_EXPORT(rtgui_edit_adjust_scroll);
 #endif
 
 struct rtgui_edit* rtgui_edit_create(struct rtgui_container* container, int left, int top, int w, int h)
@@ -241,11 +242,13 @@ struct rtgui_edit* rtgui_edit_create(struct rtgui_container* container, int left
 
 	return edit;
 }
+RTM_EXPORT(rtgui_edit_create);
 
 void rtgui_edit_destroy(struct rtgui_edit* edit)
 {
 	rtgui_widget_destroy(RTGUI_WIDGET(edit));
 }
+RTM_EXPORT(rtgui_edit_destroy);
 
 /**
  * calc line buffer alloc length
@@ -316,6 +319,7 @@ rt_bool_t rtgui_edit_append_line(struct rtgui_edit* edit, const char *text)
 	
 	return RT_TRUE;
 }
+RTM_EXPORT(rtgui_edit_append_line);
 
 rt_bool_t rtgui_edit_insert_line(struct rtgui_edit *edit, struct edit_line *p, char *text)
 {
@@ -355,6 +359,7 @@ rt_bool_t rtgui_edit_insert_line(struct rtgui_edit *edit, struct edit_line *p, c
 	
 	return RT_TRUE;
 }
+RTM_EXPORT(rtgui_edit_insert_line);
 
 rt_bool_t rtgui_edit_delete_line(struct rtgui_edit* edit, struct edit_line *line)
 {
@@ -405,6 +410,7 @@ rt_bool_t rtgui_edit_delete_line(struct rtgui_edit* edit, struct edit_line *line
 
 	return RT_TRUE;
 }
+RTM_EXPORT(rtgui_edit_delete_line);
 
 rt_bool_t rtgui_edit_connect_line(struct rtgui_edit* edit, struct edit_line *line, struct edit_line *connect)
 {
@@ -425,6 +431,7 @@ rt_bool_t rtgui_edit_connect_line(struct rtgui_edit* edit, struct edit_line *lin
 	line->len = rtgui_edit_line_strlen(line->text);
 	return RT_TRUE;
 }
+RTM_EXPORT(rtgui_edit_connect_line);
 
 static void rtgui_edit_get_caret_rect(struct rtgui_edit *edit, rtgui_rect_t *rect, rtgui_point_t visual)
 {
@@ -545,6 +552,7 @@ struct edit_line* rtgui_edit_get_line_by_index(struct rtgui_edit *edit, rt_uint3
 	}
 	return line;
 }
+RTM_EXPORT(rtgui_edit_get_line_by_index);
 
 rt_uint32_t rtgui_edit_get_index_by_line(struct rtgui_edit *edit, struct edit_line *line)
 {
@@ -568,6 +576,7 @@ rt_uint32_t rtgui_edit_get_index_by_line(struct rtgui_edit *edit, struct edit_li
 	}
 	return index;
 }
+RTM_EXPORT(rtgui_edit_get_index_by_line);
 
 enum {
 	EDIT_IDENT_DIR_BOTH,
