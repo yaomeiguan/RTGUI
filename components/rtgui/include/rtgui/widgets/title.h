@@ -14,7 +14,7 @@
 #ifndef __RTGUI_TITLE__
 #define __RTGUI_TITLE__
 
-#include <rtgui/widgets/toplevel.h>
+#include <rtgui/widgets/widget.h>
 
 DECLARE_CLASS_TYPE(wintitle);
 /** Gets the type of a title */
@@ -26,7 +26,7 @@ DECLARE_CLASS_TYPE(wintitle);
 
 struct rtgui_wintitle
 {
-	struct rtgui_toplevel parent;
+	struct rtgui_widget parent;
 
 	/* title */
 	char* title;
