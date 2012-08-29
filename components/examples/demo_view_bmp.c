@@ -118,7 +118,7 @@ void demo_image_zoom_in(struct rtgui_object* object, struct rtgui_event* event)
 		else bmpdt.scale -= (float)0.1;
 	}
 
-	bmpdt.showimg = rtgui_image_zoom(bmpdt.image, bmpdt.scale, bmpdt.scale, RTGUI_IMG_ZOOM_NEAREST);
+	bmpdt.showimg = rtgui_image_zoom(bmpdt.image, bmpdt.scale, bmpdt.scale, RTGUI_IMG_ZOOM_BILINEAR);
 	if (bmpdt.showimg != RT_NULL)
 		rtgui_widget_update(RTGUI_WIDGET(bmpdt.showbox));
 	if(bmpdt.showimg != bmpdt.image)
@@ -137,7 +137,7 @@ void demo_image_zoom_out(struct rtgui_object* object, struct rtgui_event* event)
 		else bmpdt.scale += (float)0.1;
 	}
 
-	bmpdt.showimg = rtgui_image_zoom(bmpdt.image, bmpdt.scale, bmpdt.scale, RTGUI_IMG_ZOOM_NEAREST);
+	bmpdt.showimg = rtgui_image_zoom(bmpdt.image, bmpdt.scale, bmpdt.scale, RTGUI_IMG_ZOOM_BILINEAR);
 	if (bmpdt.showimg != RT_NULL)
 		rtgui_widget_update(RTGUI_WIDGET(bmpdt.showbox));
 	if(bmpdt.showimg != bmpdt.image)

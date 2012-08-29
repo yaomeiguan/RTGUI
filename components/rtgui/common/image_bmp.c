@@ -1014,7 +1014,7 @@ static struct rtgui_image* rtgui_image_bmp_zoom(struct rtgui_image* image,
 { 
 	struct rtgui_image *d_img;
 	struct rtgui_image_bmp *bmp, *d_bmp;
-	int bitcount = 16, nbytes, i, j;
+	int bitcount, nbytes, i, j;
 	int sw, sh, dw, dh;
 	int dest_buff_size;
 	int src_line_size, dest_line_size;
@@ -1029,8 +1029,8 @@ static struct rtgui_image* rtgui_image_bmp_zoom(struct rtgui_image* image,
 	nbytes = bitcount / 8;
 	src_line_size = sw * nbytes;
 
-	dw = sw / scalew; /*rt_kprintf("dw=%d ", dw);*/
-	dh = sh / scaleh; /*rt_kprintf("dh=%d\n", dh);*/
+	dw = (int)(sw / scalew); /*rt_kprintf("dw=%d ", dw);*/
+	dh = (int)(sh / scaleh); /*rt_kprintf("dh=%d\n", dh);*/
 
 	d_img = rt_malloc(sizeof(struct rtgui_image));
 	if(d_img == RT_NULL) return RT_NULL;
@@ -1091,13 +1091,13 @@ static struct rtgui_image* rtgui_image_bmp_zoom(struct rtgui_image* image,
 
 				for (k = 0; k < 3; k++) 
 				{ 
-					c1 = (src_buf[y * src_line_size + x * nbytes + k]);
-					c2 = (src_buf[(y+1) * src_line_size + x * nbytes + k]);
-					c3 = (src_buf[y * src_line_size + (x+1) * nbytes + k]);
-					c4 = (src_buf[(y+1) * src_line_size + (x+1) * nbytes + k]);
+					c1 = (src_buf[src_line_size * y     + nbytes * x     + k]);
+					c2 = (src_buf[src_line_size * y     + nbytes * (x+1) + k]);
+					c3 = (src_buf[src_line_size * (y+1) + nbytes * x     + k]);
+					c4 = (src_buf[src_line_size * (y+1) + nbytes * (x+1) + k]);
 
-					des_buf[i * dest_line_size + j * nbytes + k] = 
-						(1-u)*(1-v) * c1 + (1-u) * v * c2 + u * (1-v) * c3 + u * v * c4;
+					des_buf[i * dest_line_size + j * nbytes + k] = (unsigned char)
+						((1-u)*(1-v)*(float)c1 + (1-u)*v*(float)c2 + u*(1-v)*(float)c3 + u*v*(float)c4);
 				}             
 			} 
 		} 
