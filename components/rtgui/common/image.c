@@ -11,6 +11,7 @@
  * Date           Author       Notes
  * 2009-10-16     Bernard      first version
  * 2012-01-24     onelife      add TJpgDec (Tiny JPEG Decompressor) support
+ * 2012-08-29     amsl         add Image zoom interface.
  */
 #include <rtthread.h>
 #include <rtgui/image.h>

@@ -1008,6 +1008,7 @@ FINSH_FUNCTION_EXPORT(screenshot, usage: screenshot(filename));
 
 /*
 * image zoom in, zoom out interface
+* Support 24 bits format image
 */
 static struct rtgui_image* rtgui_image_bmp_zoom(struct rtgui_image* image, 
 												float scalew, float scaleh, rt_uint32_t mode)  
@@ -1033,7 +1034,11 @@ static struct rtgui_image* rtgui_image_bmp_zoom(struct rtgui_image* image,
 	dh = (int)(sh / scaleh); /*rt_kprintf("dh=%d\n", dh);*/
 
 	d_img = rt_malloc(sizeof(struct rtgui_image));
-	if(d_img == RT_NULL) return RT_NULL;
+	if(d_img == RT_NULL) 
+	{
+		rt_kprintf("Not enough memory allocation IMG!\n");	
+		return RT_NULL;
+	}
 	d_img->w = dw;
 	d_img->h = dh;
 	d_img->engine = &rtgui_image_bmp_engine;
@@ -1043,19 +1048,30 @@ static struct rtgui_image* rtgui_image_bmp_zoom(struct rtgui_image* image,
 	dest_line_size = ((dw * bitcount + (bitcount-1)) / bitcount) * nbytes;
 	dest_buff_size = dest_line_size * dh;
 	d_bmp = rt_malloc(sizeof(struct rtgui_image_bmp));
-	if(d_bmp == RT_NULL) return RT_NULL;
+	if(d_bmp == RT_NULL)
+	{
+		rt_free(d_img);	
+		rt_kprintf("Not enough memory allocation BMP!\n");
+		return RT_NULL;
+	}
 
 	d_bmp->w = dw;
 	d_bmp->h = dh;
-	d_bmp->bit_per_pixel = bmp->bit_per_pixel;
-	d_bmp->pixel_offset = 54;
+	d_bmp->bit_per_pixel = bitcount;
+	d_bmp->pixel_offset = 54; /* insignificant parameter */
 	d_bmp->filerw = RT_NULL;
-	d_bmp->is_loaded = RT_TRUE;
+	d_bmp->is_loaded = RT_TRUE; /* Don't want to loading */
 	d_bmp->pitch = d_bmp->w * nbytes;
 	d_bmp->pad = ((d_bmp->pitch % 4) ? (4 - (d_bmp->pitch%4)) : 0);
 	d_bmp->scale = 0;
 	d_bmp->pixels = rt_malloc(dest_buff_size);
-	if(d_bmp->pixels == RT_NULL) return RT_NULL;
+	if(d_bmp->pixels == RT_NULL) 
+	{
+		rt_free(d_img);
+		rt_free(d_bmp);
+		rt_kprintf("Not enough memory allocation BMP data!\n");
+		return RT_NULL;
+	}
 	des_buf = d_bmp->pixels;
 
 	if (mode == RTGUI_IMG_ZOOM_NEAREST) 
