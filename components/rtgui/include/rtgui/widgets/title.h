@@ -33,7 +33,7 @@ struct rtgui_wintitle
 };
 typedef struct rtgui_wintitle rtgui_wintitle_t;
 
-rtgui_wintitle_t* rtgui_wintitle_create(const char* title);
+rtgui_wintitle_t* rtgui_wintitle_create(struct rtgui_win *window, const char* title);
 void rtgui_wintitle_destroy(rtgui_wintitle_t* wintitle);
 
 rt_bool_t rtgui_wintile_event_handler(rtgui_widget_t* widget, rtgui_event_t* event);
