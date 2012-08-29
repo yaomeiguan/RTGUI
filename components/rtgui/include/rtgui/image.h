@@ -83,6 +83,7 @@ void rtgui_image_register_engine(struct rtgui_image_engine* engine);
 /* blit an image on DC */
 void rtgui_image_blit(struct rtgui_image* image, struct rtgui_dc* dc, struct rtgui_rect* rect);
 struct rtgui_image_palette* rtgui_image_palette_create(rt_uint32_t ncolors);
+rtgui_image_t* rtgui_image_zoom(rtgui_image_t* image, float scalew, float scaleh, rt_uint32_t mode);
 
 #endif
 
