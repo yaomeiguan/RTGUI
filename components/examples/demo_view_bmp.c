@@ -161,7 +161,7 @@ rtgui_container_t *demo_view_bmp(void)
 	rect.x2 -= 5;
 	rect.y1 -= 42;
 	rect.y2 = rect.y1 + 20;
-	box = rtgui_textbox_create("/mm.bmp", RTGUI_TEXTBOX_SINGLE);
+	box = rtgui_textbox_create("", RTGUI_TEXTBOX_SINGLE);
 	rtgui_widget_set_rect(RTGUI_WIDGET(box), &rect);
 	rtgui_container_add_child(container, RTGUI_WIDGET(box));
 	bmpdt.box = box;
