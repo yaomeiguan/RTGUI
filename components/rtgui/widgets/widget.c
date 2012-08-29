@@ -38,6 +38,11 @@ static void _rtgui_widget_constructor(rtgui_widget_t *widget)
 	widget->gc.textalign = RTGUI_ALIGN_LEFT | RTGUI_ALIGN_TOP;
 	widget->align = RTGUI_ALIGN_LEFT | RTGUI_ALIGN_TOP;
 
+    /* clear the garbage value of extent and clip */
+    widget->extent.x1 = widget->extent.y1 = 0;
+    widget->extent.x2 = widget->extent.y2 = 0;
+    rtgui_region_init_with_extents(&widget->clip, &widget->extent);
+
 	/* set parent and toplevel root */
 	widget->parent        = RT_NULL;
 	widget->toplevel      = RT_NULL;
