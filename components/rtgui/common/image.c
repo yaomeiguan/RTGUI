@@ -315,3 +315,12 @@ void rtgui_image_get_rect(struct rtgui_image* image, struct rtgui_rect* rect)
 }
 RTM_EXPORT(rtgui_image_get_rect);
 
+rtgui_image_t* rtgui_image_zoom(rtgui_image_t* image, float scalew, float scaleh, rt_uint32_t mode)  
+{ 
+	if (image != RT_NULL && image->engine != RT_NULL)
+	{
+		return image->engine->image_zoom(image, scalew, scaleh, mode);
+	}		
+	return RT_NULL;
+} 
+RTM_EXPORT(rtgui_image_zoom);

@@ -34,7 +34,8 @@ struct rtgui_image_engine rtgui_image_hdc_engine =
 	rtgui_image_hdc_check,
 	rtgui_image_hdc_load,
 	rtgui_image_hdc_unload,
-	rtgui_image_hdc_blit
+	rtgui_image_hdc_blit,
+	RT_NULL
 };
 
 const struct rtgui_image_engine rtgui_image_hdcmm_engine =

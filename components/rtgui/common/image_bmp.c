@@ -46,7 +46,8 @@ static rt_bool_t rtgui_image_bmp_check(struct rtgui_filerw *file);
 static rt_bool_t rtgui_image_bmp_load(struct rtgui_image *image, struct rtgui_filerw *file, rt_bool_t load);
 static void rtgui_image_bmp_unload(struct rtgui_image *image);
 static void rtgui_image_bmp_blit(struct rtgui_image *image, struct rtgui_dc *dc, struct rtgui_rect *rect);
-
+static struct rtgui_image* rtgui_image_bmp_zoom(struct rtgui_image* image, 
+												float scalew, float scaleh, rt_uint32_t mode);
 
 struct rtgui_image_engine rtgui_image_bmp_engine =
 {
@@ -55,7 +56,8 @@ struct rtgui_image_engine rtgui_image_bmp_engine =
     rtgui_image_bmp_check,
     rtgui_image_bmp_load,
     rtgui_image_bmp_unload,
-    rtgui_image_bmp_blit
+    rtgui_image_bmp_blit,
+	rtgui_image_bmp_zoom
 };
 
 static rt_bool_t rtgui_image_bmp_check(struct rtgui_filerw *file)
@@ -1003,6 +1005,107 @@ void screenshot(const char *filename)
 #include <finsh.h>
 FINSH_FUNCTION_EXPORT(screenshot, usage: screenshot(filename));
 #endif
+
+/*
+* image zoom in, zoom out interface
+*/
+static struct rtgui_image* rtgui_image_bmp_zoom(struct rtgui_image* image, 
+												float scalew, float scaleh, rt_uint32_t mode)  
+{ 
+	struct rtgui_image *d_img;
+	struct rtgui_image_bmp *bmp, *d_bmp;
+	int bitcount = 16, nbytes, i, j;
+	int sw, sh, dw, dh;
+	int dest_buff_size;
+	int src_line_size, dest_line_size;
+	char *src_buf;
+	char *des_buf;  
+
+	bmp = (struct rtgui_image_bmp*)image->data;
+	src_buf = bmp->pixels;
+	sw = bmp->w;
+	sh = bmp->h;
+	bitcount = bmp->bit_per_pixel;
+	nbytes = bitcount / 8;
+	src_line_size = sw * nbytes;
+
+	dw = sw / scalew; /*rt_kprintf("dw=%d ", dw);*/
+	dh = sh / scaleh; /*rt_kprintf("dh=%d\n", dh);*/
+
+	d_img = rt_malloc(sizeof(struct rtgui_image));
+	if(d_img == RT_NULL) return RT_NULL;
+	d_img->w = dw;
+	d_img->h = dh;
+	d_img->engine = &rtgui_image_bmp_engine;
+	d_img->palette = RT_NULL;
+
+	/* config dest bmp data */
+	dest_line_size = ((dw * bitcount + (bitcount-1)) / bitcount) * nbytes;
+	dest_buff_size = dest_line_size * dh;
+	d_bmp = rt_malloc(sizeof(struct rtgui_image_bmp));
+	if(d_bmp == RT_NULL) return RT_NULL;
+
+	d_bmp->w = dw;
+	d_bmp->h = dh;
+	d_bmp->bit_per_pixel = bmp->bit_per_pixel;
+	d_bmp->pixel_offset = 54;
+	d_bmp->filerw = RT_NULL;
+	d_bmp->is_loaded = RT_TRUE;
+	d_bmp->pitch = d_bmp->w * nbytes;
+	d_bmp->pad = ((d_bmp->pitch % 4) ? (4 - (d_bmp->pitch%4)) : 0);
+	d_bmp->scale = 0;
+	d_bmp->pixels = rt_malloc(dest_buff_size);
+	if(d_bmp->pixels == RT_NULL) return RT_NULL;
+	des_buf = d_bmp->pixels;
+
+	if (mode == RTGUI_IMG_ZOOM_NEAREST) 
+	{ 
+		for (i = 0; i < dh; i++) 
+		{  
+			int src_th = (int)(scaleh * i + 0.5); 
+			for (j = 0; j < dw; j++) 
+			{ 
+				int src_tw = (int)(scalew * j + 0.5);                             
+				rt_memcpy (&des_buf[i * dest_line_size] + j * nbytes,
+					&src_buf[src_th * src_line_size] + src_tw * nbytes,
+					nbytes);             
+			} 
+		}     
+	} 
+	else if (mode == RTGUI_IMG_ZOOM_BILINEAR)
+	{ 
+		/* 
+		** known: (i,j), (i+1,j), (i,j+1), (i+1,j+1), u, v
+		** float coord: (i+u, j+v)
+		** f(i+u,j+v) = (1-u)(1-v)f(i,j) + (1-u)vf(i,j+1) + u(1-v)f(i+1,j) + uvf(i+1,j+1)
+		*/
+		for (i = 0; i < dh; i++) 
+		{ 
+			int y = (int)(scaleh * i);  
+			float u = (float)(scaleh * i - y);
+			unsigned char c1, c2, c3, c4;
+			for (j = 0; j < dw; j++) 
+			{ 
+				int k, x = (int)(scalew * j);
+				float v = (float)(scalew * j - x);
+
+				for (k = 0; k < 3; k++) 
+				{ 
+					c1 = (src_buf[y * src_line_size + x * nbytes + k]);
+					c2 = (src_buf[(y+1) * src_line_size + x * nbytes + k]);
+					c3 = (src_buf[y * src_line_size + (x+1) * nbytes + k]);
+					c4 = (src_buf[(y+1) * src_line_size + (x+1) * nbytes + k]);
+
+					des_buf[i * dest_line_size + j * nbytes + k] = 
+						(1-u)*(1-v) * c1 + (1-u) * v * c2 + u * (1-v) * c3 + u * v * c4;
+				}             
+			} 
+		} 
+	}
+	d_img->data = d_bmp;
+
+	return d_img;
+} 
 
 void rtgui_image_bmp_init()
 {
