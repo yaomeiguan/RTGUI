@@ -538,6 +538,7 @@ void rtgui_notebook_set_current_by_index(struct rtgui_notebook* notebook, rt_uin
 		notebook->current = index;
 		widget = notebook->childs[notebook->current].widget;
 		rtgui_widget_show(widget);
+        rtgui_widget_update_clip(widget);
 		rtgui_widget_update(widget);
 		rtgui_widget_focus(widget);
 	}
