@@ -291,8 +291,8 @@ static rt_bool_t rtgui_image_bmp_load(struct rtgui_image *image, struct rtgui_fi
         bmp->pixels = RT_NULL;
         bmp->filerw = file;
 
-        image->w = bmp->w >> bmp->scale;
-        image->h = bmp->h >> bmp->scale;
+        image->w = (rt_uint16_t)bmp->w >> bmp->scale;
+        image->h = (rt_uint16_t)bmp->h >> bmp->scale;
         image->engine = &rtgui_image_bmp_engine;
         image->data = bmp;
 
@@ -369,8 +369,8 @@ static rt_bool_t rtgui_image_bmp_load(struct rtgui_image *image, struct rtgui_fi
                     rt_kprintf("\r%lu%%", y * 100UL / image->h);
 
                     /* Read data to buffer */
-                    readLength = (BMP_WORKING_BUFFER_SIZE > (bmp->pitch - readIndex)) ? \
-                                 (bmp->pitch - readIndex) : BMP_WORKING_BUFFER_SIZE;
+                    readLength = (BMP_WORKING_BUFFER_SIZE > ((rt_uint16_t)bmp->pitch - readIndex)) ? \
+                                 ((rt_uint16_t)bmp->pitch - readIndex) : BMP_WORKING_BUFFER_SIZE;
                     if (rtgui_filerw_read(file, (void *)wrkBuffer, 1, readLength) != readLength)
                     {
                         rt_kprintf("BMP err: read failed\n");
@@ -628,8 +628,8 @@ static void rtgui_image_bmp_blit(struct rtgui_image *image, struct rtgui_dc *dc,
                     rt_kprintf("\r%lu%%", y * 100UL / h);
 
                     /* Read data to buffer */
-                    readLength = (BMP_WORKING_BUFFER_SIZE > (bmp->pitch - readIndex)) ? \
-                                 (bmp->pitch - readIndex) : BMP_WORKING_BUFFER_SIZE;
+                    readLength = (BMP_WORKING_BUFFER_SIZE > ((rt_uint16_t)bmp->pitch - readIndex)) ? \
+                                 ((rt_uint16_t)bmp->pitch - readIndex) : BMP_WORKING_BUFFER_SIZE;
                     if (rtgui_filerw_read(bmp->filerw, (void *)wrkBuffer, 1, readLength) != readLength)
                     {
                         rt_kprintf("BMP err: read failed\n");
@@ -1008,7 +1008,7 @@ FINSH_FUNCTION_EXPORT(screenshot, usage: screenshot(filename));
 
 /*
 * image zoom in, zoom out interface
-* Support 24 bits format image
+* Support 16/24 bits format image
 */
 static struct rtgui_image* rtgui_image_bmp_zoom(struct rtgui_image* image, 
 												float scalew, float scaleh, rt_uint32_t mode)  
@@ -1027,11 +1027,16 @@ static struct rtgui_image* rtgui_image_bmp_zoom(struct rtgui_image* image,
 	sw = bmp->w;
 	sh = bmp->h;
 	bitcount = bmp->bit_per_pixel;
+	if(bitcount != 16 && bitcount != 24)
+	{
+		rt_kprintf("Does not support %d format\n", bitcount);
+		return RT_NULL;
+	}
 	nbytes = bitcount / 8;
 	src_line_size = sw * nbytes;
 
-	dw = (int)(sw / scalew); /*rt_kprintf("dw=%d ", dw);*/
-	dh = (int)(sh / scaleh); /*rt_kprintf("dh=%d\n", dh);*/
+	dw = (int)(sw / scalew);
+	dh = (int)(sh / scaleh);
 
 	d_img = rt_malloc(sizeof(struct rtgui_image));
 	if(d_img == RT_NULL) 
@@ -1102,19 +1107,48 @@ static struct rtgui_image* rtgui_image_bmp_zoom(struct rtgui_image* image,
 			unsigned char c1, c2, c3, c4;
 			for (j = 0; j < dw; j++) 
 			{ 
-				int k, x = (int)(scalew * j);
+				int x = (int)(scalew * j);
 				float v = (float)(scalew * j - x);
+				if(bitcount == 16)
+				{	/* Each color component is calculated separately */
+					rt_uint32_t cc1,cc2,cc3,cc4;
+					unsigned char r, g, b;
+					cc1 = rtgui_color_from_565p(*(rt_uint16_t*)(src_buf + 
+						src_line_size * y     + nbytes * x    ));
+					cc2 = rtgui_color_from_565p(*(rt_uint16_t*)(src_buf + 
+						src_line_size * y     + nbytes * (x+1)));
+					cc3 = rtgui_color_from_565p(*(rt_uint16_t*)(src_buf + 
+						src_line_size * (y+1) + nbytes * x    ));
+					cc4 = rtgui_color_from_565p(*(rt_uint16_t*)(src_buf + 
+						src_line_size * (y+1) + nbytes * (x+1)));
 
-				for (k = 0; k < 3; k++) 
-				{ 
-					c1 = (src_buf[src_line_size * y     + nbytes * x     + k]);
-					c2 = (src_buf[src_line_size * y     + nbytes * (x+1) + k]);
-					c3 = (src_buf[src_line_size * (y+1) + nbytes * x     + k]);
-					c4 = (src_buf[src_line_size * (y+1) + nbytes * (x+1) + k]);
+					r = (unsigned char)((1-u)*(1-v)*(float)RTGUI_RGB_R(cc1) + 
+						(1-u)*v*(float)RTGUI_RGB_R(cc2) + u*(1-v)*(float)RTGUI_RGB_R(cc3) + 
+						u*v*(float)RTGUI_RGB_R(cc4));
+					g = (unsigned char)((1-u)*(1-v)*(float)RTGUI_RGB_G(cc1) + 
+						(1-u)*v*(float)RTGUI_RGB_G(cc2) + u*(1-v)*(float)RTGUI_RGB_G(cc3) + 
+						u*v*(float)RTGUI_RGB_G(cc4));
+					b = (unsigned char)((1-u)*(1-v)*(float)RTGUI_RGB_B(cc1) + 
+						(1-u)*v*(float)RTGUI_RGB_B(cc2) + u*(1-v)*(float)RTGUI_RGB_B(cc3) + 
+						u*v*(float)RTGUI_RGB_B(cc4));
+					
+					*(rt_uint16_t*)(des_buf + i * dest_line_size + j * nbytes) = 
+						rtgui_color_to_565p(RTGUI_RGB(r, g, b));
+				}
+				else if(bitcount == 24)
+				{
+					int k;
+					for (k = 0; k < 3; k++) 
+					{	/* 24 bits color is 3 bytes R:G:B */ 
+						c1 = (src_buf[src_line_size * y     + nbytes * x     + k]);
+						c2 = (src_buf[src_line_size * y     + nbytes * (x+1) + k]);
+						c3 = (src_buf[src_line_size * (y+1) + nbytes * x     + k]);
+						c4 = (src_buf[src_line_size * (y+1) + nbytes * (x+1) + k]);
 
-					des_buf[i * dest_line_size + j * nbytes + k] = (unsigned char)
-						((1-u)*(1-v)*(float)c1 + (1-u)*v*(float)c2 + u*(1-v)*(float)c3 + u*v*(float)c4);
-				}             
+						des_buf[i * dest_line_size + j * nbytes + k] = (unsigned char)
+							((1-u)*(1-v)*(float)c1 + (1-u)*v*(float)c2 + u*(1-v)*(float)c3 + u*v*(float)c4);
+					} 
+				}
 			} 
 		} 
 	}
