@@ -88,7 +88,7 @@ rt_bool_t demo_edit_event_handler(struct rtgui_object* object, struct rtgui_even
 	result = rtgui_edit_event_handler(object, event);
 
 	p = rtgui_edit_get_current_point(edit);
-	rt_sprintf(buf, "TRACK: line:%d, col:%d", p.x, p.y);
+	rt_sprintf(buf, "TRACK: line:%d, col:%d", p.y, p.x);
 	rtgui_label_set_text(label, buf);
 	
 	return result;
