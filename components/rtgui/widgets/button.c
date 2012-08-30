@@ -16,7 +16,7 @@
 #include <rtgui/widgets/button.h>
 #include <rtgui/widgets/window.h>
 
-static rt_bool_t rtgui_button_onunfocus(struct rtgui_widget* widget, rtgui_event_t* event);
+static rt_bool_t rtgui_button_onunfocus(struct rtgui_object* object, rtgui_event_t* event);
 
 static void _rtgui_button_constructor(rtgui_button_t *button)
 {
@@ -261,21 +261,21 @@ void rtgui_button_set_onbutton(rtgui_button_t* btn, rtgui_onbutton_func_t func)
 }
 RTM_EXPORT(rtgui_button_set_onbutton);
 
-static rt_bool_t rtgui_button_onunfocus(struct rtgui_widget* widget, rtgui_event_t* event)
+static rt_bool_t rtgui_button_onunfocus(struct rtgui_object* object, rtgui_event_t* event)
 {
 	rtgui_rect_t rect;
-	rtgui_button_t *button;
+	rtgui_widget_t *widget;
 	struct rtgui_dc *dc;
 
-	RT_ASSERT(widget);
-	button = RTGUI_BUTTON(widget);
+	RT_ASSERT(object);
+	widget = RTGUI_WIDGET(object);
 
 	dc = rtgui_dc_begin_drawing(widget);
 	if(dc == RT_NULL) return RT_FALSE;
 	
 	rtgui_widget_get_rect(widget, &rect);
 
-	if(!RTGUI_WIDGET_IS_FOCUSED(button))
+	if(!RTGUI_WIDGET_IS_FOCUSED(widget))
 	{
 		/* only clear focus rect */
 		rtgui_color_t color;
