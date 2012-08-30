@@ -390,8 +390,17 @@ void rtgui_widget_unfocus(rtgui_widget_t *widget)
 
 	RTGUI_WIN(widget->toplevel)->focused_widget = RT_NULL;
 
-	/* refresh widget */
-	rtgui_widget_update(widget);
+	/* Ergodic constituent widget, make child loss of focus */
+	if(RTGUI_IS_CONTAINER(widget))
+	{
+		rtgui_list_t *node;
+		rtgui_list_foreach(node, &(RTGUI_CONTAINER(widget)->children))
+		{
+			rtgui_widget_t *child = rtgui_list_entry(node, rtgui_widget_t, sibling);
+			if(RTGUI_WIDGET_IS_HIDE(child)) continue;
+			rtgui_widget_unfocus(child);
+		}
+	}
 }
 RTM_EXPORT(rtgui_widget_unfocus);
 
