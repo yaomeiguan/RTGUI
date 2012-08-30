@@ -34,6 +34,7 @@ struct rtgui_image_engine rtgui_image_png_engine =
 	rtgui_image_png_unload,
 	rtgui_image_png_blit,
 	RT_NULL,
+	RT_NULL
 };
 
 static void rtgui_image_png_read_data(png_structp png_ptr, png_bytep data, png_size_t length)

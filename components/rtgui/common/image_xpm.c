@@ -34,6 +34,7 @@ struct rtgui_image_engine rtgui_image_xpm_engine =
 	rtgui_image_xpm_load,
 	rtgui_image_xpm_unload,
 	rtgui_image_xpm_blit,
+	RT_NULL,
 	RT_NULL
 };
 

@@ -35,6 +35,7 @@ struct rtgui_image_engine rtgui_image_hdc_engine =
 	rtgui_image_hdc_load,
 	rtgui_image_hdc_unload,
 	rtgui_image_hdc_blit,
+	RT_NULL,
 	RT_NULL
 };
 

@@ -57,7 +57,8 @@ struct rtgui_image_engine rtgui_image_bmp_engine =
     rtgui_image_bmp_load,
     rtgui_image_bmp_unload,
     rtgui_image_bmp_blit,
-	rtgui_image_bmp_zoom
+	rtgui_image_bmp_zoom,
+	RT_NULL
 };
 
 static rt_bool_t rtgui_image_bmp_check(struct rtgui_filerw *file)

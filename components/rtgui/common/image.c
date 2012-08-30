@@ -325,3 +325,13 @@ rtgui_image_t* rtgui_image_zoom(rtgui_image_t* image, float scalew, float scaleh
 	return RT_NULL;
 } 
 RTM_EXPORT(rtgui_image_zoom);
+
+rtgui_image_t* rtgui_image_rotate(rtgui_image_t* image, float angle)
+{
+	if (image != RT_NULL && image->engine != RT_NULL)
+	{
+		return image->engine->image_rotate(image, angle);
+	}
+	return RT_NULL;
+}
+RTM_EXPORT(rtgui_image_rotate);
