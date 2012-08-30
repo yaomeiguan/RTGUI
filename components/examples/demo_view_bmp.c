@@ -36,7 +36,7 @@ rt_bool_t demo_bitmap_showbox(struct rtgui_object* object, struct rtgui_event* e
 		rtgui_rect_t rect;
 		struct rtgui_dc *dc;
 		struct rtgui_image *image = bmpdt.showimg;
-		
+		/* 如果从其他标签切换到当前标签, image应该是RT_NULL, 重置它 */
 		if(image == RT_NULL && bmpdt.image != RT_NULL)
 		{
 			image = bmpdt.image;
@@ -48,6 +48,7 @@ rt_bool_t demo_bitmap_showbox(struct rtgui_object* object, struct rtgui_event* e
 			return RT_FALSE;
 		
 		rtgui_widget_get_rect(widget, &rect);
+		/* 在绘制边框后, 再将rect缩小填充背景, 可以降低闪烁现象 */
 		rtgui_dc_draw_border(dc, &rect, RTGUI_WIDGET_BORDER_STYLE(widget));
 		rtgui_rect_inflate(&rect, -RTGUI_WIDGET_BORDER(widget));
 		w = rtgui_rect_width(rect);
@@ -55,7 +56,7 @@ rt_bool_t demo_bitmap_showbox(struct rtgui_object* object, struct rtgui_event* e
 #if 1
 		/* fill container with background */
 		if(image != RT_NULL)
-		{	/* Reduce unnecessary drawing */
+		{	/* 减少不必要的绘图 */
 			rtgui_rect_t rc;
 			if(w > image->w)
 			{
@@ -77,7 +78,7 @@ rt_bool_t demo_bitmap_showbox(struct rtgui_object* object, struct rtgui_event* e
 		else
 			rtgui_dc_fill_rect(dc, &rect);
 #endif
-
+		/* 将图像数据blit到画布上 */
 		if (image != RT_NULL)
 			rtgui_image_blit(image, dc, &rect);
 
@@ -91,11 +92,11 @@ void demo_bitmap_open(struct rtgui_object* object, struct rtgui_event* event)
 {
 	char *str;
 	rtgui_button_t *button = RTGUI_BUTTON(object);
-	
+	/* 从textbox控件中取得文件名 */
 	str = (char*)rtgui_textbox_get_value(bmpdt.box);
 	if(str == RT_NULL) return;
 	if(*str == '/' && (rt_strstr(str, ".bmp")!=RT_NULL || rt_strstr(str, ".BMP")!=RT_NULL))
-	{
+	{	/* 如果是bmp文件, 且文件名有效, 则读入图像数据 */
 		if(bmpdt.filename != RT_NULL) 
 			rt_free(bmpdt.filename);
 		bmpdt.filename = rt_strdup(str);
@@ -124,18 +125,18 @@ void demo_image_zoom_in(struct rtgui_object* object, struct rtgui_event* event)
 	if (bmpdt.image == RT_NULL) return;
 
 	if (bmpdt.scale > 0.15)
-	{
+	{	/* 更新缩放倍率 */
 		if (bmpdt.scale > 1.0) bmpdt.scale -= (float)0.5;
 		else bmpdt.scale -= (float)0.1;
 	}
-
+	/* 根据缩放倍率, 缩放原始图形, 并得到新图形的指针 */
 	bmpdt.showimg = rtgui_image_zoom(bmpdt.image, bmpdt.scale, bmpdt.scale, RTGUI_IMG_ZOOM_BILINEAR);
 	if (bmpdt.showimg != RT_NULL)
 		rtgui_widget_update(RTGUI_WIDGET(bmpdt.showbox));
 	else
 		return;
 	if(bmpdt.showimg != bmpdt.image)
-	{
+	{	/* 释放掉新图形所用的资源 */
 		rtgui_image_destroy(bmpdt.showimg);
 		bmpdt.showimg = RT_NULL;
 	}
@@ -148,7 +149,7 @@ void demo_image_zoom_out(struct rtgui_object* object, struct rtgui_event* event)
 	if (bmpdt.image == RT_NULL) return;
 
 	if (bmpdt.scale < 4.95)
-	{
+	{	/* 更新缩放倍率 */
 		if (bmpdt.scale > 0.95) bmpdt.scale += (float)0.5;
 		else bmpdt.scale += (float)0.1;
 	}
@@ -170,12 +171,12 @@ void demo_image_rotate(struct rtgui_object* object, struct rtgui_event* event)
 	rtgui_button_t *button = RTGUI_BUTTON(object);
 
 	if (bmpdt.image == RT_NULL) return;
-
+	/* 更新图像旋转角度 */
 	if (bmpdt.angle < 360.0)
 		bmpdt.angle += (float)1.0;
 	else
 		bmpdt.angle = 0.0;
-
+	/* 调用旋转函数执行旋转, 并取得一个新的图像指针 */
 	bmpdt.showimg = rtgui_image_rotate(bmpdt.image, bmpdt.angle);
 	if (bmpdt.showimg != RT_NULL)
 		rtgui_widget_update(RTGUI_WIDGET(bmpdt.showbox));
@@ -194,11 +195,11 @@ rtgui_container_t *demo_view_bmp(void)
 	rtgui_container_t *container, *showbox;
 	rtgui_button_t *button;
 	rtgui_textbox_t *box;
-	
+	/* 用bmpdt结构体记录一些参数 */
 	rt_memset(&bmpdt, 0, sizeof(struct demo_bmp_dt));
 	bmpdt.scale = 1.0;
 	bmpdt.angle = 0.0;
-
+	/* 创建用于演示本代码的容器控件 */
 	container = demo_view("Bmp File:");
 
 	demo_view_get_rect(container, &rect);
