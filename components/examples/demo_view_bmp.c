@@ -37,6 +37,12 @@ rt_bool_t demo_bitmap_showbox(struct rtgui_object* object, struct rtgui_event* e
 		struct rtgui_dc *dc;
 		struct rtgui_image *image = bmpdt.showimg;
 		
+		if(image == RT_NULL && bmpdt.image != RT_NULL)
+		{
+			image = bmpdt.image;
+			bmpdt.scale = 1.0f;
+		}
+
 		dc = rtgui_dc_begin_drawing(widget);
 		if (dc == RT_NULL)
 			return RT_FALSE;
@@ -69,8 +75,8 @@ rt_bool_t demo_bitmap_showbox(struct rtgui_object* object, struct rtgui_event* e
 		else
 			rtgui_dc_fill_rect(dc, &rect);
 
-		if (bmpdt.showimg != RT_NULL)
-			rtgui_image_blit(bmpdt.showimg, dc, &rect);
+		if (image != RT_NULL)
+			rtgui_image_blit(image, dc, &rect);
 
 		rtgui_dc_end_drawing(dc);
 		return RT_FALSE;
@@ -124,7 +130,10 @@ void demo_image_zoom_in(struct rtgui_object* object, struct rtgui_event* event)
 	else
 		return;
 	if(bmpdt.showimg != bmpdt.image)
+	{
 		rtgui_image_destroy(bmpdt.showimg);
+		bmpdt.showimg = RT_NULL;
+	}
 }
 
 void demo_image_zoom_out(struct rtgui_object* object, struct rtgui_event* event)
@@ -145,7 +154,10 @@ void demo_image_zoom_out(struct rtgui_object* object, struct rtgui_event* event)
 	else
 		return;
 	if(bmpdt.showimg != bmpdt.image)
+	{
 		rtgui_image_destroy(bmpdt.showimg);
+		bmpdt.showimg = RT_NULL;
+	}
 }
 
 rtgui_container_t *demo_view_bmp(void)
