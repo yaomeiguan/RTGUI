@@ -1031,7 +1031,7 @@ static struct rtgui_image* rtgui_image_bmp_zoom(struct rtgui_image* image,
 	bitcount = bmp->bit_per_pixel;
 	if(bitcount != 16 && bitcount != 24)
 	{
-		rt_kprintf("Does not support %d format\n", bitcount);
+		rt_kprintf("Does not support %d bits format\n", bitcount);
 		return RT_NULL;
 	}
 	nbytes = bitcount / 8;
@@ -1182,7 +1182,7 @@ rt_inline rtgui_point_t _rotate_pos(rtgui_point_t o, rtgui_point_t p, float sina
 
 /*
 * image rotate interface, rotate direction: clockwise
-* Support 24 bits format image
+* Support 16/24 bits format image
 */
 static struct rtgui_image* rtgui_image_bmp_rotate(struct rtgui_image* image, float angle)
 {
@@ -1206,7 +1206,7 @@ static struct rtgui_image* rtgui_image_bmp_rotate(struct rtgui_image* image, flo
 	bitcount = bmp->bit_per_pixel;
 	if(bitcount != 16 && bitcount != 24)
 	{
-		rt_kprintf("Does not support %d format\n", bitcount);
+		rt_kprintf("Does not support %d bits format\n", bitcount);
 		return RT_NULL;
 	}
 	nbytes = bitcount / 8;
@@ -1272,28 +1272,22 @@ static struct rtgui_image* rtgui_image_bmp_rotate(struct rtgui_image* image, flo
 	
 	o.x = dw>>1;
 	o.y = dh>>1;
-	
-	for (i = 0; i < dh; i++) 
-	{ 
-		unsigned char c;
-		for (j = 0; j < dw; j++) 
-		{ 
-			p.x = j; p.y = i;
-			cp = _rotate_pos(o, p, sina, cosa);
-			cp.x -= (dw-sw)>>1;
-			cp.y -= (dh-sh)>>1;
-			if(rtgui_rect_contains_point(&rect, cp.x, cp.y) != RT_EOK)
-			continue;
-			if(bitcount == 24)
+	if(bitcount == 16 || bitcount == 24)
+	{
+		for (i = 0; i < dh; i++) 
+		{
+			for (j = 0; j < dw; j++) 
 			{
-				int k;
-				for (k = 0; k < 3; k++) 
-				{
-					c = (src_buf[src_line_size * cp.y + nbytes * cp.x + k]);
-					des_buf[dest_line_size * i + nbytes * j + k] = c;
-				} 
-			}
-		} 
+				p.x = j; p.y = i;
+				cp = _rotate_pos(o, p, sina, cosa);
+				cp.x -= (dw-sw)>>1;
+				cp.y -= (dh-sh)>>1;
+				if(rtgui_rect_contains_point(&rect, cp.x, cp.y) != RT_EOK)
+					continue;
+				rt_memcpy (&des_buf[dest_line_size * i] + nbytes * j,
+					&src_buf[src_line_size * cp.y] + nbytes * cp.x, nbytes); 
+			} 
+		}
 	}
 	d_img->data = d_bmp;
 	/* rt_kprintf("rotate use %d ticks\n", rt_tick_get()-tick); */
