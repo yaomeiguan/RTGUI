@@ -608,7 +608,7 @@ static rt_bool_t identify_double_byte(struct rtgui_edit *edit, struct edit_line 
 		effe_nums = 0;
 		while(index--)
 		{
-			if(*(line->text + index) >= 0x80)
+			if((rt_uint8_t)(*(line->text + index)) >= 0x80)
 				effe_nums ++;
 			else
 				break;
@@ -627,7 +627,7 @@ static rt_bool_t identify_double_byte(struct rtgui_edit *edit, struct edit_line 
 		effe_nums = 0;
 		while(index < line->len)
 		{
-			if(*(line->text + index) >= 0x80)
+			if((rt_uint8_t)(*(line->text + index)) >= 0x80)
 				effe_nums ++;
 			else
 				break;
