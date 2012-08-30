@@ -1181,7 +1181,7 @@ rt_inline rtgui_point_t _rotate_pos(rtgui_point_t o, rtgui_point_t p, float sina
 }
 
 /*
-* image rotate interface, rotate direction: counterclockwise
+* image rotate interface, rotate direction: clockwise
 * Support 24 bits format image
 */
 static struct rtgui_image* rtgui_image_bmp_rotate(struct rtgui_image* image, float angle)
@@ -1225,7 +1225,7 @@ static struct rtgui_image* rtgui_image_bmp_rotate(struct rtgui_image* image, flo
 	dw = (int)(sw * fabs(cosa) + sh * fabs(sina));
 	dh = (int)(sh * fabs(cosa) + sw * fabs(sina));
 	rect.x1 = rect.y1 = 0;
-	rect.x2 = dw; rect.y2 = dh;
+	rect.x2 = sw; rect.y2 = sh;
 
 	d_img = rt_malloc(sizeof(struct rtgui_image));
 	if(d_img == RT_NULL) 
@@ -1272,29 +1272,25 @@ static struct rtgui_image* rtgui_image_bmp_rotate(struct rtgui_image* image, flo
 	
 	o.x = dw>>1;
 	o.y = dh>>1;
-
-	for (i = 0; i < sh; i++) 
+	
+	for (i = 0; i < dh; i++) 
 	{ 
 		unsigned char c;
-		for (j = 0; j < sw; j++) 
+		for (j = 0; j < dw; j++) 
 		{ 
-			p.x = j + ((dw-sw)>>1);
-			p.y = i + ((dh-sh)>>1);
+			p.x = j; p.y = i;
 			cp = _rotate_pos(o, p, sina, cosa);
+			cp.x -= (dw-sw)>>1;
+			cp.y -= (dh-sh)>>1;
 			if(rtgui_rect_contains_point(&rect, cp.x, cp.y) != RT_EOK)
-				continue;
+			continue;
 			if(bitcount == 24)
 			{
 				int k;
 				for (k = 0; k < 3; k++) 
-				{	/* 24 bits color is 3 bytes R:G:B */ 
-					c = (src_buf[src_line_size * i + nbytes * j + k]);
-					des_buf[cp.y * dest_line_size + cp.x * nbytes + k] = c;
-					/* Fill the floating-point calculation of the empty hole  */
-					if(cp.x < dw-1)
-					{
-						des_buf[cp.y * dest_line_size + (cp.x+1) * nbytes + k] = c;
-					}
+				{
+					c = (src_buf[src_line_size * cp.y + nbytes * cp.x + k]);
+					des_buf[dest_line_size * i + nbytes * j + k] = c;
 				} 
 			}
 		} 
