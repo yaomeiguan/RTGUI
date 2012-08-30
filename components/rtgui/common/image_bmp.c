@@ -48,6 +48,7 @@ static void rtgui_image_bmp_unload(struct rtgui_image *image);
 static void rtgui_image_bmp_blit(struct rtgui_image *image, struct rtgui_dc *dc, struct rtgui_rect *rect);
 static struct rtgui_image* rtgui_image_bmp_zoom(struct rtgui_image* image, 
 												float scalew, float scaleh, rt_uint32_t mode);
+static struct rtgui_image* rtgui_image_bmp_rotate(struct rtgui_image* image, float angle);
 
 struct rtgui_image_engine rtgui_image_bmp_engine =
 {
@@ -58,7 +59,7 @@ struct rtgui_image_engine rtgui_image_bmp_engine =
     rtgui_image_bmp_unload,
     rtgui_image_bmp_blit,
 	rtgui_image_bmp_zoom,
-	RT_NULL
+	rtgui_image_bmp_rotate
 };
 
 static rt_bool_t rtgui_image_bmp_check(struct rtgui_filerw *file)
@@ -1157,6 +1158,151 @@ static struct rtgui_image* rtgui_image_bmp_zoom(struct rtgui_image* image,
 
 	return d_img;
 } 
+
+#include <math.h>
+#ifndef M_PI
+#define M_PI    3.14159265358979323846
+#endif
+
+/*
+* around a pos o, rotating pos p
+*/
+rt_inline rtgui_point_t _rotate_pos(rtgui_point_t o, rtgui_point_t p, float sina, float cosa)
+{
+	rtgui_point_t rp;
+	float dx, dy;
+	dx = p.x - o.x;
+	dy = p.y - o.y;
+
+	rp.x = (float)o.x + dx * cosa + dy * sina;
+	rp.y = (float)o.y + dy * cosa - dx * sina;
+
+	return rp;
+}
+
+/*
+* image rotate interface, rotate direction: counterclockwise
+* Support 24 bits format image
+*/
+static struct rtgui_image* rtgui_image_bmp_rotate(struct rtgui_image* image, float angle)
+{
+	float age, sina, cosa;
+	rtgui_point_t o, p, cp;
+	rtgui_rect_t rect;
+	struct rtgui_image *d_img;
+	struct rtgui_image_bmp *bmp, *d_bmp;
+	int bitcount, nbytes, i, j;
+	int sw, sh, dw, dh;
+	int dest_buff_size;
+	int src_line_size, dest_line_size;
+	char *src_buf;
+	char *des_buf;  
+	/* rt_tick_t tick = rt_tick_get(); */
+
+	bmp = (struct rtgui_image_bmp*)image->data;
+	src_buf = bmp->pixels;
+	sw = bmp->w;
+	sh = bmp->h;
+	bitcount = bmp->bit_per_pixel;
+	if(bitcount != 16 && bitcount != 24)
+	{
+		rt_kprintf("Does not support %d format\n", bitcount);
+		return RT_NULL;
+	}
+	nbytes = bitcount / 8;
+	src_line_size = sw * nbytes;
+	
+	/* convert angle to radians */
+	age = angle * M_PI / 180.0;
+	sina = sin(age);
+	cosa = cos(age);
+
+	/* 
+	** known: a, b, angle;
+	** solve: aa = a*abs(cos(angle)) + b*abs(sin(angle));
+	** solve: bb = b*abs(cos(angle)) + a*abs(sin(angle));
+	*/   
+	dw = (int)(sw * fabs(cosa) + sh * fabs(sina));
+	dh = (int)(sh * fabs(cosa) + sw * fabs(sina));
+	rect.x1 = rect.y1 = 0;
+	rect.x2 = dw; rect.y2 = dh;
+
+	d_img = rt_malloc(sizeof(struct rtgui_image));
+	if(d_img == RT_NULL) 
+	{
+		rt_kprintf("Not enough memory allocation IMG!\n");	
+		return RT_NULL;
+	}
+	d_img->w = dw;
+	d_img->h = dh;
+	d_img->engine = &rtgui_image_bmp_engine;
+	d_img->palette = RT_NULL;
+
+	/* config dest bmp data */
+	dest_line_size = ((dw * bitcount + (bitcount-1)) / bitcount) * nbytes;
+	dest_buff_size = dest_line_size * dh;
+	d_bmp = rt_malloc(sizeof(struct rtgui_image_bmp));
+	if(d_bmp == RT_NULL)
+	{
+		rt_free(d_img);	
+		rt_kprintf("Not enough memory allocation BMP!\n");
+		return RT_NULL;
+	}
+
+	d_bmp->w = dw;
+	d_bmp->h = dh;
+	d_bmp->bit_per_pixel = bitcount;
+	d_bmp->pixel_offset = 54; /* insignificant parameter */
+	d_bmp->filerw = RT_NULL;
+	d_bmp->is_loaded = RT_TRUE; /* Don't want to loading */
+	d_bmp->pitch = d_bmp->w * nbytes;
+	d_bmp->pad = ((d_bmp->pitch % 4) ? (4 - (d_bmp->pitch%4)) : 0);
+	d_bmp->scale = 0;
+	d_bmp->pixels = rt_malloc(dest_buff_size);
+	if(d_bmp->pixels == RT_NULL) 
+	{
+		rt_free(d_img);
+		rt_free(d_bmp);
+		rt_kprintf("Not enough memory allocation BMP data!\n");
+		return RT_NULL;
+	}
+	des_buf = d_bmp->pixels;
+	/* use white fill empty pixel */
+	rt_memset(des_buf, 0xFF, dest_buff_size);
+	
+	o.x = dw>>1;
+	o.y = dh>>1;
+
+	for (i = 0; i < sh; i++) 
+	{ 
+		unsigned char c;
+		for (j = 0; j < sw; j++) 
+		{ 
+			p.x = j + ((dw-sw)>>1);
+			p.y = i + ((dh-sh)>>1);
+			cp = _rotate_pos(o, p, sina, cosa);
+			if(rtgui_rect_contains_point(&rect, cp.x, cp.y) != RT_EOK)
+				continue;
+			if(bitcount == 24)
+			{
+				int k;
+				for (k = 0; k < 3; k++) 
+				{	/* 24 bits color is 3 bytes R:G:B */ 
+					c = (src_buf[src_line_size * i + nbytes * j + k]);
+					des_buf[cp.y * dest_line_size + cp.x * nbytes + k] = c;
+					/* Fill the floating-point calculation of the empty hole  */
+					if(cp.x < dw-1)
+					{
+						des_buf[cp.y * dest_line_size + (cp.x+1) * nbytes + k] = c;
+					}
+				} 
+			}
+		} 
+	}
+	d_img->data = d_bmp;
+	/* rt_kprintf("rotate use %d ticks\n", rt_tick_get()-tick); */
+	return d_img;
+}
 
 void rtgui_image_bmp_init()
 {

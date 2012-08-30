@@ -12,7 +12,7 @@
 
 struct demo_bmp_dt
 {
-	float scale;
+	float scale, angle;
 	char *filename;
 	struct rtgui_image *image;
 	struct rtgui_image *showimg;
@@ -33,7 +33,7 @@ rt_bool_t demo_bitmap_showbox(struct rtgui_object* object, struct rtgui_event* e
 	if(event->type == RTGUI_EVENT_PAINT)
 	{
 		int w, h;
-		rtgui_rect_t rect, rc;
+		rtgui_rect_t rect;
 		struct rtgui_dc *dc;
 		struct rtgui_image *image = bmpdt.showimg;
 		
@@ -52,9 +52,11 @@ rt_bool_t demo_bitmap_showbox(struct rtgui_object* object, struct rtgui_event* e
 		rtgui_rect_inflate(&rect, -RTGUI_WIDGET_BORDER(widget));
 		w = rtgui_rect_width(rect);
 		h = rtgui_rect_height(rect);
+#if 1
 		/* fill container with background */
 		if(image != RT_NULL)
 		{	/* Reduce unnecessary drawing */
+			rtgui_rect_t rc;
 			if(w > image->w)
 			{
 				rc.x1 = image->w;
@@ -74,6 +76,7 @@ rt_bool_t demo_bitmap_showbox(struct rtgui_object* object, struct rtgui_event* e
 		}
 		else
 			rtgui_dc_fill_rect(dc, &rect);
+#endif
 
 		if (image != RT_NULL)
 			rtgui_image_blit(image, dc, &rect);
@@ -104,7 +107,9 @@ void demo_bitmap_open(struct rtgui_object* object, struct rtgui_event* event)
 		
 		if(bmpdt.image != RT_NULL)
 		{
-			bmpdt.showimg = bmpdt.image;		
+			bmpdt.showimg = bmpdt.image;
+			bmpdt.scale = 1.0;
+			bmpdt.angle = 0.0;
 			rtgui_widget_update(RTGUI_WIDGET(bmpdt.showbox));
 		}
 	}
@@ -160,6 +165,29 @@ void demo_image_zoom_out(struct rtgui_object* object, struct rtgui_event* event)
 	}
 }
 
+void demo_image_rotate(struct rtgui_object* object, struct rtgui_event* event)
+{
+	rtgui_button_t *button = RTGUI_BUTTON(object);
+
+	if (bmpdt.image == RT_NULL) return;
+
+	if (bmpdt.angle < 360.0)
+		bmpdt.angle += (float)1.0;
+	else
+		bmpdt.angle = 0.0;
+
+	bmpdt.showimg = rtgui_image_rotate(bmpdt.image, bmpdt.angle);
+	if (bmpdt.showimg != RT_NULL)
+		rtgui_widget_update(RTGUI_WIDGET(bmpdt.showbox));
+	else
+		return;
+	if(bmpdt.showimg != bmpdt.image)
+	{
+		rtgui_image_destroy(bmpdt.showimg);
+		bmpdt.showimg = RT_NULL;
+	}
+}
+
 rtgui_container_t *demo_view_bmp(void)
 {
 	rtgui_rect_t rect;
@@ -169,6 +197,7 @@ rtgui_container_t *demo_view_bmp(void)
 	
 	rt_memset(&bmpdt, 0, sizeof(struct demo_bmp_dt));
 	bmpdt.scale = 1.0;
+	bmpdt.angle = 0.0;
 
 	container = demo_view("Bmp File:");
 
@@ -181,7 +210,7 @@ rtgui_container_t *demo_view_bmp(void)
 	rtgui_widget_set_rect(RTGUI_WIDGET(box), &rect);
 	rtgui_container_add_child(container, RTGUI_WIDGET(box));
 	bmpdt.box = box;
-
+	/* create a button "open" */
 	demo_view_get_rect(container, &rect);
 	rect.x1 += 5;
 	rect.x2 = rect.x1 + 60;
@@ -191,7 +220,8 @@ rtgui_container_t *demo_view_bmp(void)
 	rtgui_widget_set_rect(RTGUI_WIDGET(button), &rect);
 	rtgui_container_add_child(container, RTGUI_WIDGET(button));
 	rtgui_button_set_onbutton(button, demo_bitmap_open);
-	
+
+	/* create a button "zoom in" */
 	demo_view_get_rect(container, &rect);
 	rect.x1 += 85;
 	rect.x2 = rect.x1 + 70;
@@ -202,6 +232,7 @@ rtgui_container_t *demo_view_bmp(void)
 	rtgui_container_add_child(container, RTGUI_WIDGET(button));
 	rtgui_button_set_onbutton(button, demo_image_zoom_in);
 
+	/* create a button "zoom out" */
 	demo_view_get_rect(container, &rect);
 	rect.x1 += 165;
 	rect.x2 = rect.x1 + 70;
@@ -212,6 +243,18 @@ rtgui_container_t *demo_view_bmp(void)
 	rtgui_container_add_child(container, RTGUI_WIDGET(button));
 	rtgui_button_set_onbutton(button, demo_image_zoom_out);
 
+	/* create a button "rotate" */
+	demo_view_get_rect(container, &rect);
+	rect.x1 += 245;
+	rect.x2 = rect.x1 + 70;
+	rect.y1 -= 10;
+	rect.y2 = rect.y1 + 24;
+	button = rtgui_button_create("rotate");
+	rtgui_widget_set_rect(RTGUI_WIDGET(button), &rect);
+	rtgui_container_add_child(container, RTGUI_WIDGET(button));
+	rtgui_button_set_onbutton(button, demo_image_rotate);
+
+	/* create a container "showbox" */
 	demo_view_get_rect(container, &rect);
 	rect.x1 += 5;
 	rect.x2 -= 5;
