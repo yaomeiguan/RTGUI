@@ -18,6 +18,7 @@ struct demo_bmp_dt
 	struct rtgui_image *showimg;
 	rtgui_container_t *showbox;
 	rtgui_textbox_t *box;
+	rtgui_rect_t lastrect;
 }bmpdt;
 
 rt_bool_t demo_bitmap_showbox(struct rtgui_object* object, struct rtgui_event* event)
@@ -41,6 +42,9 @@ rt_bool_t demo_bitmap_showbox(struct rtgui_object* object, struct rtgui_event* e
 		{
 			image = bmpdt.image;
 			bmpdt.scale = 1.0f;
+			bmpdt.angle = 0.0f;
+			rtgui_widget_get_rect(RTGUI_WIDGET(bmpdt.showbox), &bmpdt.lastrect);
+			rtgui_rect_inflate(&bmpdt.lastrect, -RTGUI_WIDGET_BORDER(bmpdt.showbox));
 		}
 
 		dc = rtgui_dc_begin_drawing(widget);
@@ -51,36 +55,47 @@ rt_bool_t demo_bitmap_showbox(struct rtgui_object* object, struct rtgui_event* e
 		/* 在绘制边框后, 再将rect缩小填充背景, 可以降低闪烁现象 */
 		rtgui_dc_draw_border(dc, &rect, RTGUI_WIDGET_BORDER_STYLE(widget));
 		rtgui_rect_inflate(&rect, -RTGUI_WIDGET_BORDER(widget));
-		w = rtgui_rect_width(rect);
-		h = rtgui_rect_height(rect);
-#if 1
+		w = rtgui_rect_width(bmpdt.lastrect);
+		h = rtgui_rect_height(bmpdt.lastrect);
+		
 		/* fill container with background */
+		/*
+		* 参数lastrect会记录上一次绘图所用区域
+		* 每次重绘时,只需与lastrect比较,即可得知那些背景区域需要刷新
+		* 例如当放大图片时,lastrect比当前绘图区小,所有无需更新背景区,
+		* 当缩小图片时, 也仅需要更新绘图区比lastrect大的区域.
+		*/
 		if(image != RT_NULL)
 		{	/* 减少不必要的绘图 */
 			rtgui_rect_t rc;
 			if(w > image->w)
 			{
 				rc.x1 = image->w;
-				rc.y1 = rect.y1;
-				rc.x2 = rect.x2;
-				rc.y2 = (h > image->h) ? image->h : rect.y2;
+				rc.y1 = bmpdt.lastrect.y1;
+				rc.x2 = bmpdt.lastrect.x2;
+				rc.y2 = (h > image->h) ? image->h : bmpdt.lastrect.y2;
 				rtgui_dc_fill_rect(dc, &rc);
 			}
 			if(h > image->h)
 			{
-				rc.x1 = rect.x1;
+				rc.x1 = bmpdt.lastrect.x1;
 				rc.y1 = image->h;
-				rc.x2 = rect.x2;
-				rc.y2 = rect.y2;
+				rc.x2 = bmpdt.lastrect.x2;
+				rc.y2 = bmpdt.lastrect.y2;
 				rtgui_dc_fill_rect(dc, &rc);
 			}
 		}
 		else
-			rtgui_dc_fill_rect(dc, &rect);
-#endif
+			rtgui_dc_fill_rect(dc, &bmpdt.lastrect);
+
 		/* 将图像数据blit到画布上 */
 		if (image != RT_NULL)
+		{
 			rtgui_image_blit(image, dc, &rect);
+			bmpdt.lastrect.x1 = bmpdt.lastrect.y1 = RTGUI_WIDGET_BORDER(bmpdt.showbox);
+			bmpdt.lastrect.x2 = bmpdt.lastrect.x1 + image->w;
+			bmpdt.lastrect.y2 = bmpdt.lastrect.y1 + image->h+1;
+		}
 
 		rtgui_dc_end_drawing(dc);
 		return RT_FALSE;
@@ -267,6 +282,8 @@ rtgui_container_t *demo_view_bmp(void)
 	rtgui_widget_set_border(RTGUI_WIDGET(showbox), RTGUI_BORDER_SIMPLE);
 	bmpdt.showbox = showbox;
 	rtgui_object_set_event_handler(RTGUI_OBJECT(showbox), demo_bitmap_showbox);
+	rtgui_widget_get_rect(RTGUI_WIDGET(showbox), &bmpdt.lastrect);
+	rtgui_rect_inflate(&bmpdt.lastrect, -RTGUI_WIDGET_BORDER(showbox));
 	
 	return container;
 }
