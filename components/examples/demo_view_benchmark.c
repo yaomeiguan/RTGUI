@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <rtgui/dc.h>
 #include <rtgui/dc_hw.h>
 #include <rtgui/rtgui_system.h>
@@ -38,7 +39,9 @@ void _onidle(struct rtgui_object *object, rtgui_event_t *event)
     rtgui_dc_end_drawing(dc);
 	if(rt_tick_get()-ticks >= RT_TICK_PER_SECOND)
 	{
-		rt_kprintf("frames per second: %d fps\n", area/(800*480));
+		char buf[16];
+		sprintf(buf, "%.2f", (double)area/(800*480));
+		rt_kprintf("frames per second: %s fps\n", buf);
 		area = 0;
 		ticks = rt_tick_get();
 	}
