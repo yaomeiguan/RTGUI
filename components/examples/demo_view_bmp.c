@@ -57,6 +57,8 @@ rt_bool_t demo_bitmap_showbox(struct rtgui_object* object, struct rtgui_event* e
 		rtgui_rect_inflate(&rect, -RTGUI_WIDGET_BORDER(widget));
 		w = rtgui_rect_width(bmpdt.lastrect);
 		h = rtgui_rect_height(bmpdt.lastrect);
+		if(w > rtgui_rect_width(rect)) w = rtgui_rect_width(rect);
+		if(h > rtgui_rect_height(rect)) h = rtgui_rect_height(rect);
 		
 		/* fill container with background */
 		/*
@@ -91,10 +93,21 @@ rt_bool_t demo_bitmap_showbox(struct rtgui_object* object, struct rtgui_event* e
 		/* 将图像数据blit到画布上 */
 		if (image != RT_NULL)
 		{
+			int value;
 			rtgui_image_blit(image, dc, &rect);
 			bmpdt.lastrect.x1 = bmpdt.lastrect.y1 = RTGUI_WIDGET_BORDER(bmpdt.showbox);
-			bmpdt.lastrect.x2 = bmpdt.lastrect.x1 + image->w;
-			bmpdt.lastrect.y2 = bmpdt.lastrect.y1 + image->h+1;
+
+			if(image->w > rtgui_rect_width(rect))
+				value = rtgui_rect_width(rect);
+			else
+				value = image->w;
+			bmpdt.lastrect.x2 = bmpdt.lastrect.x1 + value;
+
+			if(image->h > rtgui_rect_height(rect))
+				value = rtgui_rect_height(rect);
+			else
+				value = image->h;
+			bmpdt.lastrect.y2 = bmpdt.lastrect.y1 + value;
 		}
 
 		rtgui_dc_end_drawing(dc);
@@ -139,7 +152,7 @@ void demo_image_zoom_in(struct rtgui_object* object, struct rtgui_event* event)
 
 	if (bmpdt.image == RT_NULL) return;
 
-	if (bmpdt.scale > 0.15)
+	if (bmpdt.scale > 0.45)
 	{	/* 更新缩放倍率 */
 		if (bmpdt.scale > 1.0) bmpdt.scale -= (float)0.5;
 		else bmpdt.scale -= (float)0.1;
