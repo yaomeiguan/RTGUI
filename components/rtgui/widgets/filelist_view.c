@@ -309,9 +309,8 @@ static void rtgui_filelist_view_menu_pop(rtgui_widget_t *parent)
 		listbox = rtgui_listbox_create(items, sizeof(items)/sizeof(items[0]), &rect);
 		rtgui_listbox_set_onitem(listbox, rtgui_filelist_view_on_folder_item);
 		rtgui_container_add_child(RTGUI_CONTAINER(menu), RTGUI_WIDGET(listbox));
-		rtgui_win_show(menu, RT_FALSE);
-		rtgui_widget_focus(RTGUI_WIDGET(listbox));
 		rtgui_listbox_set_current_item(listbox, 0);
+		rtgui_win_show(menu, RT_TRUE);        
 	}
 }
 
@@ -675,6 +674,7 @@ rtgui_filelist_view_t* rtgui_filelist_view_create(const char* directory,
 	view = (struct rtgui_filelist_view*) rtgui_widget_create(RTGUI_FILELIST_VIEW_TYPE);
 	if (view != RT_NULL)
 	{
+		rtgui_widget_set_rect(RTGUI_WIDGET(view), rect);
 		view->items = RT_NULL;
 		view->pattern = rt_strdup(pattern);
 		view->page_items = rtgui_rect_height(*rect) / (1 + rtgui_theme_get_selected_height());
@@ -683,12 +683,15 @@ rtgui_filelist_view_t* rtgui_filelist_view_create(const char* directory,
 
 	return view;
 }
+RTM_EXPORT(rtgui_filelist_view_create);
 
 void rtgui_filelist_view_destroy(rtgui_filelist_view_t* view)
 {
     /* destroy view */
 	rtgui_widget_destroy(RTGUI_WIDGET(view));
 }
+RTM_EXPORT(rtgui_filelist_view_destroy);
+
 
 /* clear all file items */
 static void rtgui_filelist_view_clear(rtgui_filelist_view_t* view)
@@ -712,6 +715,7 @@ static void rtgui_filelist_view_clear(rtgui_filelist_view_t* view)
 	view->items_count = 0;
 	view->current_item = 0;
 }
+RTM_EXPORT(rtgui_filelist_view_clear);
 
 void rtgui_filelist_view_set_directory(rtgui_filelist_view_t* view, const char* directory)
 {
@@ -771,7 +775,7 @@ void rtgui_filelist_view_set_directory(rtgui_filelist_view_t* view, const char* 
 			item = &(view->items[0]);
 
 			/* add .. directory */
-			item->name = rt_strdup("ØXµÌ`Á§ãš”M");
+			item->name = rt_strdup("directory");
 			item->type = RTGUI_FITEM_DIR;
 			item->size = 0;
 
@@ -824,6 +828,7 @@ __return:
     /* update view */
     rtgui_widget_update(RTGUI_WIDGET(view));
 }
+RTM_EXPORT(rtgui_filelist_view_set_directory);
 
 void rtgui_filelist_view_get_fullpath(rtgui_filelist_view_t* view, char* path, rt_size_t len)
 {
@@ -836,4 +841,6 @@ void rtgui_filelist_view_get_fullpath(rtgui_filelist_view_t* view, char* path, r
 		rt_snprintf(path, len, "%s%s",view->current_directory,
 			view->items[view->current_item].name);
 }
+RTM_EXPORT(rtgui_filelist_view_get_fullpath);
+
 #endif
