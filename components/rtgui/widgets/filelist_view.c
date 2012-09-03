@@ -775,7 +775,11 @@ void rtgui_filelist_view_set_directory(rtgui_filelist_view_t* view, const char* 
 			item = &(view->items[0]);
 
 			/* add .. directory */
-			item->name = rt_strdup("directory");
+#ifdef RTGUI_USING_FONTHZ
+			item->name = rt_strdup("ÍË³öÎÄ¼þä¯ÀÀ");
+#else
+			item->name = rt_strdup("..");
+#endif
 			item->type = RTGUI_FITEM_DIR;
 			item->size = 0;
 
