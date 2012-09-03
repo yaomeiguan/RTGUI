@@ -867,7 +867,7 @@ void rtgui_image_bmp_header_cfg(struct rtgui_image_bmp_header *bhr, rt_int32_t w
 		bhr->bfOffBits += 12;
 	}
 }
-
+#ifdef RTGUI_USING_DFS_FILERW
 #define WRITE_CLUSTER_SIZE	2048
 void bmp_align_write(struct rtgui_filerw *file, char *dest, char *src, rt_int32_t len, rt_int32_t *count)
 {
@@ -1007,7 +1007,7 @@ void screenshot(const char *filename)
 #include <finsh.h>
 FINSH_FUNCTION_EXPORT(screenshot, usage: screenshot(filename));
 #endif
-
+#endif
 /*
 * image zoom in, zoom out interface
 * Support 16/24 bits format image

@@ -14,6 +14,8 @@
 #ifndef __RTGUI_FILERW_H__
 #define __RTGUI_FILERW_H__
 
+#ifdef RTGUI_USING_DFS_FILERW 
+
 #ifdef _WIN32
 #pragma warning(disable: 4996)
 #include <fcntl.h>
@@ -54,5 +56,6 @@ int rtgui_filerw_unlink(const char *filename);
 
 /* get memory data from filerw memory object */
 const rt_uint8_t* rtgui_filerw_mem_getdata(struct rtgui_filerw* context);
+#endif
 
 #endif

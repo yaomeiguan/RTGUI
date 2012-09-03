@@ -1828,10 +1828,10 @@ rt_uint32_t rtgui_edit_get_mem_consume(struct rtgui_edit *edit)
 	return mem_size;
 }
 
+#ifdef RTGUI_USING_DFS_FILERW
 /** 
  * File access component, General File Access Interface
  */
-
 rt_bool_t rtgui_edit_readin_file(struct rtgui_edit *edit, const char *filename)
 {
 	struct rtgui_filerw *filerw;
@@ -1909,3 +1909,4 @@ rt_bool_t rtgui_edit_saveas_file(struct rtgui_edit *edit, const char *filename)
 
 	return RT_TRUE;
 }
+#endif

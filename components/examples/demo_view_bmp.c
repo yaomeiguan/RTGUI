@@ -10,6 +10,7 @@
 #include <rtgui/widgets/textbox.h>
 #include <rtgui/widgets/container.h>
 
+#if defined(RTGUI_USING_DFS_FILERW)
 struct demo_bmp_dt
 {
 	float scale, angle;
@@ -300,4 +301,4 @@ rtgui_container_t *demo_view_bmp(void)
 	
 	return container;
 }
-
+#endif

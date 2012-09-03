@@ -15,7 +15,7 @@
 #include <finsh.h>
 #endif
 #define RT_USING_LZO
-#if defined(RT_USING_LZO)
+#if defined(RT_USING_LZO) && defined(RTGUI_USING_DFS_FILERW)
 
 /* the worst of allocation */
 #define LZO1X_WORST(x) ( (x) + ((x)/16) + 64 + 3 ) 

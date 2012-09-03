@@ -12,6 +12,7 @@
 #include <rtgui/widgets/label.h>
 #include <rtgui/widgets/button.h>
 
+#ifdef RTGUI_USING_DFS_FILERW
 void demo_edit_readin_file(struct rtgui_object *object, struct rtgui_event *event)
 {
     rtgui_button_t *button;
@@ -178,3 +179,4 @@ rtgui_container_t *demo_view_edit(void)
 
     return container;
 }
+#endif

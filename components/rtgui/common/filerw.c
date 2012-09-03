@@ -11,9 +11,8 @@
  * Date           Author       Notes
  * 2009-10-16     Bernard      first version
  */
-
-#include <rtgui/filerw.h>
 #include <rtgui/rtgui_system.h>
+#include <rtgui/filerw.h>
 
 #ifdef RTGUI_USING_DFS_FILERW
 
