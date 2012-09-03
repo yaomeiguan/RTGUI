@@ -50,8 +50,6 @@ static void _rtgui_widget_constructor(rtgui_widget_t *widget)
 	/* some common event handler */
 	widget->on_focus_in   = RT_NULL;
 	widget->on_focus_out  = RT_NULL;
-	widget->on_show       = RT_NULL;
-	widget->on_hide       = RT_NULL;
 
 #ifndef RTGUI_USING_SMALL_SIZE
 	widget->on_draw       = RT_NULL;
@@ -280,22 +278,6 @@ void rtgui_widget_set_onunfocus(rtgui_widget_t* widget, rtgui_event_handler_ptr 
 	widget->on_focus_out = handler;
 }
 RTM_EXPORT(rtgui_widget_set_onunfocus);
-
-void rtgui_widget_set_onshow(rtgui_widget_t* widget, rtgui_event_handler_ptr handler)
-{
-	RT_ASSERT(widget != RT_NULL);
-
-	widget->on_show = handler;
-}
-RTM_EXPORT(rtgui_widget_set_onshow);
-
-void rtgui_widget_set_onhide(rtgui_widget_t* widget, rtgui_event_handler_ptr handler)
-{
-	RT_ASSERT(widget != RT_NULL);
-
-	widget->on_hide = handler;
-}
-RTM_EXPORT(rtgui_widget_set_onhide);
 
 #ifndef RTGUI_USING_SMALL_SIZE
 void rtgui_widget_set_ondraw(rtgui_widget_t* widget, rtgui_event_handler_ptr handler)
@@ -631,9 +613,6 @@ rt_bool_t rtgui_widget_onshow(struct rtgui_object *object, struct rtgui_event *e
 
 	RTGUI_WIDGET_UNHIDE(widget);
 
-	if (widget->on_show != RT_NULL)
-		widget->on_show(RTGUI_OBJECT(widget), RT_NULL);
-
 	return RT_FALSE;
 }
 RTM_EXPORT(rtgui_widget_onshow);
@@ -662,9 +641,6 @@ rt_bool_t rtgui_widget_onhide(struct rtgui_object *object, struct rtgui_event *e
 		/* union widget rect */
 		rtgui_region_union_rect(&(parent->clip), &(parent->clip), &(widget->extent));
 	}
-
-	if (widget->on_hide != RT_NULL)
-		widget->on_hide(RTGUI_OBJECT(widget), RT_NULL);
 
 	return RT_FALSE;
 }
