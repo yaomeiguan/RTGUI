@@ -136,11 +136,11 @@ rt_bool_t rtgui_container_event_handler(struct rtgui_object* object, struct rtgu
 
 			/* fill container with background */
 			rtgui_dc_fill_rect(dc, &rect);
+			
+			rtgui_dc_end_drawing(dc);
 
 			/* paint on each child */
-			rtgui_container_dispatch_event(container, event);
-
-			rtgui_dc_end_drawing(dc);
+			rtgui_container_dispatch_event(container, event);	
 		}
 		break;
 

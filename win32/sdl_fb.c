@@ -3,8 +3,13 @@
 #include <SDL/sdl.h>
 #include <rtgui/driver.h>
 
+#if 1
+#define SDL_SCREEN_WIDTH	800
+#define SDL_SCREEN_HEIGHT	480
+#else
 #define SDL_SCREEN_WIDTH	240
 #define SDL_SCREEN_HEIGHT	320
+#endif
 
 struct sdlfb_device
 {
