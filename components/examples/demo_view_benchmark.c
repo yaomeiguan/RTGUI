@@ -81,6 +81,11 @@ rt_bool_t benchmark_event_handler(struct rtgui_object *object, rtgui_event_t *ev
     {
         _draw_default(object, event);
     }
+    else if (event->type == RTGUI_EVENT_SHOW)
+    {
+        rtgui_widget_onshow(object, event);
+        _benchmark_onshow(object, event);
+    }
     else if (event->type == RTGUI_EVENT_KBD)
     {
         struct rtgui_event_kbd *kbd = (struct rtgui_event_kbd *)event;
@@ -129,7 +134,6 @@ rtgui_container_t *demo_view_benchmark(void)
     container = demo_view("»æÍ¼²âÊÔ");
     RTGUI_WIDGET(container)->flag |= RTGUI_WIDGET_FLAG_FOCUSABLE;
     rtgui_object_set_event_handler(RTGUI_OBJECT(container), benchmark_event_handler);
-    rtgui_widget_set_onshow(RTGUI_WIDGET(container), _benchmark_onshow);
 
     return container;
 }
