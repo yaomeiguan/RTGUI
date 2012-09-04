@@ -83,7 +83,7 @@ rt_bool_t benchmark_event_handler(struct rtgui_object *object, rtgui_event_t *ev
     }
     else if (event->type == RTGUI_EVENT_SHOW)
     {
-        rtgui_widget_onshow(object, event);
+        rtgui_container_event_handler(object, event);
         _benchmark_onshow(object, event);
     }
     else if (event->type == RTGUI_EVENT_KBD)
