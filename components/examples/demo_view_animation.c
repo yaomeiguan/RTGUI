@@ -108,12 +108,12 @@ rt_bool_t animation_event_handler(struct rtgui_object *object, rtgui_event_t *ev
     }
     else if (event->type == RTGUI_EVENT_SHOW)
     {
-        rtgui_widget_onshow(object, event);
+        rtgui_container_event_handler(object, event);
         animation_on_show(object, event);
     }
     else if (event->type == RTGUI_EVENT_HIDE)
     {
-        rtgui_widget_onhide(object, event);
+        rtgui_container_event_handler(object, event);
         animation_on_hide(object, event);
     }
     else

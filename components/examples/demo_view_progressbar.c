@@ -39,12 +39,12 @@ static rt_bool_t progressbar_event_handler(struct rtgui_object *object, rtgui_ev
 
     if (event->type == RTGUI_EVENT_SHOW)
     {
-        rtgui_widget_onshow(object, event);
+        rtgui_container_event_handler(object, event);
         start_timer(object, event);
     }
     else if (event->type == RTGUI_EVENT_HIDE)
     {
-        rtgui_widget_onhide(object, event);
+        rtgui_container_event_handler(object, event);
         stop_timer(object, event);
     }
     else
