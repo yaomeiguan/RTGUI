@@ -10,6 +10,7 @@
  */
 #include <rtthread.h>
 #include "minilzo.h"
+#include <rtgui/rtgui_config.h>
 #include <rtgui/filerw.h>
 #ifdef RT_USING_FINSH
 #include <finsh.h>
