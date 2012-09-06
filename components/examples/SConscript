@@ -40,6 +40,7 @@ demo_view_mywidget.c
 demo_view_box.c
 demo_view_edit.c
 demo_view_bmp.c
+demo_plot.c
 mywidget.c
 """)
 

@@ -68,6 +68,8 @@ widgets/window.c
 widgets/panel.c
 widgets/groupbox.c
 widgets/edit.c
+widgets/plot.c
+widgets/plot_curve.c
 """)
 
 # The set of source files associated with this SConscript file.
