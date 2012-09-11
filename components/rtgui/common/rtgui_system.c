@@ -87,6 +87,7 @@ rtgui_timer_t* rtgui_timer_create(rt_int32_t time, rt_int32_t flag, rtgui_timeou
 
 	return timer;
 }
+RTM_EXPORT(rtgui_timer_create);
 
 void rtgui_timer_destory(rtgui_timer_t* timer)
 {
@@ -100,6 +101,7 @@ void rtgui_timer_destory(rtgui_timer_t* timer)
 
 	rtgui_free(timer);
 }
+RTM_EXPORT(rtgui_timer_destory);
 
 void rtgui_timer_start(rtgui_timer_t* timer)
 {
@@ -108,6 +110,7 @@ void rtgui_timer_start(rtgui_timer_t* timer)
 	/* start rt-thread timer */
 	rt_timer_start(&(timer->timer));
 }
+RTM_EXPORT(rtgui_timer_start);
 
 void rtgui_timer_stop (rtgui_timer_t* timer)
 {
@@ -116,6 +119,7 @@ void rtgui_timer_stop (rtgui_timer_t* timer)
 	/* stop rt-thread timer */
 	rt_timer_stop(&(timer->timer));
 }
+RTM_EXPORT(rtgui_timer_stop);
 
 /************************************************************************/
 /* RTGUI Memory Management                                              */
@@ -267,6 +271,7 @@ void* rtgui_malloc(rt_size_t size)
 
 	return ptr;
 }
+RTM_EXPORT(rtgui_malloc);
 
 void* rtgui_realloc(void* ptr, rt_size_t size)
 {
@@ -285,6 +290,7 @@ void* rtgui_realloc(void* ptr, rt_size_t size)
 
 	return new_ptr;
 }
+RTM_EXPORT(rtgui_realloc);
 
 void rtgui_free(void* ptr)
 {
@@ -295,6 +301,7 @@ void rtgui_free(void* ptr)
 
 	rt_free(ptr);
 }
+RTM_EXPORT(rtgui_free);
 
 #if defined(RTGUI_MEM_TRACE) && defined(RT_USING_FINSH)
 #include <finsh.h>
@@ -569,6 +576,7 @@ rt_err_t rtgui_send(rt_thread_t tid, rtgui_event_t* event, rt_size_t event_size)
 
 	return result;
 }
+RTM_EXPORT(rtgui_send);
 
 rt_err_t rtgui_send_urgent(rt_thread_t tid, rtgui_event_t* event, rt_size_t event_size)
 {
@@ -592,6 +600,7 @@ rt_err_t rtgui_send_urgent(rt_thread_t tid, rtgui_event_t* event, rt_size_t even
 
 	return result;
 }
+RTM_EXPORT(rtgui_send_urgent);
 
 rt_err_t rtgui_send_sync(rt_thread_t tid, rtgui_event_t* event, rt_size_t event_size)
 {
@@ -640,6 +649,7 @@ __return:
 	rt_mb_detach(&ack_mb);
 	return r;
 }
+RTM_EXPORT(rtgui_send_sync);
 
 rt_err_t rtgui_ack(rtgui_event_t* event, rt_int32_t status)
 {
@@ -650,6 +660,7 @@ rt_err_t rtgui_ack(rtgui_event_t* event, rt_int32_t status)
 
 	return RT_EOK;
 }
+RTM_EXPORT(rtgui_ack);
 
 rt_err_t rtgui_recv(rtgui_event_t* event, rt_size_t event_size)
 {
@@ -667,6 +678,7 @@ rt_err_t rtgui_recv(rtgui_event_t* event, rt_size_t event_size)
 
 	return r;
 }
+RTM_EXPORT(rtgui_recv);
 
 rt_err_t rtgui_recv_nosuspend(rtgui_event_t* event, rt_size_t event_size)
 {
@@ -684,6 +696,7 @@ rt_err_t rtgui_recv_nosuspend(rtgui_event_t* event, rt_size_t event_size)
 
 	return r;
 }
+RTM_EXPORT(rtgui_recv_nosuspend);
 
 rt_err_t rtgui_recv_filter(rt_uint32_t type, rtgui_event_t* event, rt_size_t event_size)
 {
@@ -713,33 +726,41 @@ rt_err_t rtgui_recv_filter(rt_uint32_t type, rtgui_event_t* event, rt_size_t eve
 
 	return -RT_ERROR;
 }
+RTM_EXPORT(rtgui_recv_filter);
 
 rt_thread_t rtgui_get_server(void)
 {
 	return rt_thread_find("rtgui");
 }
+RTM_EXPORT(rtgui_get_server);
 
 void rtgui_set_mainwin_rect(struct rtgui_rect *rect)
 {
 	_mainwin_rect = *rect;
 }
+RTM_EXPORT(rtgui_set_mainwin_rect);
 
 void rtgui_get_mainwin_rect(struct rtgui_rect *rect)
 {
 	*rect = _mainwin_rect;
 }
+RTM_EXPORT(rtgui_get_mainwin_rect);
 
 void rtgui_get_screen_rect(struct rtgui_rect *rect)
 {
 	rtgui_graphic_driver_get_rect(rtgui_graphic_driver_get_default(), rect);
 }
+RTM_EXPORT(rtgui_get_screen_rect);
 
 void rtgui_screen_lock(rt_int32_t timeout)
 {
 	rt_mutex_take(&_screen_lock, timeout);
 }
+RTM_EXPORT(rtgui_screen_lock);
 
 void rtgui_screen_unlock(void)
 {
 	rt_mutex_release(&_screen_lock);
 }
+RTM_EXPORT(rtgui_screen_unlock);
+

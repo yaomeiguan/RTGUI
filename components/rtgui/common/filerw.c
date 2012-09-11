@@ -11,20 +11,10 @@
  * Date           Author       Notes
  * 2009-10-16     Bernard      first version
  */
-
-#include <rtgui/filerw.h>
 #include <rtgui/rtgui_system.h>
+#include <rtgui/filerw.h>
 
 #ifdef RTGUI_USING_DFS_FILERW
-#ifdef _WIN32
-#pragma warning(disable: 4996)
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <io.h>
-#else
-#include <dfs_posix.h>
-#endif
 
 /* standard file read/write */
 struct rtgui_filerw_stdio
@@ -224,7 +214,7 @@ static int parse_mode(const char *mode)
     switch (*mode)
 	{
     case 0: return f;
-    case 'b': break;
+    case 'b': f|=O_BINARY;break;
     case 'r': f=O_RDONLY; break;
     case 'w': f=O_WRONLY|O_CREAT|O_TRUNC; break;
     case 'a': f=O_WRONLY|O_CREAT|O_APPEND; break;
@@ -267,6 +257,15 @@ struct rtgui_filerw* rtgui_filerw_create_file(const char* filename, const char* 
 	}
 
 	return &(rw->parent);
+}
+
+int rtgui_filerw_unlink(const char *filename)
+{
+#ifdef _WIN32
+	return _unlink(filename);
+#else
+	return unlink(filename);
+#endif
 }
 
 #endif
@@ -346,11 +345,3 @@ int rtgui_filerw_close(struct rtgui_filerw* context)
 	return 0;
 }
 
-int rtgui_filerw_unlink(const char *filename)
-{
-#ifdef _WIN32
-	return _unlink(filename);
-#else
-	return unlink(filename);
-#endif
-}

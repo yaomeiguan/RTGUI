@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <rtgui/dc.h>
 #include <rtgui/dc_hw.h>
 #include <rtgui/rtgui_system.h>
@@ -8,6 +9,15 @@
 
 static struct rtgui_container *container = RT_NULL;
 static int running = 0;
+static rt_tick_t ticks;
+static long long area;
+
+static rt_bool_t _benchmark_onshow(struct rtgui_object *obj, struct rtgui_event *ev)
+{
+    rtgui_widget_focus(RTGUI_WIDGET(obj));
+
+    return RT_TRUE;
+}
 
 void _onidle(struct rtgui_object *object, rtgui_event_t *event)
 {
@@ -26,7 +36,7 @@ void _onidle(struct rtgui_object *object, rtgui_event_t *event)
     draw_rect.y1 = RAND(rect.y1, rect.y2);
     draw_rect.x2 = RAND(draw_rect.x1, rect.x2);
     draw_rect.y2 = RAND(draw_rect.y1, rect.y2);
-
+    area += rtgui_rect_width(draw_rect) * rtgui_rect_height(draw_rect);
     color = RTGUI_RGB(rand() % 255, rand() % 255, rand() % 255);
     RTGUI_WIDGET_BACKGROUND(container) = color;
 
@@ -34,6 +44,14 @@ void _onidle(struct rtgui_object *object, rtgui_event_t *event)
 
     /* »æÍ¼Íê³É */
     rtgui_dc_end_drawing(dc);
+    if(rt_tick_get()-ticks >= RT_TICK_PER_SECOND)
+    {
+        char buf[16];
+        sprintf(buf, "%.2f", (double)area/(800*480));
+        rt_kprintf("frames per second: %s fps\n", buf);
+        area = 0;
+        ticks = rt_tick_get();
+    }
 }
 
 void _draw_default(struct rtgui_object *object, rtgui_event_t *event)
@@ -70,6 +88,11 @@ rt_bool_t benchmark_event_handler(struct rtgui_object *object, rtgui_event_t *ev
     {
         _draw_default(object, event);
     }
+    else if (event->type == RTGUI_EVENT_SHOW)
+    {
+        rtgui_container_event_handler(object, event);
+        _benchmark_onshow(object, event);
+    }
     else if (event->type == RTGUI_EVENT_KBD)
     {
         struct rtgui_event_kbd *kbd = (struct rtgui_event_kbd *)event;
@@ -88,11 +111,14 @@ rt_bool_t benchmark_event_handler(struct rtgui_object *object, rtgui_event_t *ev
             else
             {
                 /* run */
+                ticks = rt_tick_get();
+                area = 0;
                 rtgui_app_set_onidle(_onidle);
             }
 
             running = !running;
         }
+
         return RT_TRUE;
     }
     else
@@ -104,19 +130,12 @@ rt_bool_t benchmark_event_handler(struct rtgui_object *object, rtgui_event_t *ev
     return RT_FALSE;
 }
 
-static rt_bool_t _benchmark_onshow(struct rtgui_object *obj, struct rtgui_event *ev)
-{
-    rtgui_widget_focus(RTGUI_WIDGET(obj));
-    return RT_TRUE;
-}
-
 rtgui_container_t *demo_view_benchmark(void)
 {
     srand(100);
     container = demo_view("»æÍ¼²âÊÔ");
     RTGUI_WIDGET(container)->flag |= RTGUI_WIDGET_FLAG_FOCUSABLE;
     rtgui_object_set_event_handler(RTGUI_OBJECT(container), benchmark_event_handler);
-    rtgui_widget_set_onshow(RTGUI_WIDGET(container), _benchmark_onshow);
 
     return container;
 }

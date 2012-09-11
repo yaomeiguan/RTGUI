@@ -23,6 +23,15 @@
 
 static void _rtgui_win_constructor(rtgui_win_t *win)
 {
+	/* set toplevel to self */
+    RTGUI_WIDGET(win)->toplevel = win;
+
+	/* init win property */
+	win->drawing = 0;
+
+	/* hide win default */
+	RTGUI_WIDGET_HIDE(win);
+
 	RTGUI_WIDGET(win)->flag |= RTGUI_WIDGET_FLAG_FOCUSABLE;
 	win->parent_window = RT_NULL;
 	/* init window attribute */
@@ -71,6 +80,8 @@ static void _rtgui_win_destructor(rtgui_win_t* win)
 	/* release field */
 	if (win->title != RT_NULL)
 		rt_free(win->title);
+	/* release external clip info */
+	win->drawing = 0;
 }
 
 static rt_bool_t _rtgui_win_create_in_server(struct rtgui_win *win)
@@ -104,7 +115,7 @@ static rt_bool_t _rtgui_win_create_in_server(struct rtgui_win *win)
 }
 
 DEFINE_CLASS_TYPE(win, "win",
-	RTGUI_TOPLEVEL_TYPE,
+	RTGUI_CONTAINER_TYPE,
 	_rtgui_win_constructor,
 	_rtgui_win_destructor,
 	sizeof(struct rtgui_win));
@@ -121,7 +132,7 @@ rtgui_win_t* rtgui_win_create(struct rtgui_win* parent_window,
 	if (win == RT_NULL)
 		return RT_NULL;
 
-	/* set parent toplevel */
+	/* set parent window */
 	win->parent_window = parent_window;
 
 	/* set title, rect and style */
@@ -143,6 +154,7 @@ __on_err:
 	rtgui_widget_destroy(RTGUI_WIDGET(win));
 	return RT_NULL;
 }
+RTM_EXPORT(rtgui_win_create);
 
 rtgui_win_t* rtgui_mainwin_create(struct rtgui_win *parent_window, const char* title, rt_uint16_t style)
 {
@@ -153,6 +165,7 @@ rtgui_win_t* rtgui_mainwin_create(struct rtgui_win *parent_window, const char* t
 
 	return rtgui_win_create(parent_window, title, &rect, style);
 }
+RTM_EXPORT(rtgui_mainwin_create);
 
 static rt_bool_t _rtgui_win_deal_close(struct rtgui_win *win,
 									   struct rtgui_event *event,
@@ -215,6 +228,7 @@ void rtgui_win_destroy(struct rtgui_win* win)
 		rtgui_widget_destroy(RTGUI_WIDGET(win));
 	}
 }
+RTM_EXPORT(rtgui_win_destroy);
 
 /* send a close event to myself to get a consistent behavior */
 rt_bool_t rtgui_win_close(struct rtgui_win* win)
@@ -227,6 +241,7 @@ rt_bool_t rtgui_win_close(struct rtgui_win* win)
 								 (struct rtgui_event*)&eclose,
 								 RT_FALSE);
 }
+RTM_EXPORT(rtgui_win_close);
 
 rt_base_t rtgui_win_show(struct rtgui_win* win, rt_bool_t is_modal)
 {
@@ -298,6 +313,7 @@ rt_base_t rtgui_win_show(struct rtgui_win* win, rt_bool_t is_modal)
 
 	return exit_code;
 }
+RTM_EXPORT(rtgui_win_show);
 
 void rtgui_win_end_modal(struct rtgui_win* win, rtgui_modal_code_t modal_code)
 {
@@ -309,6 +325,7 @@ void rtgui_win_end_modal(struct rtgui_win* win, rtgui_modal_code_t modal_code)
 	/* remove modal mode */
 	win->flag &= ~RTGUI_WIN_FLAG_MODAL;
 }
+RTM_EXPORT(rtgui_win_end_modal);
 
 void rtgui_win_hiden(struct rtgui_win* win)
 {
@@ -333,6 +350,7 @@ void rtgui_win_hiden(struct rtgui_win* win)
 		win->flag &= ~RTGUI_WIN_FLAG_ACTIVATE;
 	}
 }
+RTM_EXPORT(rtgui_win_hiden);
 
 rt_err_t rtgui_win_activate(struct rtgui_win *win)
 {
@@ -343,6 +361,7 @@ rt_err_t rtgui_win_activate(struct rtgui_win *win)
 	return rtgui_server_post_event_sync(RTGUI_EVENT(&eact),
 									    sizeof(eact));
 }
+RTM_EXPORT(rtgui_win_activate);
 
 rt_bool_t rtgui_win_is_activated(struct rtgui_win* win)
 {
@@ -352,6 +371,7 @@ rt_bool_t rtgui_win_is_activated(struct rtgui_win* win)
 
 	return RT_FALSE;
 }
+RTM_EXPORT(rtgui_win_is_activated);
 
 void rtgui_win_move(struct rtgui_win* win, int x, int y)
 {
@@ -385,6 +405,7 @@ void rtgui_win_move(struct rtgui_win* win, int x, int y)
 	rtgui_widget_show(RTGUI_WIDGET(win));
 	return;
 }
+RTM_EXPORT(rtgui_win_move);
 
 static rt_bool_t rtgui_win_ondraw(struct rtgui_win* win)
 {
@@ -411,6 +432,24 @@ static rt_bool_t rtgui_win_ondraw(struct rtgui_win* win)
 	rtgui_dc_end_drawing(dc);
 
 	return RT_FALSE;
+}
+
+void rtgui_win_update_clip(struct rtgui_win* win)
+{
+	struct rtgui_container* cnt;
+	struct rtgui_list_node* node;
+
+	if (win == RT_NULL)
+		return;
+
+	/* update the clip info of each child */
+	cnt = RTGUI_CONTAINER(win);
+	rtgui_list_foreach(node, &(cnt->children))
+	{
+		rtgui_widget_t* child = rtgui_list_entry(node, rtgui_widget_t, sibling);
+
+		rtgui_widget_update_clip(child);
+	}
 }
 
 rt_bool_t rtgui_win_event_handler(struct rtgui_object* object, struct rtgui_event* event)
@@ -454,13 +493,6 @@ rt_bool_t rtgui_win_event_handler(struct rtgui_object* object, struct rtgui_even
 		}
 
 		win->flag |= RTGUI_WIN_FLAG_ACTIVATE;
-#ifndef RTGUI_USING_SMALL_SIZE
-		if (RTGUI_WIDGET(object)->on_draw != RT_NULL)
-			RTGUI_WIDGET(object)->on_draw(object, event);
-		else
-#endif
-		rtgui_widget_update(RTGUI_WIDGET(win));
-
 		if (win->on_activate != RT_NULL)
 		{
 			win->on_activate(RTGUI_OBJECT(object), event);
@@ -483,18 +515,16 @@ rt_bool_t rtgui_win_event_handler(struct rtgui_object* object, struct rtgui_even
 		else
 		{
 			win->flag &= ~RTGUI_WIN_FLAG_ACTIVATE;
-#ifndef RTGUI_USING_SMALL_SIZE
-			if (RTGUI_WIDGET(object)->on_draw != RT_NULL)
-				RTGUI_WIDGET(object)->on_draw(object, event);
-			else
-#endif
-				rtgui_widget_update(RTGUI_WIDGET(win));
-
 			if (win->on_deactivate != RT_NULL)
 			{
 				win->on_deactivate(RTGUI_OBJECT(object), event);
 			}
 		}
+		break;
+
+	case RTGUI_EVENT_CLIP_INFO:
+		/* update win clip */
+		rtgui_win_update_clip(win);
 		break;
 
 	case RTGUI_EVENT_PAINT:
@@ -578,13 +608,27 @@ rt_bool_t rtgui_win_event_handler(struct rtgui_object* object, struct rtgui_even
 		}
 		break;
 
-	default:
-		/* call parent event handler */
-		return rtgui_toplevel_event_handler(object, event);
+	case RTGUI_EVENT_COMMAND:
+		if (rtgui_container_dispatch_event(RTGUI_CONTAINER(object), event) != RT_TRUE)
+		{
+#ifndef RTGUI_USING_SMALL_SIZE
+			if (RTGUI_WIDGET(object)->on_command != RT_NULL)
+			{
+				RTGUI_WIDGET(object)->on_command(object, event);
+			}
+#endif
+		}
+		else
+            return RT_TRUE;
+		break;
+
+	default :
+		return rtgui_container_event_handler(object, event);
 	}
 
 	return RT_FALSE;
 }
+RTM_EXPORT(rtgui_win_event_handler);
 
 void rtgui_win_set_rect(rtgui_win_t* win, rtgui_rect_t* rect)
 {
@@ -604,6 +648,7 @@ void rtgui_win_set_rect(rtgui_win_t* win, rtgui_rect_t* rect)
 		rtgui_server_post_event(&(event.parent), sizeof(struct rtgui_event_win_resize));
 	}
 }
+RTM_EXPORT(rtgui_win_set_rect);
 
 void rtgui_win_set_onactivate(rtgui_win_t* win, rtgui_event_handler_ptr handler)
 {
@@ -612,6 +657,7 @@ void rtgui_win_set_onactivate(rtgui_win_t* win, rtgui_event_handler_ptr handler)
 		win->on_activate = handler;
 	}
 }
+RTM_EXPORT(rtgui_win_set_onactivate);
 
 void rtgui_win_set_ondeactivate(rtgui_win_t* win, rtgui_event_handler_ptr handler)
 {
@@ -620,6 +666,7 @@ void rtgui_win_set_ondeactivate(rtgui_win_t* win, rtgui_event_handler_ptr handle
 		win->on_deactivate = handler;
 	}
 }
+RTM_EXPORT(rtgui_win_set_ondeactivate);
 
 void rtgui_win_set_onclose(rtgui_win_t* win, rtgui_event_handler_ptr handler)
 {
@@ -628,6 +675,7 @@ void rtgui_win_set_onclose(rtgui_win_t* win, rtgui_event_handler_ptr handler)
 		win->on_close = handler;
 	}
 }
+RTM_EXPORT(rtgui_win_set_onclose);
 
 void rtgui_win_set_onkey(rtgui_win_t* win, rtgui_event_handler_ptr handler)
 {
@@ -636,6 +684,7 @@ void rtgui_win_set_onkey(rtgui_win_t* win, rtgui_event_handler_ptr handler)
 		win->on_key = handler;
 	}
 }
+RTM_EXPORT(rtgui_win_set_onkey);
 
 void rtgui_win_set_title(rtgui_win_t* win, const char *title)
 {
@@ -656,6 +705,7 @@ void rtgui_win_set_title(rtgui_win_t* win, const char *title)
 		win->title = rt_strdup(title);
 	}
 }
+RTM_EXPORT(rtgui_win_set_title);
 
 char* rtgui_win_get_title(rtgui_win_t* win)
 {
@@ -663,3 +713,5 @@ char* rtgui_win_get_title(rtgui_win_t* win)
 
 	return win->title;
 }
+RTM_EXPORT(rtgui_win_get_title);
+

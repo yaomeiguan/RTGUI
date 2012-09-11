@@ -16,12 +16,13 @@
 #include <rtgui/widgets/listbox.h>
 
 #define LIST_MARGIN		5
+static rt_bool_t rtgui_listbox_onunfocus(struct rtgui_object* object, rtgui_event_t* event);
 
 static void _rtgui_listbox_constructor(struct rtgui_listbox *box)
 {
 	/* set default widget rect and set event handler */
 	rtgui_object_set_event_handler(RTGUI_OBJECT(box), rtgui_listbox_event_handler);
-
+	rtgui_widget_set_onunfocus(RTGUI_WIDGET(box), rtgui_listbox_onunfocus);
 	RTGUI_WIDGET(box)->flag |= RTGUI_WIDGET_FLAG_FOCUSABLE;
 
 	box->current_item = -1;
@@ -102,6 +103,7 @@ void rtgui_listbox_ondraw(struct rtgui_listbox* box)
 	}
 	rtgui_dc_end_drawing(dc);
 }
+RTM_EXPORT(rtgui_listbox_ondraw);
 
 static void rtgui_listbox_update_current(struct rtgui_listbox* box, rt_int16_t old_item)
 {
@@ -324,6 +326,7 @@ rt_bool_t rtgui_listbox_event_handler(struct rtgui_object* object, struct rtgui_
     /* use box event handler */
     return rtgui_widget_event_handler(RTGUI_OBJECT(widget), event);
 }
+RTM_EXPORT(rtgui_listbox_event_handler);
 
 rtgui_listbox_t* rtgui_listbox_create(const struct rtgui_listbox_item* items, rt_uint16_t count, rtgui_rect_t *rect)
 {
@@ -342,12 +345,14 @@ rtgui_listbox_t* rtgui_listbox_create(const struct rtgui_listbox_item* items, rt
 
 	return box;
 }
+RTM_EXPORT(rtgui_listbox_create);
 
 void rtgui_listbox_destroy(rtgui_listbox_t* box)
 {
     /* destroy box */
 	rtgui_widget_destroy(RTGUI_WIDGET(box));
 }
+RTM_EXPORT(rtgui_listbox_destroy);
 
 void rtgui_listbox_set_onitem(rtgui_listbox_t* box, rtgui_event_handler_ptr func)
 {
@@ -355,6 +360,7 @@ void rtgui_listbox_set_onitem(rtgui_listbox_t* box, rtgui_event_handler_ptr func
 
 	box->on_item = func;
 }
+RTM_EXPORT(rtgui_listbox_set_onitem);
 
 void rtgui_listbox_set_items(rtgui_listbox_t* box, struct rtgui_listbox_item* items, rt_uint16_t count)
 {
@@ -369,6 +375,7 @@ void rtgui_listbox_set_items(rtgui_listbox_t* box, struct rtgui_listbox_item* it
 
 	rtgui_widget_update(RTGUI_WIDGET(box));
 }
+RTM_EXPORT(rtgui_listbox_set_items);
 
 void rtgui_listbox_set_current_item(rtgui_listbox_t* box, int index)
 {
@@ -384,4 +391,33 @@ void rtgui_listbox_set_current_item(rtgui_listbox_t* box, int index)
 		rtgui_listbox_update_current(box, old_item);
 	}
 }
+RTM_EXPORT(rtgui_listbox_set_current_item);
 
+static rt_bool_t rtgui_listbox_onunfocus(struct rtgui_object* object, rtgui_event_t* event)
+{
+	rtgui_rect_t rect;
+	rtgui_widget_t *widget;
+	struct rtgui_dc *dc;
+
+	RT_ASSERT(object);
+	widget = RTGUI_WIDGET(object);
+
+	dc = rtgui_dc_begin_drawing(widget);
+	if(dc == RT_NULL) return RT_FALSE;
+
+	rtgui_widget_get_rect(widget, &rect);
+
+	if(!RTGUI_WIDGET_IS_FOCUSED(widget))
+	{
+		/* only clear focus rect */
+		rtgui_color_t color;
+		rect.x2 -= 1; rect.y2 -= 1;
+		color = RTGUI_DC_FC(dc);
+		RTGUI_DC_FC(dc) = RTGUI_DC_BC(dc);
+		rtgui_dc_draw_focus_rect(dc, &rect);
+		RTGUI_DC_FC(dc) = color;
+	}
+
+	rtgui_dc_end_drawing(dc);
+	return RT_TRUE;
+}

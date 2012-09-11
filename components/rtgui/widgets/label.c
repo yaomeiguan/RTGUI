@@ -18,6 +18,7 @@
 
 static void _rtgui_label_constructor(rtgui_label_t *label)
 {
+	RTGUI_WIDGET_TEXTALIGN(label) = RTGUI_ALIGN_LEFT | RTGUI_ALIGN_CENTER_VERTICAL;
 	/* init widget and set event handler */
 	rtgui_object_set_event_handler(RTGUI_OBJECT(label), rtgui_label_event_handler);
 
@@ -56,6 +57,7 @@ rt_bool_t rtgui_label_event_handler(struct rtgui_object *object, struct rtgui_ev
 
 	return RT_FALSE;
 }
+RTM_EXPORT(rtgui_label_event_handler);
 
 rtgui_label_t* rtgui_label_create(const char* text)
 {
@@ -78,11 +80,13 @@ rtgui_label_t* rtgui_label_create(const char* text)
 
     return label;
 }
+RTM_EXPORT(rtgui_label_create);
 
 void rtgui_label_destroy(rtgui_label_t* label)
 {
 	rtgui_widget_destroy(RTGUI_WIDGET(label));
 }
+RTM_EXPORT(rtgui_label_destroy);
 
 char* rtgui_label_get_text(rtgui_label_t* label)
 {
@@ -90,6 +94,7 @@ char* rtgui_label_get_text(rtgui_label_t* label)
 
 	return label->text;
 }
+RTM_EXPORT(rtgui_label_get_text);
 
 void rtgui_label_set_text(rtgui_label_t* label, const char* text)
 {
@@ -110,4 +115,5 @@ void rtgui_label_set_text(rtgui_label_t* label, const char* text)
 	/* update widget */
 	rtgui_theme_draw_label(label);
 }
+RTM_EXPORT(rtgui_label_set_text);
 
