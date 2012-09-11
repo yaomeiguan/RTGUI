@@ -310,7 +310,7 @@ struct rtgui_event_kbd
 
 struct rtgui_event_command
 {
-        _RTGUI_EVENT_WIN_ELEMENTS
+    _RTGUI_EVENT_WIN_ELEMENTS
 
 	/* command type */
 	rt_int32_t type;
