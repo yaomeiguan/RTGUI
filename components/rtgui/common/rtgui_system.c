@@ -380,7 +380,16 @@ static void rtgui_event_dump(rt_thread_t tid, rtgui_event_t* event)
 	if (event->sender != RT_NULL)
 		sender = event->sender->name;
 
-	rt_kprintf("%s -- %s --> %s ", sender, event_string[event->type], tid->name);
+	if (event->type >= RTGUI_EVENT_COMMAND)
+	{
+		rt_kprintf("%s -- USER EVENT --> %s \n", sender, tid->name);
+		return ;
+	}
+	else
+	{
+		rt_kprintf("%s -- %s --> %s ", sender, event_string[event->type], tid->name);
+	}
+
 	switch (event->type)
 	{
 	case RTGUI_EVENT_APP_CREATE:
