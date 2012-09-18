@@ -1,5 +1,5 @@
 /*
- * File      : plot.h
+ * File      : plot.c
  * This file is part of RT-Thread RTOS
  * COPYRIGHT (C) 2012, RT-Thread Development Team
  *
@@ -172,6 +172,10 @@ rt_bool_t rtgui_plot_event_handler(struct rtgui_object *object, struct rtgui_eve
     switch (event->type)
     {
     case RTGUI_EVENT_PAINT:
+        _rtgui_plot_onpaint(object, event);
+        break;
+    case RTGUI_EVENT_MV_MODEL:
+        /* not optimized */
         _rtgui_plot_onpaint(object, event);
         break;
     default:
