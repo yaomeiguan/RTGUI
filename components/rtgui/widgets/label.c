@@ -107,7 +107,7 @@ void rtgui_label_set_text(rtgui_label_t* label, const char* text)
             return;
 
 		/* release old text memory */
-		rtgui_free(label->text);
+		rt_free(label->text);
 	}
 
 	if (text != RT_NULL)
