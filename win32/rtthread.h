@@ -435,6 +435,7 @@ void rt_kprintf(const char *fmt, ...);
 #define rt_sprintf sprintf
 #define rt_snprintf _snprintf
 #define rt_strstr strstr
+#define rt_strcmp strcmp
 
 void* rt_memset(void *src, int c, rt_ubase_t n);
 void* rt_memcpy(void *dest, const void *src, rt_ubase_t n);
