@@ -38,7 +38,19 @@ DEFINE_CLASS_TYPE(plot_curve, "plot_curve",
 
 struct rtgui_plot_curve *rtgui_plot_curve_create(void)
 {
-    return (struct rtgui_plot_curve*)rtgui_mv_model_create(2);
+    struct rtgui_plot_curve *curve;
+
+    curve = RTGUI_PLOT_CURVE(rtgui_object_create(RTGUI_PLOT_CURVE_TYPE));
+    if (curve == RT_NULL)
+        return RT_NULL;
+
+    if (rtgui_mv_model_set_dimension(RTGUI_MV_MODEL(curve), 2) != RT_EOK)
+    {
+        rtgui_object_destroy(RTGUI_OBJECT(curve));
+        return RT_NULL;
+    }
+
+    return curve;
 }
 RTM_EXPORT(rtgui_plot_curve_create);
 

@@ -41,13 +41,12 @@ struct rtgui_mv_model
     /* the content of view is like the content of data. If a model has more
      * then one view, view is pointed to an array of pointers to views. */
     void *view;
-
-    struct rtgui_mv_model *next;
 };
 
 struct rtgui_mv_model *rtgui_mv_model_create(rt_uint16_t dimension);
 void rtgui_mv_model_destroy(struct rtgui_mv_model *model);
 
+rt_err_t rtgui_mv_model_set_dimension(struct rtgui_mv_model *model, rt_uint16_t dimension);
 rt_err_t rtgui_mv_model_add_view(struct rtgui_mv_model*, struct rtgui_mv_view*);
 void rtgui_mv_model_remove_view(struct rtgui_mv_model*, struct rtgui_mv_view*);
 

@@ -28,8 +28,11 @@ static rt_bool_t _rtgui_mv_model_notify_view(struct rtgui_mv_model *model,
 
 static void _rtgui_mv_model_constructor(struct rtgui_mv_model *model)
 {
+    model->dimension   = 0;
+    model->length      = 0;
+    model->data        = RT_NULL;
     model->view_number = 0;
-    model->next = RT_NULL;
+    model->view        = RT_NULL;
 
     /* currently not interested in any event */
 	rtgui_object_set_event_handler(RTGUI_OBJECT(model), RT_NULL);
@@ -72,28 +75,46 @@ struct rtgui_mv_model* rtgui_mv_model_create(rt_uint16_t dimension)
     if (model == RT_NULL)
         return RT_NULL;
 
-    model->dimension = dimension;
-    if (dimension == 1)
+    if (rtgui_mv_model_set_dimension(model, dimension) != RT_EOK)
     {
-        model->data = RT_NULL;
-    }
-    else
-    {
-        void *data = rtgui_malloc(sizeof(void*)*dimension);
-
-        if (data == RT_NULL)
-        {
-            rtgui_free(model);
-            return RT_NULL;
-        }
-
-        rt_memset(data, 0, sizeof(void*)*dimension);
-        model->data = data;
+        rtgui_object_destroy(RTGUI_OBJECT(model));
+        return RT_NULL;
     }
 
     return model;
 }
 RTM_EXPORT(rtgui_mv_model_create);
+
+rt_err_t rtgui_mv_model_set_dimension(struct rtgui_mv_model *model, rt_uint16_t dimension)
+{
+    if (dimension == 1)
+    {
+        if (model->dimension > 1)
+            rtgui_free(model->data);
+        model->data = RT_NULL;
+    }
+    else
+    {
+        void *data;
+
+        if (model->dimension > 1)
+            rtgui_free(model->data);
+
+        data = rtgui_malloc(sizeof(void*)*dimension);
+
+        if (data == RT_NULL)
+        {
+            return -RT_ENOMEM;
+        }
+
+        rt_memset(data, 0, sizeof(void*)*dimension);
+        model->data = data;
+    }
+    model->dimension = dimension;
+
+    return RT_EOK;
+}
+RTM_EXPORT(rtgui_mv_model_set_dimension);
 
 void rtgui_mv_model_destroy(struct rtgui_mv_model *model)
 {
@@ -404,7 +425,7 @@ static rt_bool_t _rtgui_mv_model_notify_view(struct rtgui_mv_model *model,
     rt_thread_t target = RTGUI_WIDGET(view)->toplevel->app->tid;
     emodel->model = model;
     emodel->view = view;
-    rtgui_send(target, (struct rtgui_event*)emodel, sizeof(*emodel));
+    return rtgui_send(target, (struct rtgui_event*)emodel, sizeof(*emodel));
 }
 
 void rtgui_mv_model_notify(struct rtgui_mv_model *model,

@@ -20,7 +20,7 @@
 static void _rtgui_plot_constructor(struct rtgui_plot *plot)
 {
     /* init widget and set event handler */
-    plot->base_point.x = plot->base_point.y = 0;
+    plot->base_x = plot->base_y = 0;
     rtgui_object_set_event_handler(RTGUI_OBJECT(plot), rtgui_plot_event_handler);
 }
 
@@ -50,17 +50,18 @@ void rtgui_plot_destroy(struct rtgui_plot *plot)
 }
 RTM_EXPORT(rtgui_plot_destroy);
 
-void rtgui_plot_set_base_point(struct rtgui_plot *plot, rt_uint16_t x, rt_uint16_t y)
+void rtgui_plot_set_base(struct rtgui_plot *plot,
+        rtgui_plot_curve_dtype x, rtgui_plot_curve_dtype y)
 {
-    plot->base_point.x = x;
-    plot->base_point.y = y;
+    plot->base_x = x;
+    plot->base_y = y;
 }
-RTM_EXPORT(rtgui_plot_set_base_point);
+RTM_EXPORT(rtgui_plot_set_base);
 
 static void _rtgui_plot_curve_onpaint(
         struct rtgui_dc *dc,
-        struct rtgui_plot_curve *curve,
-        struct rtgui_point base)
+        struct rtgui_plot *plot,
+        struct rtgui_plot_curve *curve)
 {
     struct rtgui_rect rect;
     rt_uint16_t height;
@@ -80,12 +81,12 @@ static void _rtgui_plot_curve_onpaint(
     {
         rt_size_t i;
 
-        last_x = x_data[0] + base.x;
-        last_y = height - y_data[0] - base.y;
+        last_x = x_data[0] + plot->base_x;
+        last_y = height - y_data[0] - plot->base_y;
         for (i = 1; i < RTGUI_MV_MODEL(curve)->length; i++)
         {
-            int cur_x = x_data[i] + base.x;
-            int cur_y = height - y_data[i] - base.y;
+            int cur_x = x_data[i] + plot->base_x;
+            int cur_y = height - y_data[i] - plot->base_y;
             rtgui_dc_draw_line(dc,
                                last_x, last_y,
                                cur_x, cur_y);
@@ -97,12 +98,12 @@ static void _rtgui_plot_curve_onpaint(
     {
         rt_size_t i;
 
-        last_x = 0 + base.x;
-        last_y = height - y_data[0] - base.y;
+        last_x = 0 + plot->base_x;
+        last_y = height - y_data[0] - plot->base_y;
         for (i = 1; i < RTGUI_MV_MODEL(curve)->length; i++)
         {
-            int cur_x = i + base.x;
-            int cur_y = height - y_data[i] - base.y;
+            int cur_x = i + plot->base_x;
+            int cur_y = height - y_data[i] - plot->base_y;
             rtgui_dc_draw_line(dc,
                                last_x, last_y,
                                cur_x, cur_y);
@@ -129,14 +130,16 @@ static void _rtgui_plot_onpaint(struct rtgui_object *object, struct rtgui_event 
 
     if (RTGUI_MV_VIEW(plot)->model_number == 1)
     {
-        _rtgui_plot_curve_onpaint(dc, RTGUI_MV_VIEW(plot)->model, plot->base_point);
+        _rtgui_plot_curve_onpaint(dc, plot,
+                RTGUI_PLOT_CURVE(RTGUI_MV_VIEW(plot)->model));
     }
     else
     {
         void **curve_array = (void **)RTGUI_MV_VIEW(object)->model;
         for (i = 0; i < RTGUI_MV_VIEW(object)->model_number; i++)
         {
-            _rtgui_plot_curve_onpaint(dc, curve_array[i], plot->base_point);
+            _rtgui_plot_curve_onpaint(dc, plot,
+                    RTGUI_PLOT_CURVE(curve_array[i]));
         }
     }
 

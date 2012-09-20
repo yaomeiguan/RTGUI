@@ -17,6 +17,7 @@
 #include <rtgui/rtgui.h>
 #include <rtgui/widgets/widget.h>
 #include <rtgui/widgets/mv_view.h>
+#include <rtgui/widgets/plot_curve.h>
 
 DECLARE_CLASS_TYPE(plot);
 
@@ -43,13 +44,15 @@ struct rtgui_plot
 
     enum rtgui_plot_flag pflag;
 
-    struct rtgui_point base_point;
+    rtgui_plot_curve_dtype base_x;
+    rtgui_plot_curve_dtype base_y;
 };
 
 struct rtgui_plot *rtgui_plot_create(void);
 void rtgui_plot_destroy(struct rtgui_plot *plot);
 
-void rtgui_plot_set_base_point(struct rtgui_plot *plot, rt_uint16_t x, rt_uint16_t y);
+void rtgui_plot_set_base(struct rtgui_plot *plot,
+        rtgui_plot_curve_dtype x, rtgui_plot_curve_dtype y);
 
 rt_bool_t rtgui_plot_event_handler(struct rtgui_object *object, struct rtgui_event *event);
 
