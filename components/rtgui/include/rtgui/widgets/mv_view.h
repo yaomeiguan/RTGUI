@@ -39,4 +39,6 @@ struct rtgui_mv_view
 struct rtgui_mv_view *rtgui_mv_view_create(void);
 void rtgui_mv_view_destroy(struct rtgui_mv_view *view);
 
+struct rtgui_mv_model *rtgui_mv_view_foreach_in_model(struct rtgui_mv_view *view, rt_uint32_t *iter);
+
 #endif /* end of include guard: __MV_VIEW_H__ */

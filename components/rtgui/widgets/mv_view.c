@@ -56,3 +56,26 @@ void rtgui_mv_view_destroy(struct rtgui_mv_view *view)
     rtgui_widget_destroy(RTGUI_WIDGET(view));
 }
 
+struct rtgui_mv_model *rtgui_mv_view_foreach_in_model(struct rtgui_mv_view *view, rt_uint32_t *iter)
+{
+    struct rtgui_mv_model *model;
+
+    RT_ASSERT(view);
+
+    if (*iter >= view->model_number)
+        return RT_NULL;
+
+    if (view->model_number == 1)
+    {
+        model = view->model;
+    }
+    else
+    {
+        struct rtgui_mv_model **model_array = view->model;
+        model = model_array[*iter];
+    }
+
+    (*iter)++;
+    return model;
+}
+
