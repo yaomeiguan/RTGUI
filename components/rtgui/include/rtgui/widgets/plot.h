@@ -28,11 +28,10 @@ DECLARE_CLASS_TYPE(plot);
 /** Checks if the object is an rtgui_plot */
 #define RTGUI_IS_PLOT(obj)    (RTGUI_OBJECT_CHECK_TYPE((obj), RTGUI_PLOT_TYPE))
 
-enum rtgui_plot_flag
+enum rtgui_plot_type
 {
-    RTGUI_PLOT_INCREMENTAL,
-    RTGUI_PLOT_MOVING_WINDOW,
-    RTGUI_PLOT_SCAN,
+    RTGUI_PLOT_TYPE_SCAN,
+    RTGUI_PLOT_TYPE_INCREMENTAL,
 };
 
 /*
@@ -42,7 +41,9 @@ struct rtgui_plot
 {
     struct rtgui_mv_view parent;
 
-    enum rtgui_plot_flag pflag;
+    enum rtgui_plot_type ptype;
+    rt_uint16_t          scale_x;
+    rt_uint16_t          scale_y;
 
     rtgui_plot_curve_dtype base_x;
     rtgui_plot_curve_dtype base_y;

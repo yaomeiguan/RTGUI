@@ -35,6 +35,9 @@ struct rtgui_plot_curve
     struct rtgui_mv_model parent;
 
     rtgui_color_t color;
+
+    rtgui_plot_curve_dtype min_x, max_x;
+    rtgui_plot_curve_dtype min_y, max_y;
 };
 
 struct rtgui_plot_curve *rtgui_plot_curve_create(void);

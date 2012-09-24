@@ -20,6 +20,7 @@
 static void _rtgui_plot_curve_constructor(struct rtgui_plot_curve *curve)
 {
     curve->color = red;
+    curve->max_x = curve->min_x = curve->max_y = curve->min_y = 0;
 
     /* init widget and set event handler */
     rtgui_object_set_event_handler(RTGUI_OBJECT(curve), RT_NULL);
