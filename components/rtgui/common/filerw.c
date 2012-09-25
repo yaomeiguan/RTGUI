@@ -264,7 +264,12 @@ int rtgui_filerw_unlink(const char *filename)
 #ifdef _WIN32
 	return _unlink(filename);
 #else
+#ifndef RT_USING_DFS
+	/* no unlink function */
+	return -1;
+#else
 	return unlink(filename);
+#endif
 #endif
 }
 
