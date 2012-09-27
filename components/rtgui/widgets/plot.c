@@ -60,6 +60,16 @@ void rtgui_plot_set_base(struct rtgui_plot *plot,
 }
 RTM_EXPORT(rtgui_plot_set_base);
 
+rt_inline int _rtgui_plot_curve_calc_x(struct rtgui_plot *plot, rtgui_plot_curve_dtype x)
+{
+        return (x - plot->base_x) / plot->scale_x;
+}
+
+rt_inline int _rtgui_plot_curve_calc_y(struct rtgui_plot *plot, rtgui_plot_curve_dtype y, rt_uint16_t height)
+{
+        return height - (y + plot->base_y) / plot->scale_y;
+}
+
 static void _rtgui_plot_curve_onpaint(
         struct rtgui_dc *dc,
         struct rtgui_plot *plot,
@@ -85,18 +95,13 @@ static void _rtgui_plot_curve_onpaint(
     {
         rt_size_t i;
 
-        last_x = (x_data[start_idx] - plot->base_x) / plot->scale_x;
-        last_y = height - (y_data[start_idx] + plot->base_y) / plot->scale_y;
-        rt_kprintf("base x:%d, base y:%d\n", plot->base_x, plot->base_y);
-        rt_kprintf("scale x:%d, scale y:%d\n", plot->scale_x, plot->scale_y);
+        last_x = _rtgui_plot_curve_calc_x(plot, x_data[start_idx]);
+        last_y = _rtgui_plot_curve_calc_y(plot, y_data[start_idx], height);
         for (i = start_idx+1; i < stop_idx; i++)
         {
-            int cur_x = (x_data[i] - plot->base_x) / plot->scale_x;
-            int cur_y = height - (y_data[i] + plot->base_y) / plot->scale_y;
+            int cur_x = _rtgui_plot_curve_calc_x(plot, x_data[i]);
+            int cur_y = _rtgui_plot_curve_calc_y(plot, y_data[i], height);
             rtgui_dc_draw_line(dc,
-                               last_x, last_y,
-                               cur_x, cur_y);
-            rt_kprintf("draw line bt:(%d, %d), (%d, %d)\n",
                                last_x, last_y,
                                cur_x, cur_y);
             last_x = cur_x;
@@ -107,13 +112,12 @@ static void _rtgui_plot_curve_onpaint(
     {
         rt_size_t i;
 
-        // FIXME
-        last_x = start_idx + plot->base_x;
-        last_y = height - y_data[start_idx] - plot->base_y;
+        last_x = _rtgui_plot_curve_calc_x(plot, start_idx);
+        last_y = _rtgui_plot_curve_calc_y(plot, y_data[start_idx], height);
         for (i = start_idx+1; i < stop_idx; i++)
         {
-            int cur_x = i + plot->base_x;
-            int cur_y = height - y_data[i] - plot->base_y;
+            int cur_x = _rtgui_plot_curve_calc_x(plot, i);
+            int cur_y = _rtgui_plot_curve_calc_y(plot, y_data[i], height);
             rtgui_dc_draw_line(dc,
                                last_x, last_y,
                                cur_x, cur_y);
