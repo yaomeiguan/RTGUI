@@ -51,7 +51,7 @@ __license__ = 'GNU GPL 2'
 __version__ = '0.1'
 
 
-import sys, random, string, cStringIO
+import sys, random, string, cStringIO, StringIO
 
 verbose = False
 trails = 5
@@ -261,7 +261,7 @@ class Hash2:
         self.salt = []
         
     def __call__(self, key):
-        skey = str(key)
+        skey = key
         while len(self.salt) < len(skey): # add more salt if necessary
             self.salt.append(random.randint(0, self.N-1))
         
@@ -371,7 +371,7 @@ class Format:
             return str(data)
         
         lendel = len(self.delimiter)
-        aux = cStringIO.StringIO()
+        aux = StringIO.StringIO()
         pos = 20
         for i, elt in enumerate(data):
             last = bool(i == len(data)-1)
