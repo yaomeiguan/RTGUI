@@ -14,11 +14,25 @@ const struct rtgui_font_engine hz_bmp_font_engine =
 	rtgui_hz_bitmap_font_get_metrics
 };
 
+rt_inline const rt_uint8_t* _rtgui_hz_bitmap_get_font_ptr(struct rtgui_font_bitmap *bmp_font,
+                                          rt_uint8_t *str,
+                                          rt_base_t font_bytes)
+{
+    rt_ubase_t sect, index;
+
+    /* calculate section and index */
+    sect  = *str - 0xA0;
+    index = *(str+1) - 0xA0;
+
+    /* get font pixel data */
+    return bmp_font->bmp + (94 * (sect - 1) + (index - 1)) * font_bytes;
+}
+
 static void _rtgui_hz_bitmap_font_draw_text(struct rtgui_font_bitmap* bmp_font, struct rtgui_dc* dc, const char* text, rt_ubase_t len, struct rtgui_rect* rect)
 {
-	rt_uint8_t* str;
 	rtgui_color_t bc;
 	rt_uint16_t style;
+    rt_uint8_t *str;
 	register rt_base_t h, word_bytes, font_bytes;
 
 	RT_ASSERT(bmp_font != RT_NULL);
@@ -27,25 +41,20 @@ static void _rtgui_hz_bitmap_font_draw_text(struct rtgui_font_bitmap* bmp_font, 
 	style = rtgui_dc_get_gc(dc)->textstyle;
 	bc = rtgui_dc_get_gc(dc)->background;
 
-	/* drawing height */
-	h = (bmp_font->height + rect->y1 > rect->y2)? rect->y2 - rect->y1 : bmp_font->height;
-	word_bytes = (bmp_font->width + 7)/8;
-	font_bytes = word_bytes * bmp_font->height;
+    /* drawing height */
+    h = (bmp_font->height + rect->y1 > rect->y2)? rect->y2 - rect->y1 : bmp_font->height;
+    word_bytes = (bmp_font->width + 7)/8;
+    font_bytes = word_bytes * bmp_font->height;
 
-	str = (rt_uint8_t*)text;
+    str = (rt_uint8_t*)text;
 
 	while (len > 0 && rect->x1 < rect->x2)
 	{
 		const rt_uint8_t* font_ptr;
-		rt_ubase_t sect, index;
 		register rt_base_t i, j, k;
 
-		/* calculate section and index */
-		sect  = *str - 0xA0;
-		index = *(str+1) - 0xA0;
-
 		/* get font pixel data */
-		font_ptr = bmp_font->bmp + (94 * (sect - 1) + (index - 1)) * font_bytes;
+		font_ptr = _rtgui_hz_bitmap_get_font_ptr(bmp_font, str, font_bytes);
 		/* draw word */
 		for (i=0; i < h; i ++)
 		{
