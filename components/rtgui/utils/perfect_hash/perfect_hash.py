@@ -414,7 +414,7 @@ def keyDict(keys_hashes):
 
 
 
-def generate_code(keys_hashes, template, Hash, options):
+def generate_code(keys_hashes, template, Hash, options, extra_subs):
     """
     Takes a list of key value pairs and inserts the generated parameter
     lists into the 'template' strinng.  'Hash' is the random hash function
@@ -436,7 +436,8 @@ def generate_code(keys_hashes, template, Hash, options):
         G  = fmt(G),
         NK = len(keys_hashes),
         K  = fmt([key for key, hashval in keys_hashes], quote = True),
-        H  = fmt([hashval for key, hashval in keys_hashes]))
+        H  = fmt([hashval for key, hashval in keys_hashes]),
+        **extra_subs)
 
 
 
