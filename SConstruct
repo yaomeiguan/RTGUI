@@ -32,6 +32,8 @@ for exe_name, src_path in TARGETS:
     work_objs = base_objs + SConscript(dirs=[src_path],
                                        variant_dir=path_join('build', src_path),
                                        duplicate=0)
+    PreBuilding()
+
     # build program
     env.Program(path_join(exe_dir, exe_name), work_objs)
 
@@ -47,6 +49,7 @@ for d in list:
         objs = base_objs + SConscript(dirs=[src_path],
                                        variant_dir=path_join('build', src_path),
                                        duplicate=0)
+        PreBuilding()
         # build program
         env.Program(path_join(exe_dir, exe_name), objs)
 
