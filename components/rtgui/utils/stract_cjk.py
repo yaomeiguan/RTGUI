@@ -101,11 +101,27 @@ def gen_char_mph(font_lib):
 
     return code
 
+# {name:[file_name, height, width, encoding, instance]}
+_font_map = {'hz16':['common/hz16font.c', 16, 16, 'GB2312', None],
+             'hz12':['common/hz12font.c', 12, 12, 'GB2312', None]}
+
+def get_font_lib(name):
+    if name not in _font_map.keys():
+        return None
+
+    if _font_map[name][-1] is None:
+        _font_map[name][-1] = font_lib(open(_font_map[name][0], 'r'),
+                                       _font_map[name][1],
+                                       _font_map[name][2],
+                                       _font_map[name][3])
+    return _font_map[name][-1]
+
 if __name__ == '__main__':
     import sys
 
-    lib = font_lib(open(r'common\hz16font.c', 'r'),
-            16, 16, 'GB2312')
+    lib = get_font_lib('hz16')
+    libn = get_font_lib('hz16')
+    assert(lib is libn)
 
     lib.push_file(open(sys.argv[1], 'rb'))
 
