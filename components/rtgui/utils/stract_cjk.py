@@ -90,7 +90,7 @@ class mph_options(object):
         self.width = width
 
 def gen_char_mph(font_lib):
-    template = open('utils/mph-tmpl.c', 'r').read()
+    template = open('common/font_mph-tmpl.c', 'r').read()
     opt = mph_options()
     hmap, flib = font_lib.finish()
     code = perfect_hash.generate_code(hmap, template, perfect_hash.Hash2, opt,

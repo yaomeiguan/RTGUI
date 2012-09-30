@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-#include "mph-code.h"
+#include <rtgui/font_mph-code.h>
 
 static uint8_t T1[] = { $S1 };
 static uint8_t T2[] = { $S2 };

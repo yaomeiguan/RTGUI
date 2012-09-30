@@ -15,7 +15,7 @@ const struct rtgui_font_engine hz_bmp_font_engine =
 };
 
 #ifdef RTGUI_USING_FONT_COMPACT
-#include <rtgui/mph-code.h>
+#include <rtgui/font_mph-code.h>
 rt_inline const rt_uint8_t* _rtgui_hz_bitmap_get_font_ptr(struct rtgui_font_bitmap *bmp_font,
                                           rt_uint8_t *str,
                                           rt_base_t font_bytes)
