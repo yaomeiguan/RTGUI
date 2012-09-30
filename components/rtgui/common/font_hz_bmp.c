@@ -14,6 +14,19 @@ const struct rtgui_font_engine hz_bmp_font_engine =
 	rtgui_hz_bitmap_font_get_metrics
 };
 
+#ifdef RTGUI_USING_FONT_COMPACT
+#include <rtgui/mph-code.h>
+rt_inline const rt_uint8_t* _rtgui_hz_bitmap_get_font_ptr(struct rtgui_font_bitmap *bmp_font,
+                                          rt_uint8_t *str,
+                                          rt_base_t font_bytes)
+{
+    int idx = rtgui_font_mph(*(rt_uint16_t*)str);
+    if (idx < 0)
+        idx = 0;
+    /* get font pixel data */
+    return bmp_font->bmp + idx * font_bytes;
+}
+#else
 rt_inline const rt_uint8_t* _rtgui_hz_bitmap_get_font_ptr(struct rtgui_font_bitmap *bmp_font,
                                           rt_uint8_t *str,
                                           rt_base_t font_bytes)
@@ -27,6 +40,7 @@ rt_inline const rt_uint8_t* _rtgui_hz_bitmap_get_font_ptr(struct rtgui_font_bitm
     /* get font pixel data */
     return bmp_font->bmp + (94 * (sect - 1) + (index - 1)) * font_bytes;
 }
+#endif
 
 static void _rtgui_hz_bitmap_font_draw_text(struct rtgui_font_bitmap* bmp_font, struct rtgui_dc* dc, const char* text, rt_ubase_t len, struct rtgui_rect* rect)
 {

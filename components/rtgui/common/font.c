@@ -35,15 +35,23 @@ void rtgui_font_system_init()
 
 #ifdef RTGUI_USING_FONT16
 	rtgui_font_system_add_font(&rtgui_font_asc16);
+#ifdef RTGUI_USING_FONT_COMPACT
+	rtgui_font_system_add_font(&rtgui_font_hzcmp16);
+#else
 #ifdef RTGUI_USING_FONTHZ
 	rtgui_font_system_add_font(&rtgui_font_hz16);
+#endif
 #endif
 #endif
 
 #ifdef RTGUI_USING_FONT12
 	rtgui_font_system_add_font(&rtgui_font_asc12);
+#ifdef RTGUI_USING_FONT_COMPACT
+	rtgui_font_system_add_font(&rtgui_font_hzcmp12);
+#else
 #ifdef RTGUI_USING_FONTHZ
 	rtgui_font_system_add_font(&rtgui_font_hz12);
+#endif
 #endif
 #endif
 
