@@ -15,14 +15,24 @@ const struct rtgui_font_engine hz_bmp_font_engine =
 };
 
 #ifdef RTGUI_USING_FONT_COMPACT
-#include <rtgui/font_mph-code.h>
+extern rt_uint32_t rtgui_font_mph12(const rt_uint16_t key);
+extern rt_uint32_t rtgui_font_mph16(const rt_uint16_t key);
 rt_inline const rt_uint8_t* _rtgui_hz_bitmap_get_font_ptr(struct rtgui_font_bitmap *bmp_font,
                                           rt_uint8_t *str,
                                           rt_base_t font_bytes)
 {
-    int idx = rtgui_font_mph(*(rt_uint16_t*)str);
+    rt_uint16_t cha = *(rt_uint16_t*)str;
+    int idx;
+
+    if (bmp_font->height  == 16)
+        idx = rtgui_font_mph16(cha);
+    else // asume the height is 12
+        idx = rtgui_font_mph12(cha);
+
+    /* don't access beyond the data */
     if (idx < 0)
         idx = 0;
+
     /* get font pixel data */
     return bmp_font->bmp + idx * font_bytes;
 }

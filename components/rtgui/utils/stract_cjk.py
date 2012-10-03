@@ -1,7 +1,9 @@
 #encoding: utf-8
 from perfect_hash import perfect_hash
 
-import re, string
+import re, string, os, random
+
+cur_dir = os.path.abspath(os.path.dirname(__file__))
 
 unicode_chinese_re = u'[\u2E80-\u2EFF\u2F00-\u2FDF\u3000-\u303F\u31C0-\u31EF\u3200-\u32FF\u3300-\u33FF\u3400-\u4DBF\u4DC0-\u4DFF\u4E00-\u9FBF\uF900-\uFAFF\uFE30-\uFE4F\uFF00-\uFFEF]'
 match_re = re.compile(unicode_chinese_re)
@@ -33,13 +35,11 @@ class font_lib(object):
         self.char_dict = {}
 
     def get_char_data(self, char):
-        ''' get the font lib from font lib.
-
-        char: charactor in unicode.'''
-        char_gb = char.encode(self.encoding)
+        #char_gb = char.encode(self.encoding)
 
         # copied from font_hz_bmp.c
-        sec, idx = [ord(i) - 0xA0 for i in char_gb]
+        sec, idx = [ord(i) - 0xA0 for i in char]
+        #print 'sec %d, idx %d for' % (sec, idx), char
         start = (94 * (sec-1) + (idx-1)) * self._bpc
         return self._lib[start:start+self._bpc]
 
@@ -51,7 +51,7 @@ class font_lib(object):
             t = re.findall(match_re, unicode(i.decode(self.encoding)))
             if t:
                 for c in t:
-                    self.push_char(c)
+                    self.push_char(c.encode(self.encoding))
 
     def _finish_push(self):
         if self._finished_push:
@@ -90,9 +90,12 @@ class mph_options(object):
         self.width = width
 
 def gen_char_mph(font_lib):
-    template = open('common/font_mph-tmpl.c', 'r').read()
+    template = open(os.path.join(cur_dir, '..', 'common', 'font_mph-tmpl.c'), 'r').read()
     opt = mph_options()
     hmap, flib = font_lib.finish()
+    #print 'compact font lib: %d chars included.' % len(hmap)
+    #for i in hmap:
+        #print i[0], repr(i[0]), i[1]
     code = perfect_hash.generate_code(hmap, template, perfect_hash.Hash2, opt,
             extra_subs={
                 'width':str(font_lib.width),
@@ -102,19 +105,37 @@ def gen_char_mph(font_lib):
     return code
 
 # {name:[file_name, height, width, encoding, instance]}
-_font_map = {'hz16':['common/hz16font.c', 16, 16, 'GB2312', None],
-             'hz12':['common/hz12font.c', 12, 12, 'GB2312', None]}
+_font_map = {'hz16':{'fname':'common/hz16font.c',
+                     'height':16,
+                     'width':16,
+                     'encoding':'GB2312',
+                     'flib':None},
+             'hz12':{'fname':'common/hz12font.c',
+                     'height':12,
+                     'width':12,
+                     'encoding':'GB2312',
+                     'flib':None}
+            }
 
 def get_font_lib(name):
     if name not in _font_map.keys():
         return None
 
-    if _font_map[name][-1] is None:
-        _font_map[name][-1] = font_lib(open(_font_map[name][0], 'r'),
-                                       _font_map[name][1],
-                                       _font_map[name][2],
-                                       _font_map[name][3])
-    return _font_map[name][-1]
+    if _font_map[name]['flib'] is None:
+        _font_map[name]['flib'] = font_lib(open(
+                                       os.path.join(cur_dir, '..', _font_map[name]['fname']), 'r'),
+                                       _font_map[name]['height'],
+                                       _font_map[name]['width'],
+                                       _font_map[name]['encoding'])
+    return _font_map[name]['flib']
+
+def gen_cmp_font_file():
+    for i in _font_map:
+        fl = _font_map[i]['flib']
+        if fl is not None:
+            code = gen_char_mph(fl)
+            with open(os.path.join(cur_dir, '..', 'common', 'font_cmp_%s.c' % i), 'w') as f:
+                f.write(code)
 
 if __name__ == '__main__':
     import sys

@@ -2,7 +2,9 @@
 
 #ifdef RTGUI_USING_FONT12
 #ifndef RTGUI_USING_HZ_FILE
-#ifndef RTGUI_USING_FONT_COMPACT
+#ifdef RTGUI_USING_FONT_COMPACT
+extern const unsigned char hz12_font[];
+#else
 const unsigned char hz12_font[] = {
 FONT_BMP_DATA_BEGIN
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -12274,6 +12276,7 @@ FONT_BMP_DATA_BEGIN
 0x4c, 0x90, 0xfb, 0xe0, 0xaa, 0x20, 0xfb, 0xe0, 0x02, 0x20, 0xff, 0xe0, 0x48, 0x00, 0x8b, 0xf0,
 FONT_BMP_DATA_END
 };
+#endif
 
 const struct rtgui_font_bitmap hz12 =
 {
@@ -12296,7 +12299,6 @@ struct rtgui_font rtgui_font_hz12 =
 	(void*)&hz12,		/* font private data */
 };
 /* size = 196272 bytes */
-#endif
 #else
 struct rtgui_hz_file_font hz12 =
 {

@@ -8,6 +8,8 @@ sys.path = sys.path + [path_join(RTT_ROOT, 'win32')]
 from building import *
 import rtconfig
 
+sys.path.insert(0, path_join(RTT_ROOT, 'components', 'rtgui', 'utils'))
+
 exe_dir = 'executables'
 
 # list of targets, list item format in:
@@ -32,8 +34,6 @@ for exe_name, src_path in TARGETS:
     work_objs = base_objs + SConscript(dirs=[src_path],
                                        variant_dir=path_join('build', src_path),
                                        duplicate=0)
-    PreBuilding()
-
     # build program
     env.Program(path_join(exe_dir, exe_name), work_objs)
 
@@ -49,9 +49,10 @@ for d in list:
         objs = base_objs + SConscript(dirs=[src_path],
                                        variant_dir=path_join('build', src_path),
                                        duplicate=0)
-        PreBuilding()
         # build program
         env.Program(path_join(exe_dir, exe_name), objs)
 
         # end building
         EndBuilding(exe_name)
+
+PreBuilding()
