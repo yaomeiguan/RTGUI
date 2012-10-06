@@ -3,9 +3,6 @@
 #include <rtthread.h>
 #include <string.h>
 
-#include <rtgui/font.h>
-#include <rtgui/font_mph-code.h>
-
 static const rt_uint32_t T1[] = { $S1 };
 static const rt_uint32_t T2[] = { $S2 };
 static const rt_uint16_t G[] = { $G };
