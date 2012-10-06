@@ -47,11 +47,19 @@ class font_lib(object):
         self.char_dict[c] = self.char_dict.get(c, 0) + 1
 
     def push_file(self, f):
-        for i in f:
-            t = re.findall(match_re, unicode(i.decode(self.encoding)))
-            if t:
-                for c in t:
-                    self.push_char(c.encode(self.encoding))
+        try:
+            for i in f:
+                t = re.findall(match_re, unicode(i.decode(self.encoding)))
+                if t:
+                    for c in t:
+                        self.push_char(c.encode(self.encoding))
+        except UnicodeDecodeError as e:
+            try:
+                print 'error in decoding %s' % f.name
+            except:
+                print 'error in decoding string %s' % f
+            # re-raise the exception and terminate the building process
+            raise
 
     def _finish_push(self):
         if self._finished_push:
