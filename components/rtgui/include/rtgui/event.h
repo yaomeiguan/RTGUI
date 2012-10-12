@@ -62,9 +62,6 @@ enum _rtgui_event_type
 	RTGUI_EVENT_MOUSE_BUTTON,          /* mouse button info     */
 	RTGUI_EVENT_KBD,                   /* keyboard info         */
 
-	/* user command event */
-	RTGUI_EVENT_COMMAND=0x0100,        /* user command          */
-
 	/* widget event */
 	RTGUI_EVENT_FOCUSED,               /* widget focused        */
 	RTGUI_EVENT_SCROLLED,              /* scroll bar scrolled   */
@@ -72,6 +69,9 @@ enum _rtgui_event_type
 	RTGUI_EVENT_SELECTED,			   /* widget selected       */
 	RTGUI_EVENT_UNSELECTED,			   /* widget un-selected    */
     RTGUI_EVENT_MV_MODEL,              /* data of a model has been changed */
+
+	/* user command event. It should always be the last command type. */
+	RTGUI_EVENT_COMMAND = 0x0100,        /* user command          */
 };
 typedef enum _rtgui_event_type rtgui_event_type;
 
@@ -441,10 +441,10 @@ union rtgui_event_generic
 	struct rtgui_event_clip_info clip_info;
 	struct rtgui_event_mouse mouse;
 	struct rtgui_event_kbd kbd;
-	struct rtgui_event_command command;
 	struct rtgui_event_scrollbar scrollbar;
 	struct rtgui_event_focused focused;
 	struct rtgui_event_resize resize;
     struct rtgui_event_mv_model model;
+	struct rtgui_event_command command;
 };
 #endif
