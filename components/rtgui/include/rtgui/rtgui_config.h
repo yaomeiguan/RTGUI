@@ -48,6 +48,7 @@
 	#define RTGUI_USING_WINMOVE
 	#define RTGUI_USING_NOTEBOOK_IMAGE
 	// #define RTGUI_USING_HZ_FILE
+    //#define RTGUI_USING_FONT_COMPACT
 #else
 	/* native running under RT-Thread */
 	#ifndef RT_USING_DFS
@@ -79,8 +80,6 @@
 #define RTGUI_USING_CAST_CHECK
 
 //#define RTGUI_USING_DESKTOP_WINDOW
-#undef RTGUI_USING_SMALL_SIZE
-
-#define RTGUI_USING_FONT_COMPACT
+//#undef RTGUI_USING_SMALL_SIZE
 
 #endif
