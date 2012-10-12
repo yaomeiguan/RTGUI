@@ -78,6 +78,9 @@ struct rtgui_win
 	/* the widget that will grab the focus in current window */
 	struct rtgui_widget *focused_widget;
 
+    /* which app I belong */
+    struct rtgui_app *app;
+
 	/* window style */
 	rt_uint16_t style;
 

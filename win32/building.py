@@ -177,6 +177,16 @@ def DefineGroup(name, src, depend, **parameters):
     objs = Env.Object(group['src'])
     return objs
 
+PREBUILDING = []
+def RegisterPreBuildingAction(act):
+    global PREBUILDING
+    PREBUILDING.append(act)
+
+def PreBuilding():
+    global PREBUILDING
+    for a in PREBUILDING:
+        a()
+
 def EndBuilding(target):
     pass
 

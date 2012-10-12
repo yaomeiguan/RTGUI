@@ -71,6 +71,7 @@ enum _rtgui_event_type
 	RTGUI_EVENT_RESIZE,                /* widget resize         */
 	RTGUI_EVENT_SELECTED,			   /* widget selected       */
 	RTGUI_EVENT_UNSELECTED,			   /* widget un-selected    */
+    RTGUI_EVENT_MV_MODEL,              /* data of a model has been changed */
 };
 typedef enum _rtgui_event_type rtgui_event_type;
 
@@ -83,7 +84,7 @@ enum {
 struct rtgui_event
 {
 	/* the event type */
-	rt_uint16_t type;
+    enum _rtgui_event_type type;
 	/* user field of event */
 	rt_uint16_t user;
 
@@ -376,6 +377,39 @@ struct rtgui_event_resize
 };
 #define RTGUI_EVENT_RESIZE_INIT(e) RTGUI_EVENT_INIT(&((e)->parent), RTGUI_EVENT_RESIZE)
 
+/*
+ * RTGUI Model/View Event
+ */
+enum rtgui_event_model_mode
+{
+    MV_DATA_ADDED,
+    MV_DATA_CHANGED,
+    MV_DATA_DELETED,
+};
+
+struct rtgui_event_mv_model
+{
+    struct rtgui_event parent;
+    struct rtgui_mv_model *model;
+    struct rtgui_mv_view  *view;
+    rt_size_t first_data_changed_idx;
+    rt_size_t last_data_changed_idx;
+};
+
+#define _RTGUI_EVENT_MV_INIT_TYPE(T) \
+rt_inline void RTGUI_EVENT_MV_MODEL_##T##_INIT(struct rtgui_event_mv_model *e) \
+{ \
+    RTGUI_EVENT_INIT(&((e)->parent), RTGUI_EVENT_MV_MODEL); \
+    (e)->parent.user = MV_DATA_##T; \
+} \
+/* useless struct to allow trailing semicolon */ \
+struct dummy
+
+_RTGUI_EVENT_MV_INIT_TYPE(ADDED);
+_RTGUI_EVENT_MV_INIT_TYPE(CHANGED);
+_RTGUI_EVENT_MV_INIT_TYPE(DELETED);
+#undef _RTGUI_EVENT_MV_INIT_TYPE
+
 #undef _RTGUI_EVENT_WIN_ELEMENTS
 
 union rtgui_event_generic
@@ -411,5 +445,6 @@ union rtgui_event_generic
 	struct rtgui_event_scrollbar scrollbar;
 	struct rtgui_event_focused focused;
 	struct rtgui_event_resize resize;
+    struct rtgui_event_mv_model model;
 };
 #endif

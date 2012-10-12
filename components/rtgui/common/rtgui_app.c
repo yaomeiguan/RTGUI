@@ -285,6 +285,13 @@ rt_bool_t rtgui_app_event_handler(struct rtgui_object* object, rtgui_event_t* ev
 		}
 		break;
 
+        case RTGUI_EVENT_MV_MODEL:
+        {
+            struct rtgui_event_mv_model *emodel = (struct rtgui_event_mv_model*)event;
+            RT_ASSERT(emodel->view);
+            return rtgui_object_handle(RTGUI_OBJECT(emodel->view), event);
+        }
+
         case RTGUI_EVENT_COMMAND:
         {
             struct rtgui_event_command *ecmd = (struct rtgui_event_command*)event;

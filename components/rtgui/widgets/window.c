@@ -34,6 +34,7 @@ static void _rtgui_win_constructor(rtgui_win_t *win)
 
 	RTGUI_WIDGET(win)->flag |= RTGUI_WIDGET_FLAG_FOCUSABLE;
 	win->parent_window = RT_NULL;
+    win->app = rtgui_app_self();
 	/* init window attribute */
 	win->on_activate   = RT_NULL;
 	win->on_deactivate = RT_NULL;
@@ -249,7 +250,7 @@ rt_base_t rtgui_win_show(struct rtgui_win* win, rt_bool_t is_modal)
 	struct rtgui_app *app;
 	struct rtgui_event_win_show eshow;
 
-	app = rtgui_app_self();
+	app = win->app;
 	RTGUI_EVENT_WIN_SHOW_INIT(&eshow);
 	eshow.wid = win;
 
@@ -289,7 +290,7 @@ rt_base_t rtgui_win_show(struct rtgui_win* win, rt_bool_t is_modal)
 		RTGUI_EVENT_WIN_MODAL_ENTER_INIT(&emodal);
 		emodal.wid = win;
 
-		app = rtgui_app_self();
+		app = win->app;
 		RT_ASSERT(app != RT_NULL);
 
 		win->flag |= RTGUI_WIN_FLAG_MODAL;
@@ -320,7 +321,7 @@ void rtgui_win_end_modal(struct rtgui_win* win, rtgui_modal_code_t modal_code)
 	if (win == RT_NULL || !(win->flag & RTGUI_WIN_FLAG_MODAL))
 		return;
 
-	rtgui_app_exit(rtgui_app_self(), modal_code);
+	rtgui_app_exit(win->app, modal_code);
 
 	/* remove modal mode */
 	win->flag &= ~RTGUI_WIN_FLAG_MODAL;

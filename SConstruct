@@ -8,6 +8,8 @@ sys.path = sys.path + [path_join(RTT_ROOT, 'win32')]
 from building import *
 import rtconfig
 
+sys.path.insert(0, path_join(RTT_ROOT, 'components', 'rtgui', 'utils'))
+
 exe_dir = 'executables'
 
 # list of targets, list item format in:
@@ -52,3 +54,5 @@ for d in list:
 
         # end building
         EndBuilding(exe_name)
+
+PreBuilding()

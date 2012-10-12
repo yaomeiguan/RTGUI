@@ -111,4 +111,8 @@ void rtgui_font_draw(struct rtgui_font* font, struct rtgui_dc* dc, const char* t
 int  rtgui_font_get_string_width(struct rtgui_font* font, const char* text);
 void rtgui_font_get_metrics(struct rtgui_font* font, const char* text, struct rtgui_rect* rect);
 
+/* used by stract font */
+#define FONT_BMP_DATA_BEGIN
+#define FONT_BMP_DATA_END
+
 #endif
