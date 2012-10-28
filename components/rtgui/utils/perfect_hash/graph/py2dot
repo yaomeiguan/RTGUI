@@ -133,7 +133,7 @@ tools (see http://www.graphviz.org/) to generate a picture of the graph.
     parser.add_option("-l", "--labels",
                       action  = "store_true",
                       help    = "Be verbose")
- 
+
     parser.add_option("-m", "--minsize",
                       action  = "store",
                       default = 1,

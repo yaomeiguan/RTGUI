@@ -53,7 +53,7 @@ struct rtgui_plot *rtgui_plot_create(void);
 void rtgui_plot_destroy(struct rtgui_plot *plot);
 
 void rtgui_plot_set_base(struct rtgui_plot *plot,
-        rtgui_plot_curve_dtype x, rtgui_plot_curve_dtype y);
+                         rtgui_plot_curve_dtype x, rtgui_plot_curve_dtype y);
 
 rt_bool_t rtgui_plot_event_handler(struct rtgui_object *object, struct rtgui_event *event);
 

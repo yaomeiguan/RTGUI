@@ -30,7 +30,7 @@ static void _rtgui_mv_view_destructor(struct rtgui_mv_view *view)
     }
     else if (view->model_number > 1)
     {
-        void **model_arr = *(void ***)view->model;
+        void **model_arr = *(void ** *)view->model;
         int i;
 
         for (i = 0; i < view->model_number; i++)

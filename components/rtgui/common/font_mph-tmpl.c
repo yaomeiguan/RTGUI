@@ -9,7 +9,7 @@ static const rt_uint16_t G[] = { $G };
 
 static rt_uint32_t hash_g(const rt_uint16_t key, const rt_uint32_t *T)
 {
-    rt_uint32_t sum = (T[0] * (key&0xFF) + T[1] * (key>>8)) % $NG;
+    rt_uint32_t sum = (T[0] * (key & 0xFF) + T[1] * (key >> 8)) % $NG;
     return G[sum % $NG];
 }
 

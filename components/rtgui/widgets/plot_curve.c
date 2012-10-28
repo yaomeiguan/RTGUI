@@ -67,7 +67,7 @@ void rtgui_plot_curve_set_x(struct rtgui_plot_curve *curve, void *p)
 }
 RTM_EXPORT(rtgui_plot_curve_set_x);
 
-void* rtgui_plot_curve_get_x(struct rtgui_plot_curve *curve)
+void *rtgui_plot_curve_get_x(struct rtgui_plot_curve *curve)
 {
     return rtgui_mv_model_get_data(RTGUI_MV_MODEL(curve), 0);
 }
@@ -79,7 +79,7 @@ void rtgui_plot_curve_set_y(struct rtgui_plot_curve *curve, void *p)
 }
 RTM_EXPORT(rtgui_plot_curve_set_y);
 
-void* rtgui_plot_curve_get_y(struct rtgui_plot_curve *curve)
+void *rtgui_plot_curve_get_y(struct rtgui_plot_curve *curve)
 {
     return rtgui_mv_model_get_data(RTGUI_MV_MODEL(curve), 1);
 }

@@ -44,8 +44,8 @@ struct rtgui_plot_curve *rtgui_plot_curve_create(void);
 void rtgui_plot_curve_destroy(struct rtgui_plot_curve *curve);
 
 void rtgui_plot_curve_set_x(struct rtgui_plot_curve *curve, void *p);
-void* rtgui_plot_curve_get_x(struct rtgui_plot_curve *curve);
+void *rtgui_plot_curve_get_x(struct rtgui_plot_curve *curve);
 void rtgui_plot_curve_set_y(struct rtgui_plot_curve *curve, void *p);
-void* rtgui_plot_curve_get_y(struct rtgui_plot_curve *curve);
+void *rtgui_plot_curve_get_y(struct rtgui_plot_curve *curve);
 
 #endif

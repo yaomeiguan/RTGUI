@@ -47,8 +47,8 @@ struct rtgui_mv_model *rtgui_mv_model_create(rt_uint16_t dimension);
 void rtgui_mv_model_destroy(struct rtgui_mv_model *model);
 
 rt_err_t rtgui_mv_model_set_dimension(struct rtgui_mv_model *model, rt_uint16_t dimension);
-rt_err_t rtgui_mv_model_add_view(struct rtgui_mv_model*, struct rtgui_mv_view*);
-void rtgui_mv_model_remove_view(struct rtgui_mv_model*, struct rtgui_mv_view*);
+rt_err_t rtgui_mv_model_add_view(struct rtgui_mv_model *, struct rtgui_mv_view *);
+void rtgui_mv_model_remove_view(struct rtgui_mv_model *, struct rtgui_mv_view *);
 
 rt_bool_t rtgui_mv_model_has_view(struct rtgui_mv_model *model, struct rtgui_mv_view *view);
 void rtgui_mv_model_set_data(struct rtgui_mv_model *model, rt_uint16_t dim, void *p);
