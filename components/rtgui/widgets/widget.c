@@ -519,9 +519,11 @@ rt_bool_t rtgui_widget_event_handler(struct rtgui_object *object, rtgui_event_t 
             return widget->on_size(RTGUI_OBJECT(widget), event);
         break;
 #endif
+    default:
+        return rtgui_object_event_handler(object, event);
     }
 
-    return rtgui_object_event_handler(object, event);
+    return RT_FALSE;
 }
 RTM_EXPORT(rtgui_widget_event_handler);
 
