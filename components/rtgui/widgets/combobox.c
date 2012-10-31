@@ -167,7 +167,8 @@ static rt_bool_t rtgui_combobox_onmouse_button(struct rtgui_combobox *box, struc
                 /* create pull down window */
                 rect = RTGUI_WIDGET(box)->extent;
                 rect.y1 = rect.y2;
-                rect.y2 = rect.y1 + 5 * (2 + rtgui_theme_get_selected_height());
+                /* give it 5 pixels margin, or the last item won't get shown */
+                rect.y2 = rect.y1 + box->items_count * (2 + rtgui_theme_get_selected_height()) + 5;
                 box->pd_win = rtgui_win_create(RT_NULL, "combo", &rect, RTGUI_WIN_STYLE_NO_TITLE);
                 rtgui_win_set_ondeactivate(RTGUI_WIN(box->pd_win), rtgui_combobox_pulldown_hide);
                 /* set user data to parent combobox */
