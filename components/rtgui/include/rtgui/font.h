@@ -103,7 +103,7 @@ void rtgui_font_system_remove_font(struct rtgui_font *font);
 struct rtgui_font *rtgui_font_default(void);
 void rtgui_font_set_defaut(struct rtgui_font *font);
 
-struct rtgui_font *rtgui_font_refer(const rt_uint8_t *family, rt_uint16_t height);
+struct rtgui_font *rtgui_font_refer(const char *family, rt_uint16_t height);
 void rtgui_font_derefer(struct rtgui_font *font);
 
 /* draw a text */

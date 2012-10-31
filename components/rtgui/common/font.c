@@ -86,7 +86,7 @@ void rtgui_font_set_defaut(struct rtgui_font *font)
     rtgui_default_font = font;
 }
 
-struct rtgui_font *rtgui_font_refer(const rt_uint8_t *family, rt_uint16_t height)
+struct rtgui_font *rtgui_font_refer(const char *family, rt_uint16_t height)
 {
     /* search font */
     struct rtgui_list_node *node;
@@ -95,7 +95,7 @@ struct rtgui_font *rtgui_font_refer(const rt_uint8_t *family, rt_uint16_t height
     rtgui_list_foreach(node, &_rtgui_font_list)
     {
         font = rtgui_list_entry(node, struct rtgui_font, list);
-        if ((rt_strncmp((const char *)font->family, (const char *)family, RTGUI_NAME_MAX) == 0) &&
+        if ((rt_strncmp(font->family, family, RTGUI_NAME_MAX) == 0) &&
                 font->height == height)
         {
             font->refer_count ++;
