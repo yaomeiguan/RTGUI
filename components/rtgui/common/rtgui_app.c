@@ -299,9 +299,11 @@ rt_bool_t rtgui_app_event_handler(struct rtgui_object *object, rtgui_event_t *ev
         if (ecmd->wid != RT_NULL)
             return _rtgui_application_dest_handle(app, event);
     }
+    default:
+    return rtgui_object_event_handler(object, event);
     }
 
-    return rtgui_object_event_handler(object, event);
+    return RT_TRUE;
 }
 
 rt_inline void _rtgui_application_event_loop(struct rtgui_app *app)

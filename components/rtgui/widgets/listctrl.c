@@ -365,10 +365,12 @@ rt_bool_t rtgui_listctrl_event_handler(struct rtgui_object *object, struct rtgui
         }
     }
     return RT_FALSE;
-    }
-
+    default:
     /* use ctrl event handler */
     return rtgui_widget_event_handler(RTGUI_OBJECT(widget), event);
+    }
+
+    return RT_FALSE;
 }
 RTM_EXPORT(rtgui_listctrl_event_handler);
 

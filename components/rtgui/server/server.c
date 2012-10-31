@@ -329,6 +329,9 @@ static rt_bool_t rtgui_server_event_handler(struct rtgui_object *object,
         /* handle mouse monitor */
         rtgui_server_handle_monitor_add((struct rtgui_event_monitor *)event);
         break;
+    default:
+        rt_kprintf("RTGUI: wrong event sent to server: %d", event->type);
+        return RT_FALSE;
     }
 
     return RT_TRUE;

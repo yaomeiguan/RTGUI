@@ -570,10 +570,14 @@ rt_bool_t rtgui_list_view_event_handler(struct rtgui_object *widget, struct rtgu
         }
     }
     return RT_FALSE;
-    }
+
+    default:
 
     /* use view event handler */
     return rtgui_container_event_handler(widget, event);
+    }
+
+    return RT_FALSE;
 }
 RTM_EXPORT(rtgui_list_view_event_handler);
 
