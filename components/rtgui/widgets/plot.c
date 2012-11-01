@@ -67,7 +67,7 @@ rt_inline int _rtgui_plot_curve_calc_x(struct rtgui_plot *plot, rtgui_plot_curve
 
 rt_inline int _rtgui_plot_curve_calc_y(struct rtgui_plot *plot, rtgui_plot_curve_dtype y, rt_uint16_t height)
 {
-    return height - (y + plot->base_y) / plot->scale_y;
+    return height - (y - plot->base_y) / plot->scale_y;
 }
 
 static void _rtgui_plot_curve_onpaint(
