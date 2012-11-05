@@ -50,7 +50,6 @@ extern "C" {
 
     void rtgui_theme_draw_radiobox(struct rtgui_radiobox *radiobox);
     void rtgui_theme_draw_slider(struct rtgui_slider *slider);
-    void rtgui_theme_draw_scrollbar(struct rtgui_scrollbar *bar);
     void rtgui_theme_draw_progressbar(struct rtgui_progressbar *bar);
     void rtgui_theme_draw_staticline(struct rtgui_staticline *staticline);
 
