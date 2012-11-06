@@ -94,10 +94,12 @@ struct rtgui_object_information obj_info = {0, 0, 0};
 #endif
 
 /**
- * @brief Creates a new object: it calls the corresponding constructors (from the constructor of the base class to the
- * constructor of the more derived class) and then sets the values of the given properties
+ * @brief Creates a new object: it calls the corresponding constructors 
+ * (from the constructor of the base class to the constructor of the more 
+ * derived class) and then sets the values of the given properties
+ *
  * @param object_type the type of object to create
- * @return Returns the new Etk_Object of type @a object_type
+ * @return the created object
  */
 rtgui_object_t *rtgui_object_create(rtgui_type_t *object_type)
 {
@@ -125,11 +127,11 @@ rtgui_object_t *rtgui_object_create(rtgui_type_t *object_type)
 RTM_EXPORT(rtgui_object_create);
 
 /**
- * @brief Destroys the object: it first sets the weak-pointers to RT_NULL, emits the "destroyed" signal, and then
- * queues the object in the list of objects to free. Thus, the destructors will only be called at the beginning of the
- * next main loop iteration (from the destructor of the more derived class to the destructor of the ultimate base class).
+ * @brief Destroys the object.
+ * 
+ * The object destructors will be called in inherited type order.
+ * 
  * @param object the object to destroy
- * @warning You should not assume that this function will call directly the destructors of the object!
  */
 void rtgui_object_destroy(rtgui_object_t *object)
 {
@@ -151,21 +153,24 @@ void rtgui_object_destroy(rtgui_object_t *object)
 RTM_EXPORT(rtgui_object_destroy);
 
 /**
- * @brief Checks if @a object can be cast to @a type.
- * If @a object doesn't inherit from @a type, a warning is displayed in the console but the object is returned anyway.
+ * @brief Checks if the object can be cast to the specified type.
+ * 
+ * If the object doesn't inherit from the specified type, a warning 
+ * is displayed in the console but the object is returned anyway.
+ * 
  * @param object the object to cast
  * @param type the type to which we cast the object
  * @return Returns the object
- * @note You usually do not need to call this function, use specific macros instead (ETK_IS_WIDGET() for example)
  */
 rtgui_object_t *rtgui_object_check_cast(rtgui_object_t *obj, rtgui_type_t *obj_type, const char *func, int line)
 {
     if (!obj) return RT_NULL;
 
-    if (!rtgui_type_inherits_from(obj->type, obj_type))
-    {
-        rt_kprintf("%s[%d]: Invalid cast from \"%s\" to \"%s\"\n", func, line, rtgui_type_name_get(obj->type), rtgui_type_name_get(obj_type));
-    }
+	if (!rtgui_type_inherits_from(obj->type, obj_type))
+	{
+		rt_kprintf("%s[%d]: Invalid cast from \"%s\" to \"%s\"\n", func, line, 
+            rtgui_type_name_get(obj->type), rtgui_type_name_get(obj_type));
+	}
 
     return obj;
 }
@@ -174,8 +179,9 @@ RTM_EXPORT(rtgui_object_check_cast);
 
 /**
  * @brief Gets the type of the object
+ * 
  * @param object an object
- * @return Returns the type of @a object (RT_NULL on failure)
+ * @return the type of the object (RT_NULL on failure)
  */
 const rtgui_type_t *rtgui_object_object_type_get(rtgui_object_t *object)
 {
