@@ -15,7 +15,7 @@
 #define __RTGUI_FILERW_H__
 
 #ifdef RTGUI_USING_DFS_FILERW
-#ifdef _WIN32
+#ifdef _WIN32_NATIVE
 #pragma warning(disable: 4996)
 #include <fcntl.h>
 #include <sys/types.h>

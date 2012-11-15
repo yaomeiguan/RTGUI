@@ -7,7 +7,7 @@
 #include <rtgui/rtgui_system.h>
 
 #ifdef RTGUI_USING_HZ_FILE
-#ifdef _WIN32
+#ifdef _WIN32_NATIVE
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>

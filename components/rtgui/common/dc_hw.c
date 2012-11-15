@@ -108,7 +108,7 @@ struct rtgui_dc *rtgui_dc_hw_create(rtgui_widget_t *owner)
         if (top->drawing == 1)
         {
 #ifdef RTGUI_USING_MOUSE_CURSOR
-#ifdef _WIN32
+#ifdef _WIN32_NATIVE
             rt_mutex_take(&cursor_mutex, RT_WAITING_FOREVER);
             rt_kprintf("hide cursor\n");
             rtgui_mouse_hide_cursor();
@@ -127,7 +127,7 @@ struct rtgui_dc *rtgui_dc_hw_create(rtgui_widget_t *owner)
 
         if (top->drawing == 1)
         {
-#ifdef _WIN32
+#ifdef _WIN32_NATIVE
 #ifdef RTGUI_USING_MOUSE_CURSOR
             rt_mutex_take(&cursor_mutex, RT_WAITING_FOREVER);
             rt_kprintf("hide cursor\n");
@@ -166,7 +166,7 @@ static rt_bool_t rtgui_dc_hw_fini(struct rtgui_dc *dc)
         top->drawing --;
         if ((top->drawing == 0) && RTGUI_WIDGET_IS_DC_VISIBLE(owner))
         {
-#ifdef _WIN32
+#ifdef _WIN32_NATIVE
 #ifdef RTGUI_USING_MOUSE_CURSOR
             rt_mutex_release(&cursor_mutex);
             /* show cursor */
@@ -194,7 +194,7 @@ static rt_bool_t rtgui_dc_hw_fini(struct rtgui_dc *dc)
 
         if ((top->drawing == 0) && RTGUI_WIDGET_IS_DC_VISIBLE(owner))
         {
-#ifdef _WIN32
+#ifdef _WIN32_NATIVE
 #ifdef RTGUI_USING_MOUSE_CURSOR
             rt_mutex_release(&cursor_mutex);
             /* show cursor */

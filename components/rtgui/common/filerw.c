@@ -245,7 +245,7 @@ struct rtgui_filerw *rtgui_filerw_create_file(const char *filename, const char *
     RT_ASSERT(filename != RT_NULL);
 
     rw = RT_NULL;
-#ifdef _WIN32
+#ifdef _WIN32_NATIVE
     fd = _open(filename, parse_mode(mode), 0);
 #else
     fd = open(filename, parse_mode(mode), 0);
@@ -273,7 +273,7 @@ struct rtgui_filerw *rtgui_filerw_create_file(const char *filename, const char *
 
 int rtgui_filerw_unlink(const char *filename)
 {
-#ifdef _WIN32
+#ifdef _WIN32_NATIVE
     return _unlink(filename);
 #else
 #ifndef RT_USING_DFS
