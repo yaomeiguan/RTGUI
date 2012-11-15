@@ -15,9 +15,11 @@ exe_dir = 'executables'
 # list of targets, list item format in:
 #     ['executable_name', 'path_to_SConscript']
 TARGETS = [['demo', 'demo'],
-	       ['realtouch', 'realtouch']]
+               ['realtouch', 'realtouch']]
 
 env = Environment()
+if Execute(env['CC']):
+    env.Append(ENV = os.environ)
 
 if ARGUMENTS.get('VERBOSE') != '1':
     env['CCCOMSTR'] = "Compiling $TARGET"

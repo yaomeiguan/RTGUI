@@ -129,6 +129,11 @@ void rtgui_widget_set_rect(rtgui_widget_t *widget, const rtgui_rect_t *rect)
 
     /* update extent rectangle */
     widget->extent = *rect;
+    if (RTGUI_IS_CONTAINER(widget))
+    {
+        /* re-do layout */
+        rtgui_container_layout(RTGUI_CONTAINER(widget));
+    }
 
     /* reset mini width and height */
     widget->mini_width  = rtgui_rect_width(widget->extent);
@@ -560,7 +565,7 @@ void rtgui_widget_update_clip(rtgui_widget_t *widget)
     if (parent != RT_NULL)
     {
         /* subtract widget clip in parent clip */
-        if (!(widget->flag & RTGUI_WIDGET_FLAG_TRANSPARENT))
+        if (!(widget->flag & RTGUI_WIDGET_FLAG_TRANSPARENT) && RTGUI_IS_CONTAINER(parent))
         {
             rtgui_region_subtract_rect(&(parent->clip), &(parent->clip),
                                        &(widget->extent));

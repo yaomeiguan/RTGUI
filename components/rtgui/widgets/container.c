@@ -162,7 +162,6 @@ rt_bool_t rtgui_container_event_handler(struct rtgui_object *object, struct rtgu
         rtgui_container_dispatch_event(container, event);
         break;
     case RTGUI_EVENT_COMMAND:
-    case RTGUI_EVENT_RESIZE:
         rtgui_container_dispatch_event(container, event);
         break;
 
@@ -171,6 +170,11 @@ rt_bool_t rtgui_container_event_handler(struct rtgui_object *object, struct rtgu
         rtgui_widget_onupdate_toplvl(object, event);
         /* update the children */
         rtgui_container_broadcast_event(container, event);
+        break;
+
+    case RTGUI_EVENT_RESIZE:
+        /* re-layout container */
+        rtgui_container_layout(container);
         break;
 
     default:

@@ -375,12 +375,12 @@ void rtgui_notebook_add(struct rtgui_notebook *notebook, const char *label, stru
     /* set parent */
     rtgui_widget_set_parent(child, RTGUI_WIDGET(notebook));
 
+    if (notebook->count - 1 != notebook->current)
+        rtgui_widget_hide(child);
+
     _rtgui_notebook_get_page_rect(notebook, &rect);
     rtgui_widget_rect_to_device(RTGUI_WIDGET(notebook), &rect);
     rtgui_widget_set_rect(child, &rect);
-
-    if (notebook->count - 1 != notebook->current)
-        rtgui_widget_hide(child);
 
     if (RTGUI_WIDGET(notebook)->toplevel != RT_NULL &&
             RTGUI_IS_WIN(RTGUI_WIDGET(notebook)->toplevel))
@@ -578,6 +578,8 @@ static void _rtgui_notebook_all_widget_handle(struct rtgui_notebook *notebook,
 
 rt_bool_t rtgui_notebook_event_handler(struct rtgui_object *object, struct rtgui_event *event)
 {
+    int page_index;
+    rtgui_rect_t rect;  
     struct rtgui_notebook *notebook;
 
     RT_ASSERT(object != RT_NULL);
@@ -611,6 +613,17 @@ rt_bool_t rtgui_notebook_event_handler(struct rtgui_object *object, struct rtgui
         /* update all the widgets in myself */
         _rtgui_notebook_all_widget_handle(notebook, event);
         return RT_FALSE;
+    
+    case RTGUI_EVENT_RESIZE:
+        /* re-size page widget */
+        _rtgui_notebook_get_page_rect(notebook, &rect);
+        rtgui_widget_rect_to_device(RTGUI_WIDGET(notebook), &rect);
+        for (page_index = 0; page_index < notebook->count; page_index ++)
+        {
+            rtgui_widget_set_rect(notebook->childs[page_index].widget, &rect);
+        }
+        break;
+
     default:
         /* use parent event handler */
         return rtgui_widget_event_handler(object, event);
