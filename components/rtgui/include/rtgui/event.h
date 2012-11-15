@@ -383,9 +383,9 @@ struct rtgui_event_resize
  */
 enum rtgui_event_model_mode
 {
-    MV_DATA_ADDED,
-    MV_DATA_CHANGED,
-    MV_DATA_DELETED,
+    RTGUI_MV_DATA_ADDED,
+    RTGUI_MV_DATA_CHANGED,
+    RTGUI_MV_DATA_DELETED,
 };
 
 struct rtgui_event_mv_model
@@ -401,7 +401,7 @@ struct rtgui_event_mv_model
 rt_inline void RTGUI_EVENT_MV_MODEL_##T##_INIT(struct rtgui_event_mv_model *e) \
 { \
     RTGUI_EVENT_INIT(&((e)->parent), RTGUI_EVENT_MV_MODEL); \
-    (e)->parent.user = MV_DATA_##T; \
+    (e)->parent.user = RTGUI_MV_DATA_##T; \
 } \
 /* useless struct to allow trailing semicolon */ \
 struct dummy
@@ -410,6 +410,19 @@ _RTGUI_EVENT_MV_INIT_TYPE(ADDED);
 _RTGUI_EVENT_MV_INIT_TYPE(CHANGED);
 _RTGUI_EVENT_MV_INIT_TYPE(DELETED);
 #undef _RTGUI_EVENT_MV_INIT_TYPE
+
+#define _RTGUI_EVENT_MV_IS_TYPE(T) \
+rt_inline rt_bool_t RTGUI_EVENT_MV_MODEL_IS_##T(struct rtgui_event_mv_model *e) \
+{ \
+    return e->parent.user == RTGUI_MV_DATA_##T; \
+} \
+/* useless struct to allow trailing semicolon */ \
+struct dummy
+
+_RTGUI_EVENT_MV_IS_TYPE(ADDED);
+_RTGUI_EVENT_MV_IS_TYPE(CHANGED);
+_RTGUI_EVENT_MV_IS_TYPE(DELETED);
+#undef _RTGUI_EVENT_MV_IS_TYPE
 
 #undef _RTGUI_EVENT_WIN_ELEMENTS
 
