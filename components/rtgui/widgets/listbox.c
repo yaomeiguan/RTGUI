@@ -389,15 +389,19 @@ void rtgui_listbox_set_current_item(rtgui_listbox_t *box, int index)
 {
     RT_ASSERT(box != RT_NULL);
 
+    if (index >= box->items_count)
+        return;
+
     if (index != box->current_item)
     {
         int old_item;
 
         old_item = box->current_item;
         box->current_item = index;
-
         rtgui_listbox_update_current(box, old_item);
     }
+    if (box->on_item)
+        box->on_item(RTGUI_OBJECT(box), RT_NULL);
 }
 RTM_EXPORT(rtgui_listbox_set_current_item);
 
