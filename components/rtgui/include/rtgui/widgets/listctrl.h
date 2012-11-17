@@ -59,6 +59,7 @@ void rtgui_listctrl_destroy(rtgui_listctrl_t *ctrl);
 rt_bool_t rtgui_listctrl_event_handler(struct rtgui_object *object, struct rtgui_event *event);
 void rtgui_listctrl_set_onitem(rtgui_listctrl_t *ctrl, rtgui_event_handler_ptr func);
 void rtgui_listctrl_set_items(rtgui_listctrl_t *ctrl, void *items, rt_uint16_t count);
+void rtgui_listctrl_set_current_item(struct rtgui_listctrl *ctrl, rt_uint16_t index);
 rt_bool_t rtgui_listctrl_get_item_rect(rtgui_listctrl_t *ctrl, rt_uint16_t item, rtgui_rect_t *item_rect);
 void rtgui_listctrl_set_itemheight(struct rtgui_listctrl *ctrl, int height);
 

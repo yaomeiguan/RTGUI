@@ -424,6 +424,36 @@ void rtgui_listctrl_set_items(rtgui_listctrl_t *ctrl, void *items, rt_uint16_t c
 }
 RTM_EXPORT(rtgui_listctrl_set_items);
 
+/**
+ * @brief set the selected(current) item of listctrl widget.
+ *
+ * If the index is greater than items_count, it will have no effect. Otherwise,
+ * the item on @param index will be selected and the on_item will be invoked if
+ * it has one.
+ *
+ * @fixme set current to the items which is not in current page won't update
+ * the scrollbar.
+ */
+void rtgui_listctrl_set_current_item(struct rtgui_listctrl *ctrl, rt_uint16_t index)
+{
+    RT_ASSERT(ctrl);
+
+    if (index >= ctrl->items_count)
+        return;
+
+    if (index != ctrl->current_item)
+    {
+        rt_uint16_t old_item = ctrl->current_item;
+        ctrl->current_item = index;
+        rtgui_listctrl_update_current(ctrl, old_item);
+    }
+    if (ctrl->on_item != RT_NULL)
+    {
+        ctrl->on_item(RTGUI_OBJECT(ctrl), RT_NULL);
+    }
+}
+RTM_EXPORT(rtgui_listctrl_set_current_item);
+
 rt_bool_t rtgui_listctrl_get_item_rect(rtgui_listctrl_t *ctrl, rt_uint16_t item, rtgui_rect_t *item_rect)
 {
     if (item < ctrl->items_count)
