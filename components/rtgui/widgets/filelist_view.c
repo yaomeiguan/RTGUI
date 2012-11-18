@@ -25,7 +25,7 @@
 #include <rtgui/widgets/window.h>
 
 #if defined(RTGUI_USING_DFS_FILERW)
-#ifdef _WIN32
+#ifdef _WIN32_NATIVE
 #include <io.h>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -532,7 +532,7 @@ static void rtgui_filelist_view_onenturn(struct rtgui_filelist_view *view)
             }
         }
         else if (view->current_item == 0 &&
-#ifdef _WIN32
+#ifdef _WIN32_NATIVE
                  (view->current_directory[1] == ':') && (view->current_directory[2] == '\\')
 #else
                  (view->current_directory[0] == '/') && (view->current_directory[1] == '\0')

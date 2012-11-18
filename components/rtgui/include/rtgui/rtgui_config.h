@@ -18,7 +18,7 @@
 
 /* RTGUI options */
 
-#ifdef _WIN32
+#ifdef _WIN32_NATIVE
 /* name length of RTGUI object */
 #define RTGUI_NAME_MAX      12
 /* support 16 weight font */

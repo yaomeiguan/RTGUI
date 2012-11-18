@@ -38,7 +38,7 @@ struct rtgui_image_bmp_header
     rt_uint32_t biClrUsed;
     rt_uint32_t biClrImportant;
 };
-#ifdef _WIN32
+#ifdef _WIN32_NATIVE
 #pragma warning(disable : 4103)
 #endif
 void rtgui_image_bmp_init(void);
