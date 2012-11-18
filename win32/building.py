@@ -111,7 +111,7 @@ def PrepareBuilding(env, root_directory):
         Env['SDL_LIBPATH'] = Rtt_Root + '/win32/SDL/lib'
     Env.Append(LIBPATH=Env['SDL_LIBPATH'])
     Env.Append(CCFLAGS=['/MT', '/ZI', '/Od', '/W 3', '/WL'])
-    Env.Append(LINKFLAGS='/SUBSYSTEM:WINDOWS /NODEFAULTLIB /MACHINE:X86 /DEBUG')
+    Env.Append(LINKFLAGS='/SUBSYSTEM:WINDOWS /NODEFAULTLIB:LIBCMT /MACHINE:X86 /DEBUG')
     # SCons use dict.update to 'Append' a dict, which will overwrite the old values,
     # So we have to update the env key by key
     for k in os.environ:
