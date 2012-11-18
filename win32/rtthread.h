@@ -1,6 +1,8 @@
 #ifndef __RT_THREAD_H__
 #define __RT_THREAD_H__
 
+#include <rtconfig.h>
+
 typedef char  rt_int8_t;
 typedef short rt_int16_t;
 typedef long  rt_int32_t;

@@ -22,7 +22,7 @@
 #include <rtgui/widgets/window.h>
 #include <rtgui/rtgui_theme.h>
 
-#ifdef _WIN32
+#ifdef _WIN32_NATIVE
 #define RTGUI_MEM_TRACE
 #endif
 
@@ -316,7 +316,7 @@ FINSH_FUNCTION_EXPORT(list_guimem, display memory information);
 /* RTGUI Event Dump                                                     */
 /************************************************************************/
 
-#ifdef _WIN32
+#ifdef _WIN32_NATIVE
 #define RTGUI_EVENT_DEBUG
 #endif
 

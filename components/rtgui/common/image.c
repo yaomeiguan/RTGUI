@@ -21,6 +21,9 @@
 #include <rtgui/image_container.h>
 
 #include <string.h>
+#ifdef _WIN32
+#define strncasecmp  strnicmp
+#endif
 
 #ifdef RTGUI_IMAGE_XPM
 #include <rtgui/image_xpm.h>
