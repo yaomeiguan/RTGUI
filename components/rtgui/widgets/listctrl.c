@@ -166,7 +166,7 @@ static void _rtgui_listctrl_ondraw(struct rtgui_listctrl *ctrl)
     rtgui_dc_end_drawing(dc);
 }
 
-void rtgui_listctrl_update_current(struct rtgui_listctrl *ctrl, rt_uint16_t old_item)
+static void rtgui_listctrl_update_current(struct rtgui_listctrl *ctrl, rt_uint16_t old_item)
 {
     struct rtgui_dc *dc;
     rtgui_rect_t rect, item_rect;
@@ -214,7 +214,6 @@ void rtgui_listctrl_update_current(struct rtgui_listctrl *ctrl, rt_uint16_t old_
 
     rtgui_dc_end_drawing(dc);
 }
-RTM_EXPORT(rtgui_listctrl_update_current);
 
 rt_bool_t rtgui_listctrl_event_handler(struct rtgui_object *object, struct rtgui_event *event)
 {
