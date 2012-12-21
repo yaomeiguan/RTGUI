@@ -167,25 +167,18 @@ struct rtgui_app *rtgui_app_self(void)
 }
 RTM_EXPORT(rtgui_app_self);
 
-void rtgui_app_set_onidle(rtgui_idle_func_t onidle)
+void rtgui_app_set_onidle(struct rtgui_app *app, rtgui_idle_func_t onidle)
 {
-    struct rtgui_app *app;
-
-    app = rtgui_app_self();
-    if (app != RT_NULL)
-        app->on_idle = onidle;
+    _rtgui_application_check(app);
+    app->on_idle = onidle;
 }
 RTM_EXPORT(rtgui_app_set_onidle);
 
-rtgui_idle_func_t rtgui_app_get_onidle(void)
+rtgui_idle_func_t rtgui_app_get_onidle(struct rtgui_app *app)
 {
-    struct rtgui_app *app;
 
-    app = rtgui_app_self();
-    if (app != RT_NULL)
-        return app->on_idle;
-    else
-        return RT_NULL;
+    _rtgui_application_check(app);
+    return app->on_idle;
 }
 RTM_EXPORT(rtgui_app_get_onidle);
 
@@ -386,15 +379,15 @@ RTM_EXPORT(rtgui_app_close);
 /**
  * set this application as window manager
  */
-rt_err_t rtgui_app_set_as_wm(void)
+rt_err_t rtgui_app_set_as_wm(struct rtgui_app *app)
 {
     rt_thread_t srv_tid;
     struct rtgui_event_set_wm event;
-    struct rtgui_app *app;
+
+    _rtgui_application_check(app);
 
     srv_tid = rtgui_get_server();
-    app = rtgui_app_self();
-    if (app != RT_NULL && srv_tid != RT_NULL)
+    if (srv_tid != RT_NULL)
     {
         /* notify rtgui server, this is a window manager */
         RTGUI_EVENT_SET_WM_INIT(&event);
@@ -408,15 +401,11 @@ rt_err_t rtgui_app_set_as_wm(void)
 }
 RTM_EXPORT(rtgui_app_set_as_wm);
 
-void rtgui_app_set_main_win(struct rtgui_win *win)
+void rtgui_app_set_main_win(struct rtgui_app *app, struct rtgui_win *win)
 {
-    struct rtgui_app *app;
 
-    app = rtgui_app_self();
-    if (app != RT_NULL)
-    {
-        app->main_object = RTGUI_OBJECT(win);
-    }
+    _rtgui_application_check(app);
+    app->main_object = RTGUI_OBJECT(win);
 }
 RTM_EXPORT(rtgui_app_set_main_win);
 
