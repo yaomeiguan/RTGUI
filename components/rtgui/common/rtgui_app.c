@@ -51,10 +51,9 @@ DEFINE_CLASS_TYPE(application, "application",
                   _rtgui_app_destructor,
                   sizeof(struct rtgui_app));
 
-struct rtgui_app *rtgui_app_create(
-    rt_thread_t tid,
-    const char *title)
+struct rtgui_app *rtgui_app_create(const char *title)
 {
+    rt_thread_t tid = rt_thread_self();
     rt_thread_t srv_tid;
     struct rtgui_app *app;
     struct rtgui_event_application event;

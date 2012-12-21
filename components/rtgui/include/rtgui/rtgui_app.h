@@ -70,9 +70,13 @@ struct rtgui_app
 };
 
 /**
- * create an application named @myname on thread @param tid
+ * create an application named @myname on current thread.
+ *
+ * @param name the name of the application
+ *
+ * @return a pointer to struct rtgui_app on success. RT_NULL on failure.
  */
-struct rtgui_app *rtgui_app_create(rt_thread_t tid, const char *title);
+struct rtgui_app *rtgui_app_create(const char *name);
 void rtgui_app_destroy(struct rtgui_app *app);
 rt_bool_t rtgui_app_event_handler(struct rtgui_object *obj, rtgui_event_t *event);
 

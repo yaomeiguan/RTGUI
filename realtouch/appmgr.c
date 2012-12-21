@@ -112,7 +112,7 @@ void app_mgr_entry(void* parameter)
 {
 	struct rtgui_app* application;
 
-	application = rtgui_app_create(rt_thread_self(), "AppMgr");
+	application = rtgui_app_create("AppMgr");
 	if (application != RT_NULL)
 	{
 		/* set as window manager */

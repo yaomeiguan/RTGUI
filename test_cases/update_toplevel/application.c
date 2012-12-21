@@ -19,7 +19,7 @@ static void app_lcd(void *parameter)
 	struct rtgui_notebook* notebook;
     struct rtgui_button* btn;
 
-	app = rtgui_app_create(rt_thread_self(), "lcd_app");
+	app = rtgui_app_create("lcd_app");
 
     if (!app)
     {
