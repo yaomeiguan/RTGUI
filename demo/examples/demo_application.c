@@ -33,7 +33,7 @@ static void application_entry(void *parameter)
     struct rtgui_app *app;
     struct rtgui_rect rect;
 
-    app = rtgui_app_create(rt_thread_self(), "gui_demo");
+    app = rtgui_app_create("gui_demo");
     if (app == RT_NULL)
         return;
 

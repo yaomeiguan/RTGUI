@@ -30,7 +30,7 @@ static void app_lcd(void *parameter)
     struct rtgui_button* btn;
     struct rtgui_label *lb;
 
-	app = rtgui_app_create(rt_thread_self(), "lcd_app");
+	app = rtgui_app_create("lcd_app");
 
     if (!app)
     {

@@ -280,7 +280,7 @@ rt_base_t rtgui_win_show(struct rtgui_win *win, rt_bool_t is_modal)
 
     /* set main window */
     if (app->main_object == RT_NULL)
-        rtgui_app_set_main_win(win);
+        rtgui_app_set_main_win(app, win);
 
     if (is_modal == RT_TRUE)
     {

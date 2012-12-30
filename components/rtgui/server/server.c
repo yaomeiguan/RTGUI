@@ -349,8 +349,7 @@ static void rtgui_server_entry(void *parameter)
 #endif
 
     /* create rtgui server application */
-    rtgui_server_application = rtgui_app_create(rtgui_server_tid,
-                               "rtgui");
+    rtgui_server_application = rtgui_app_create("rtgui");
     if (rtgui_server_application == RT_NULL)
         return;
 
