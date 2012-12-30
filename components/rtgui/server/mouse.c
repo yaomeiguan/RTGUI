@@ -255,6 +255,10 @@ void rtgui_mouse_moveto(int x, int y)
             rtgui_mouse_show_cursor();
 #endif
         }
+
+#ifdef RTGUI_USING_HW_CURSOR
+		rtgui_cursor_set_position(_rtgui_cursor->cx, _rtgui_cursor->cy);
+#endif
     }
 
 #ifdef RTGUI_USING_MOUSE_CURSOR
