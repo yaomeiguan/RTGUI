@@ -134,7 +134,7 @@ void rtgui_cursor_set_position(rt_uint16_t x, rt_uint16_t y)
 
 	if (_cursor_driver.device != RT_NULL)
 	{
-		value = (x < 16 | y);
+		value = (x << 16 | y);
 		rt_device_control(_cursor_driver.device, RT_DEVICE_CTRL_CURSOR_SET_POSITION, &value);
 	}
 }
