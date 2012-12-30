@@ -15,7 +15,7 @@
 #include <rtthread.h>
 #include <rtgui/rtgui.h>
 #include <rtgui/dc.h>
-#include "digfont.h"
+#include <rtgui/widgets/digfont.h>
 
 #define DIGFONT_V  1
 #define DIGFONT_H  0
