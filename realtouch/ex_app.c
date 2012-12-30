@@ -8,7 +8,7 @@ void app1_entry(void* parameter)
 	struct rtgui_app* application;
 	struct rtgui_win* win;
 
-	application = rtgui_app_create(rt_thread_self(), "ExApp1");
+	application = rtgui_app_create("ExApp1");
 	if (application != RT_NULL)
 	{
 		struct rtgui_label *label;
@@ -32,7 +32,7 @@ void app2_entry(void* parameter)
 	struct rtgui_app* application;
 	struct rtgui_win* win;
 
-	application = rtgui_app_create(rt_thread_self(), "ExApp2");
+	application = rtgui_app_create("ExApp2");
 	if (application != RT_NULL)
 	{
 		rtgui_rect_t rect = {220, 250, 400, 450};

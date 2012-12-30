@@ -6,6 +6,7 @@
 #include "demo_view.h"
 
 #define RAND(x1, x2) ((rand() % (x2 - x1)) + x1)
+#define _int_swap(x, y)		do {x ^= y; y ^= x; x ^= y; } while(0)
 
 static struct rtgui_container *container = RT_NULL;
 static int running = 0;
@@ -34,8 +35,12 @@ void _onidle(struct rtgui_object *object, rtgui_event_t *event)
     demo_view_get_logic_rect(RTGUI_CONTAINER(container), &rect);
     draw_rect.x1 = RAND(rect.x1, rect.x2);
     draw_rect.y1 = RAND(rect.y1, rect.y2);
-    draw_rect.x2 = RAND(draw_rect.x1, rect.x2);
-    draw_rect.y2 = RAND(draw_rect.y1, rect.y2);
+    draw_rect.x2 = RAND(rect.x1, rect.x2);
+    draw_rect.y2 = RAND(rect.y1, rect.y2);
+	
+	if(draw_rect.x1 > draw_rect.x2) _int_swap(draw_rect.x1, draw_rect.x2);
+	if(draw_rect.y1 > draw_rect.y2) _int_swap(draw_rect.y1, draw_rect.y2);
+
     area += rtgui_rect_width(draw_rect) * rtgui_rect_height(draw_rect);
     color = RTGUI_RGB(rand() % 255, rand() % 255, rand() % 255);
     RTGUI_WIDGET_BACKGROUND(container) = color;
@@ -105,7 +110,7 @@ rt_bool_t benchmark_event_handler(struct rtgui_object *object, rtgui_event_t *ev
             if (running)
             {
                 /* stop */
-                rtgui_app_set_onidle(RT_NULL);
+                rtgui_app_set_onidle(rtgui_app_self(), RT_NULL);
                 _draw_default(object, event);
             }
             else
@@ -113,7 +118,7 @@ rt_bool_t benchmark_event_handler(struct rtgui_object *object, rtgui_event_t *ev
                 /* run */
                 ticks = rt_tick_get();
                 area = 0;
-                rtgui_app_set_onidle(_onidle);
+                rtgui_app_set_onidle(rtgui_app_self(), _onidle);
             }
 
             running = !running;

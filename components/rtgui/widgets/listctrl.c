@@ -105,16 +105,18 @@ static void _rtgui_listctrl_scrollbar_onmouse(struct rtgui_listctrl *ctrl, struc
     if (mouse->y < rect.y1)
     {
         if (ctrl->current_item - ctrl->page_items >= 0)
-            ctrl->current_item -= ctrl->page_items;
-        rtgui_listctrl_update_current(ctrl, old_item);
+            rtgui_listctrl_set_current_item(ctrl, ctrl->current_item - ctrl->page_items);
+        else
+            rtgui_listctrl_update_current(ctrl, old_item);
     }
     else if (mouse->y > rect.y2)
     {
+        rt_uint16_t new_item;
         if (ctrl->current_item + ctrl->page_items < ctrl->items_count - 1)
-            ctrl->current_item += ctrl->page_items;
+            new_item = ctrl->current_item + ctrl->page_items;
         else
-            ctrl->current_item = ((ctrl->current_item / ctrl->page_items) + 1) * ctrl->page_items;
-        rtgui_listctrl_update_current(ctrl, old_item);
+            new_item = ((ctrl->current_item / ctrl->page_items) + 1) * ctrl->page_items;
+        rtgui_listctrl_set_current_item(ctrl, new_item);
     }
 }
 
@@ -166,7 +168,7 @@ static void _rtgui_listctrl_ondraw(struct rtgui_listctrl *ctrl)
     rtgui_dc_end_drawing(dc);
 }
 
-void rtgui_listctrl_update_current(struct rtgui_listctrl *ctrl, rt_uint16_t old_item)
+static void rtgui_listctrl_update_current(struct rtgui_listctrl *ctrl, rt_uint16_t old_item)
 {
     struct rtgui_dc *dc;
     rtgui_rect_t rect, item_rect;
@@ -214,7 +216,6 @@ void rtgui_listctrl_update_current(struct rtgui_listctrl *ctrl, rt_uint16_t old_
 
     rtgui_dc_end_drawing(dc);
 }
-RTM_EXPORT(rtgui_listctrl_update_current);
 
 rt_bool_t rtgui_listctrl_event_handler(struct rtgui_object *object, struct rtgui_event *event)
 {
@@ -288,24 +289,10 @@ rt_bool_t rtgui_listctrl_event_handler(struct rtgui_object *object, struct rtgui
             if ((index < ctrl->page_items) &&
                     (ctrl->current_item / ctrl->page_items)* ctrl->page_items + index < ctrl->items_count)
             {
-                rt_uint16_t old_item;
-
-                old_item = ctrl->current_item;
-
-                /* set selected item */
-                ctrl->current_item = (ctrl->current_item / ctrl->page_items) * ctrl->page_items + index;
                 if (emouse->button & RTGUI_MOUSE_BUTTON_DOWN)
                 {
-                    /* down event */
-                    rtgui_listctrl_update_current(ctrl, old_item);
-                }
-                else
-                {
-                    /* up event */
-                    if (ctrl->on_item != RT_NULL)
-                    {
-                        ctrl->on_item(RTGUI_OBJECT(ctrl), RT_NULL);
-                    }
+                    rtgui_listctrl_set_current_item(ctrl,
+                            (ctrl->current_item / ctrl->page_items) * ctrl->page_items + index);
                 }
             }
         }
@@ -318,38 +305,36 @@ rt_bool_t rtgui_listctrl_event_handler(struct rtgui_object *object, struct rtgui
         struct rtgui_event_kbd *ekbd = (struct rtgui_event_kbd *)event;
         if ((ekbd->type == RTGUI_KEYDOWN) && (ctrl->items_count > 0))
         {
-            rt_uint16_t old_item;
-
-            old_item = ctrl->current_item;
             switch (ekbd->key)
             {
             case RTGUIK_LEFT:
                 if (ctrl->current_item - ctrl->page_items >= 0)
-                    ctrl->current_item -= ctrl->page_items;
-                rtgui_listctrl_update_current(ctrl, old_item);
+                    rtgui_listctrl_set_current_item(ctrl, ctrl->current_item - ctrl->page_items);
                 return RT_TRUE;
 
             case RTGUIK_UP:
                 if (ctrl->current_item > 0)
-                    ctrl->current_item --;
-                rtgui_listctrl_update_current(ctrl, old_item);
+                    rtgui_listctrl_set_current_item(ctrl, ctrl->current_item-1);
                 return RT_TRUE;
 
             case RTGUIK_RIGHT:
-                if (ctrl->current_item + ctrl->page_items < ctrl->items_count - 1)
-                    ctrl->current_item += ctrl->page_items;
-                else
                 {
-                    if ((((ctrl->current_item / ctrl->page_items) + 1) * ctrl->page_items) < ctrl->items_count - 1)
-                        ctrl->current_item = ((ctrl->current_item / ctrl->page_items) + 1) * ctrl->page_items;
+                    rt_uint16_t new_item = ctrl->items_count;
+                    if (ctrl->current_item + ctrl->page_items < ctrl->items_count - 1)
+                        new_item = ctrl->current_item + ctrl->page_items;
+                    else
+                    {
+                        if ((((ctrl->current_item / ctrl->page_items) + 1) * ctrl->page_items)
+                                < ctrl->items_count - 1)
+                            new_item = ((ctrl->current_item / ctrl->page_items) + 1) * ctrl->page_items;
+                    }
+                    rtgui_listctrl_set_current_item(ctrl, new_item);
                 }
-                rtgui_listctrl_update_current(ctrl, old_item);
                 return RT_TRUE;
 
             case RTGUIK_DOWN:
                 if (ctrl->current_item < ctrl->items_count - 1)
-                    ctrl->current_item ++;
-                rtgui_listctrl_update_current(ctrl, old_item);
+                    rtgui_listctrl_set_current_item(ctrl, ctrl->current_item+1);
                 return RT_TRUE;
 
             case RTGUIK_RETURN:
@@ -374,7 +359,7 @@ rt_bool_t rtgui_listctrl_event_handler(struct rtgui_object *object, struct rtgui
 }
 RTM_EXPORT(rtgui_listctrl_event_handler);
 
-rtgui_listctrl_t *rtgui_listctrl_create(rt_uint32_t items, rt_uint16_t count, rtgui_rect_t *rect,
+rtgui_listctrl_t *rtgui_listctrl_create(void *items, rt_uint16_t count, rtgui_rect_t *rect,
                                         rtgui_onitem_draw_t ondraw)
 {
     struct rtgui_listctrl *ctrl = RT_NULL;
@@ -409,7 +394,7 @@ void rtgui_listctrl_set_onitem(rtgui_listctrl_t *ctrl, rtgui_event_handler_ptr f
 }
 RTM_EXPORT(rtgui_listctrl_set_onitem);
 
-void rtgui_listctrl_set_items(rtgui_listctrl_t *ctrl, rt_uint32_t items, rt_uint16_t count)
+void rtgui_listctrl_set_items(rtgui_listctrl_t *ctrl, void *items, rt_uint16_t count)
 {
     rtgui_rect_t rect;
 
@@ -423,6 +408,36 @@ void rtgui_listctrl_set_items(rtgui_listctrl_t *ctrl, rt_uint32_t items, rt_uint
     rtgui_widget_update(RTGUI_WIDGET(ctrl));
 }
 RTM_EXPORT(rtgui_listctrl_set_items);
+
+/**
+ * @brief set the selected(current) item of listctrl widget.
+ *
+ * If the index is greater than items_count, it will have no effect. Otherwise,
+ * the item on @param index will be selected and the on_item will be invoked if
+ * it has one.
+ *
+ * @fixme set current to the items which is not in current page won't update
+ * the scrollbar.
+ */
+void rtgui_listctrl_set_current_item(struct rtgui_listctrl *ctrl, rt_uint16_t index)
+{
+    RT_ASSERT(ctrl);
+
+    if (index >= ctrl->items_count)
+        return;
+
+    if (index != ctrl->current_item)
+    {
+        rt_uint16_t old_item = ctrl->current_item;
+        ctrl->current_item = index;
+        rtgui_listctrl_update_current(ctrl, old_item);
+    }
+    if (ctrl->on_item != RT_NULL)
+    {
+        ctrl->on_item(RTGUI_OBJECT(ctrl), RT_NULL);
+    }
+}
+RTM_EXPORT(rtgui_listctrl_set_current_item);
 
 rt_bool_t rtgui_listctrl_get_item_rect(rtgui_listctrl_t *ctrl, rt_uint16_t item, rtgui_rect_t *item_rect)
 {

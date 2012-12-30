@@ -1,6 +1,8 @@
 #ifndef __RT_THREAD_H__
 #define __RT_THREAD_H__
 
+#include <rtconfig.h>
+
 typedef char  rt_int8_t;
 typedef short rt_int16_t;
 typedef long  rt_int32_t;
@@ -359,13 +361,20 @@ rt_size_t rt_device_write(rt_device_t dev, rt_off_t pos, const void* buffer, rt_
 rt_err_t  rt_device_control(rt_device_t dev, rt_uint8_t cmd, void* arg);
 
 /**
+ * cursor control command
+ */
+#define RT_DEVICE_CTRL_CURSOR_SET_POSITION	0x10
+#define RT_DEVICE_CTRL_CURSOR_SET_TYPE 		0x11
+
+/**
  * graphic device control command 
  */
-#define RTGRAPHIC_CTRL_RECT_UPDATE	0
-#define RTGRAPHIC_CTRL_POWERON		1
-#define RTGRAPHIC_CTRL_POWEROFF		2
-#define RTGRAPHIC_CTRL_GET_INFO		3
-#define RTGRAPHIC_CTRL_SET_MODE		4
+#define RTGRAPHIC_CTRL_RECT_UPDATE      0
+#define RTGRAPHIC_CTRL_POWERON          1
+#define RTGRAPHIC_CTRL_POWEROFF         2
+#define RTGRAPHIC_CTRL_GET_INFO         3
+#define RTGRAPHIC_CTRL_SET_MODE         4
+#define RTGRAPHIC_CTRL_GET_EXT			5
 
 /* graphic deice */
 enum 

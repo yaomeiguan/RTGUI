@@ -109,9 +109,7 @@ void rt_init_thread_entry(void* parameter)
 	struct rtgui_app* app;
 
 
-	app = rtgui_app_create(
-			rt_thread_self(),
-			"guiapp");
+	app = rtgui_app_create("guiapp");
 
 	RT_ASSERT(app != RT_NULL);
 

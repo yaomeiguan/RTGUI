@@ -21,8 +21,8 @@
 #include <rtgui/image_container.h>
 
 #include <string.h>
-#ifdef _MSC_VER
-#define strncasecmp  strnicmp 
+#ifdef _WIN32
+#define strncasecmp  strnicmp
 #endif
 
 #ifdef RTGUI_IMAGE_XPM

@@ -14,7 +14,7 @@ void win_thread_entry(void* parameter)
 
 	struct rtgui_rect rect = {50, 50, 350, 350};
 
-	app = rtgui_app_create(rt_thread_self(), "MyApp");
+	app = rtgui_app_create("MyApp");
 	RT_ASSERT(app != RT_NULL);
 
     win = rtgui_win_create(RT_NULL, "MyWindow", &rect, RTGUI_WIN_STYLE_DEFAULT);
