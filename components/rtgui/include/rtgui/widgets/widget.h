@@ -100,7 +100,7 @@ struct rtgui_widget
     rtgui_rect_t extent;
 
     /* minimal width and height of widget */
-    rt_int16_t mini_width, mini_height;
+    rt_int16_t min_width, min_height;
     /* widget align */
     rt_int32_t align;
     rt_uint16_t border;
@@ -151,9 +151,9 @@ void rtgui_widget_set_rect(rtgui_widget_t *widget, const rtgui_rect_t *rect);
 void rtgui_widget_set_rectangle(rtgui_widget_t *widget, int x, int y, int width, int height);
 void rtgui_widget_get_extent(rtgui_widget_t *widget, rtgui_rect_t *rect);
 
-void rtgui_widget_set_minisize(rtgui_widget_t *widget, int width, int height);
-void rtgui_widget_set_miniwidth(rtgui_widget_t *widget, int width);
-void rtgui_widget_set_miniheight(rtgui_widget_t *widget, int height);
+void rtgui_widget_set_minsize(rtgui_widget_t *widget, int width, int height);
+void rtgui_widget_set_minwidth(rtgui_widget_t *widget, int width);
+void rtgui_widget_set_minheight(rtgui_widget_t *widget, int height);
 
 void rtgui_widget_set_parent(rtgui_widget_t *widget, rtgui_widget_t *parent);
 

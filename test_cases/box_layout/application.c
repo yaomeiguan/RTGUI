@@ -35,7 +35,7 @@ void win_thread_entry(void* parameter)
         struct rtgui_box *box;
 
         panel = rtgui_panel_create(RTGUI_BORDER_NONE);
-        rtgui_widget_set_miniheight(RTGUI_WIDGET(panel), 25);
+        rtgui_widget_set_minheight(RTGUI_WIDGET(panel), 25);
         RTGUI_WIDGET_ALIGN(panel) = RTGUI_ALIGN_EXPAND;
         rtgui_container_add_child(RTGUI_CONTAINER(win), RTGUI_WIDGET(panel));
 
@@ -43,13 +43,13 @@ void win_thread_entry(void* parameter)
         rtgui_container_set_box(RTGUI_CONTAINER(panel), box);
 
         label = rtgui_label_create("Usename:");
-        rtgui_widget_set_miniwidth(RTGUI_WIDGET(label), 80);
+        rtgui_widget_set_minwidth(RTGUI_WIDGET(label), 80);
         rtgui_container_add_child(RTGUI_CONTAINER(panel), RTGUI_WIDGET(label));
 
         text = rtgui_textbox_create("", RTGUI_TEXTBOX_SINGLE);
         RTGUI_WIDGET_ALIGN(text) = RTGUI_ALIGN_STRETCH;
-        rtgui_widget_set_miniwidth(RTGUI_WIDGET(text), 80);
-        /*rtgui_widget_set_miniheight(RTGUI_WIDGET(text), 25);*/
+        rtgui_widget_set_minwidth(RTGUI_WIDGET(text), 80);
+        /*rtgui_widget_set_minheight(RTGUI_WIDGET(text), 25);*/
         rtgui_container_add_child(RTGUI_CONTAINER(panel), RTGUI_WIDGET(text));
     }
 
@@ -58,7 +58,7 @@ void win_thread_entry(void* parameter)
         struct rtgui_box *box;
 
         panel = rtgui_panel_create(RTGUI_BORDER_NONE);
-        rtgui_widget_set_miniheight(RTGUI_WIDGET(panel), 25);
+        rtgui_widget_set_minheight(RTGUI_WIDGET(panel), 25);
         RTGUI_WIDGET_ALIGN(panel) = RTGUI_ALIGN_EXPAND;
         rtgui_container_add_child(RTGUI_CONTAINER(win), RTGUI_WIDGET(panel));
 
@@ -66,20 +66,20 @@ void win_thread_entry(void* parameter)
         rtgui_container_set_box(RTGUI_CONTAINER(panel), box);
 
         label = rtgui_label_create("Password:");
-        rtgui_widget_set_miniwidth(RTGUI_WIDGET(label), 80);
+        rtgui_widget_set_minwidth(RTGUI_WIDGET(label), 80);
         rtgui_container_add_child(RTGUI_CONTAINER(panel), RTGUI_WIDGET(label));
 
         text = rtgui_textbox_create("", RTGUI_TEXTBOX_MASK);
         RTGUI_WIDGET_ALIGN(text) = RTGUI_ALIGN_STRETCH;
-        rtgui_widget_set_miniwidth(RTGUI_WIDGET(text), 80);
-        /*rtgui_widget_set_miniheight(RTGUI_WIDGET(text), 25);*/
+        rtgui_widget_set_minwidth(RTGUI_WIDGET(text), 80);
+        /*rtgui_widget_set_minheight(RTGUI_WIDGET(text), 25);*/
         rtgui_container_add_child(RTGUI_CONTAINER(panel), RTGUI_WIDGET(text));
     }
 
     /* Button */
     button = rtgui_button_create("OK");
-    rtgui_widget_set_miniwidth(RTGUI_WIDGET(button), 80);
-    rtgui_widget_set_miniheight(RTGUI_WIDGET(button), 25);
+    rtgui_widget_set_minwidth(RTGUI_WIDGET(button), 80);
+    rtgui_widget_set_minheight(RTGUI_WIDGET(button), 25);
     RTGUI_WIDGET_ALIGN(button) = RTGUI_ALIGN_RIGHT;
     rtgui_container_add_child(RTGUI_CONTAINER(win), RTGUI_WIDGET(button));
 
