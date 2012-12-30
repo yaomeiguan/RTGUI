@@ -34,6 +34,8 @@ DECLARE_CLASS_TYPE(textbox);
 #define RTGUI_TEXTBOX_DEFAULT_WIDTH     80
 #define RTGUI_TEXTBOX_DEFAULT_HEIGHT        20
 
+#define RTGUI_TEXTBOX_BORDER_WIDTH     1
+
 #define RTGUI_TEXTBOX_SINGLE        0x00
 #define RTGUI_TEXTBOX_MULTI         0x01 /* multiline */
 #define RTGUI_TEXTBOX_MASK          0x02 /* ciphertext */

@@ -54,6 +54,14 @@ static void _rtgui_textbox_constructor(rtgui_textbox_t *box)
 	rtgui_textbox_set_mask_char(box, '*');
 
 	rtgui_font_get_metrics(RTGUI_WIDGET_FONT(box), "H", &rect);
+    rtgui_widget_set_miniheight(RTGUI_WIDGET(box),
+            rtgui_rect_height(rect) + RTGUI_TEXTBOX_BORDER_WIDTH * 2);
+    /* at least, we want to display one char. */
+    rtgui_widget_set_miniwidth(RTGUI_WIDGET(box),
+            rtgui_rect_width(rect) + RTGUI_TEXTBOX_BORDER_WIDTH * 2 \
+            + RTGUI_WIDGET_DEFAULT_MARGIN /* there is a margin in the beginning
+                                             of the text. */
+            );
 	box->font_width = rtgui_rect_width(rect);
 	box->on_enter = RT_NULL;
 	box->dis_length = 0;
@@ -531,13 +539,13 @@ void rtgui_textbox_ondraw(rtgui_textbox_t *box)
 	rtgui_widget_get_rect(RTGUI_WIDGET(box), &rect);
 	fc = RTGUI_WIDGET_FOREGROUND(box);
 
-	rtgui_rect_inflate(&rect, -1);
+	rtgui_rect_inflate(&rect, -RTGUI_TEXTBOX_BORDER_WIDTH);
 
 	/* fill widget rect with white color */
 	RTGUI_WIDGET_BACKGROUND(box) = white;
 	rtgui_dc_fill_rect(dc, &rect);
 
-	rtgui_rect_inflate(&rect, 1);
+	rtgui_rect_inflate(&rect, RTGUI_TEXTBOX_BORDER_WIDTH);
 	/* draw border */
 	RTGUI_WIDGET_FOREGROUND(box) = RTGUI_RGB(123, 158, 189);
 	rtgui_dc_draw_rect(dc, &rect);
