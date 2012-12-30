@@ -184,6 +184,14 @@ void rtgui_widget_get_extent(rtgui_widget_t *widget, rtgui_rect_t *rect)
 }
 RTM_EXPORT(rtgui_widget_get_extent);
 
+void rtgui_widget_set_size(rtgui_widget_t *widget, int width, int height)
+{
+	RT_ASSERT(widget != RT_NULL);
+	widget->mini_width = width;
+	widget->mini_height = height;
+}
+RTM_EXPORT(rtgui_widget_set_size);
+
 void rtgui_widget_set_miniwidth(rtgui_widget_t *widget, int width)
 {
     RT_ASSERT(widget != RT_NULL);
