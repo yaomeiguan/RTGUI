@@ -151,7 +151,7 @@ void rtgui_widget_set_rect(rtgui_widget_t *widget, const rtgui_rect_t *rect);
 void rtgui_widget_set_rectangle(rtgui_widget_t *widget, int x, int y, int width, int height);
 void rtgui_widget_get_extent(rtgui_widget_t *widget, rtgui_rect_t *rect);
 
-void rtgui_widget_set_size(rtgui_widget_t *widget, int width, int height);
+void rtgui_widget_set_minisize(rtgui_widget_t *widget, int width, int height);
 void rtgui_widget_set_miniwidth(rtgui_widget_t *widget, int width);
 void rtgui_widget_set_miniheight(rtgui_widget_t *widget, int height);
 
