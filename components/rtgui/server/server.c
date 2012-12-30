@@ -57,6 +57,9 @@ void rtgui_server_handle_mouse_btn(struct rtgui_event_mouse *event)
     /* re-init to server thread */
     RTGUI_EVENT_MOUSE_BUTTON_INIT(event);
 
+	/* set cursor position */
+	rtgui_mouse_set_position(event->x, event->y);
+
 #ifdef RTGUI_USING_WINMOVE
     if (rtgui_winrect_is_moved() &&
             event->button & (RTGUI_MOUSE_BUTTON_LEFT | RTGUI_MOUSE_BUTTON_UP))

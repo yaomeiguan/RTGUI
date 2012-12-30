@@ -266,6 +266,17 @@ void rtgui_mouse_moveto(int x, int y)
 #endif
 }
 
+void rtgui_mouse_set_position(int x, int y)
+{
+	/* move current cursor */
+	_rtgui_cursor->cx = x;
+	_rtgui_cursor->cy = y;
+
+#ifdef RTGUI_USING_HW_CURSOR
+	rtgui_cursor_set_position(_rtgui_cursor->cx, _rtgui_cursor->cy);
+#endif
+}
+
 #ifdef RTGUI_USING_MOUSE_CURSOR
 void rtgui_mouse_set_cursor_enable(rt_bool_t enable)
 {
