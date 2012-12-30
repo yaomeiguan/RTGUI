@@ -15,9 +15,6 @@
 #include <rtgui/driver.h>
 
 struct rtgui_graphic_driver _driver;
-#ifdef RTGUI_USING_HW_CURSOR
-struct rtgui_cursor_driver _cursor_driver = {0, 0, RT_NULL};
-#endif
 
 extern const struct rtgui_graphic_driver_ops *rtgui_pixel_device_get_ops(int pixel_format);
 extern const struct rtgui_graphic_driver_ops *rtgui_framebuffer_get_ops(int pixel_format);
@@ -81,6 +78,11 @@ rt_err_t rtgui_graphic_set_device(rt_device_t device)
         _driver.ops = rtgui_pixel_device_get_ops(_driver.pixel_format);
     }
 
+#ifdef RTGUI_USING_HW_CURSOR
+	/* set default cursor image */
+	rtgui_cursor_set_image(RTGUI_CURSOR_ARROW);
+#endif
+
     return RT_EOK;
 }
 RTM_EXPORT(rtgui_graphic_set_device);
@@ -112,30 +114,14 @@ rt_uint8_t *rtgui_graphic_driver_get_default_framebuffer(void)
 RTM_EXPORT(rtgui_graphic_driver_get_default_framebuffer);
 
 #ifdef RTGUI_USING_HW_CURSOR
-void rtgui_cursor_set_device(const char* device_name)
-{
-	rt_device_t device;
-
-	device = rt_device_find(device_name);
-	if (device != RT_NULL)
-	{
-		_cursor_driver.device = device;
-		rtgui_cursor_set_position(0, 0);
-		rtgui_cursor_set_image(RTGUI_CURSOR_ARROW);
-	}
-}
-
 void rtgui_cursor_set_position(rt_uint16_t x, rt_uint16_t y)
 {
 	rt_uint32_t value;
 
-	_cursor_driver.x = x;
-	_cursor_driver.y = y;
-
-	if (_cursor_driver.device != RT_NULL)
+	if (_driver.device != RT_NULL)
 	{
 		value = (x << 16 | y);
-		rt_device_control(_cursor_driver.device, RT_DEVICE_CTRL_CURSOR_SET_POSITION, &value);
+		rt_device_control(_driver.device, RT_DEVICE_CTRL_CURSOR_SET_POSITION, &value);
 	}
 }
 
@@ -143,10 +129,11 @@ void rtgui_cursor_set_image(enum rtgui_cursor_type type)
 {
 	rt_uint32_t value;
 
-	if (_cursor_driver.device != RT_NULL)
+	if (_driver.device != RT_NULL)
 	{
 		value = type;
-		rt_device_control(_cursor_driver.device, RT_DEVICE_CTRL_CURSOR_SET_TYPE, &value);
+		rt_device_control(_driver.device, RT_DEVICE_CTRL_CURSOR_SET_TYPE, &value);
 	}
 };
 #endif
+

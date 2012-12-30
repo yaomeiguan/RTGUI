@@ -91,14 +91,6 @@ enum rtgui_cursor_type
 	RTGUI_CURSOR_HAND,
 };
 
-struct rtgui_cursor_driver
-{
-	rt_uint16_t x;
-	rt_uint16_t y;
-
-	struct rt_device* device;
-};
-
 void rtgui_cursor_set_device(const char* device_name);
 void rtgui_cursor_set_position(rt_uint16_t x, rt_uint16_t y);
 void rtgui_cursor_set_image(enum rtgui_cursor_type type);
