@@ -95,6 +95,7 @@ static void application_entry(void *parameter)
     demo_view_notebook();
     demo_view_mywidget();
     demo_plot();
+	demo_view_digtube();
 
 #if defined(RTGUI_USING_DFS_FILERW)
 	demo_view_edit();
