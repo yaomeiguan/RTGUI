@@ -54,10 +54,10 @@ static void _rtgui_textbox_constructor(rtgui_textbox_t *box)
 	rtgui_textbox_set_mask_char(box, '*');
 
 	rtgui_font_get_metrics(RTGUI_WIDGET_FONT(box), "H", &rect);
-    rtgui_widget_set_miniheight(RTGUI_WIDGET(box),
+    rtgui_widget_set_minheight(RTGUI_WIDGET(box),
             rtgui_rect_height(rect) + RTGUI_TEXTBOX_BORDER_WIDTH * 2);
     /* at least, we want to display one char. */
-    rtgui_widget_set_miniwidth(RTGUI_WIDGET(box),
+    rtgui_widget_set_minwidth(RTGUI_WIDGET(box),
             rtgui_rect_width(rect) + RTGUI_TEXTBOX_BORDER_WIDTH * 2 \
             + RTGUI_WIDGET_DEFAULT_MARGIN /* there is a margin in the beginning
                                              of the text. */
