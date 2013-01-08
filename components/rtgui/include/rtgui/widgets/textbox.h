@@ -82,7 +82,20 @@ void rtgui_textbox_set_value(struct rtgui_textbox *box, const char *text);
 const char *rtgui_textbox_get_value(struct rtgui_textbox *box);
 void rtgui_textbox_set_mask_char(rtgui_textbox_t *box, const char ch);
 char rtgui_textbox_get_mask_char(rtgui_textbox_t *box);
-void rtgui_textbox_set_line_length(struct rtgui_textbox *box, rt_size_t length);
+/** set the maximum chars a line could hold excluding the NULL byte
+ *
+ * It will truncate the current line if the length is smaller than the chars
+ * the box is currently holding. But the box->text is guaranteed to be NULL
+ * terminated anyway.
+ *
+ * @param box the text box it operate on
+ * @param length the new line length. It should be greater than 0.
+ *
+ * @return -RT_ERROR on invalid length; -RT_ENOMEM if there is no enough memory
+ * to allocate the new buffer. On returning -RT_ENOMEM, the original text would
+ * remain unchanged.
+ */
+rt_err_t rtgui_textbox_set_line_length(struct rtgui_textbox *box, rt_size_t length);
 
 void rtgui_textbox_get_edit_rect(struct rtgui_textbox *box, rtgui_rect_t *rect);
 

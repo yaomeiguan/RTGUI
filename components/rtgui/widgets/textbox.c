@@ -618,29 +618,27 @@ char rtgui_textbox_get_mask_char(rtgui_textbox_t *box)
 	return box->mask_char;
 }
 
-void rtgui_textbox_set_line_length(rtgui_textbox_t *box, rt_size_t length)
+rt_err_t rtgui_textbox_set_line_length(rtgui_textbox_t *box, rt_size_t length)
 {
-	rt_uint8_t *new_line;
+    char *new_line;
 
-	RT_ASSERT(box != RT_NULL);
+    RT_ASSERT(box != RT_NULL);
 
-	/* invalid length */
-	if (length <= 0)
-		return;
+    /* invalid length */
+    if (length <= 0)
+        return -RT_ERROR;
 
-	new_line = rtgui_malloc(length);
-	if (length < box->line_length)
-	{
-		rt_memcpy(new_line, box->text, length - 1);
-		new_line[length] = '\0';
-	}
-	else
-	{
-		rt_memcpy(new_line, (const char *)box->text, rt_strlen((const char *)box->text));
-	}
+    new_line = rtgui_realloc(box->text, length+1);
+    if (new_line == RT_NULL)
+        return -RT_ENOMEM;
 
-	/* set line length */
-	box->line_length = length;
+    if (length < box->line_length)
+        new_line[length] = '\0';
+
+    box->line_length = length;
+    box->text = new_line;
+
+    return RT_EOK;
 }
 
 /* get textbox text area */
