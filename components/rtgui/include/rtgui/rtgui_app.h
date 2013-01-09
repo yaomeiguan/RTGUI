@@ -52,9 +52,6 @@ struct rtgui_app
 
     /* the thread id */
     rt_thread_t tid;
-    /* the RTGUI server id */
-    rt_thread_t server;
-
     /* the message queue of thread */
     rt_mq_t mq;
     /* event buffer */
