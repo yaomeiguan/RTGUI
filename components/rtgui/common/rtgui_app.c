@@ -30,7 +30,6 @@ static void _rtgui_app_constructor(struct rtgui_app *app)
     app->ref_count      = 0;
     app->exit_code      = 0;
     app->tid            = RT_NULL;
-    app->server         = RT_NULL;
     app->mq             = RT_NULL;
     app->modal_object   = RT_NULL;
     app->main_object    = RT_NULL;
