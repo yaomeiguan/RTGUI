@@ -178,7 +178,7 @@ static rt_bool_t _rtgui_win_deal_close(struct rtgui_win *win,
             return RT_FALSE;
     }
 
-    rtgui_win_hiden(win);
+    rtgui_win_hide(win);
 
     win->flag |= RTGUI_WIN_FLAG_CLOSED;
 
@@ -328,7 +328,7 @@ void rtgui_win_end_modal(struct rtgui_win *win, rtgui_modal_code_t modal_code)
 }
 RTM_EXPORT(rtgui_win_end_modal);
 
-void rtgui_win_hiden(struct rtgui_win *win)
+void rtgui_win_hide(struct rtgui_win *win)
 {
     RT_ASSERT(win != RT_NULL);
 
@@ -351,7 +351,7 @@ void rtgui_win_hiden(struct rtgui_win *win)
         win->flag &= ~RTGUI_WIN_FLAG_ACTIVATE;
     }
 }
-RTM_EXPORT(rtgui_win_hiden);
+RTM_EXPORT(rtgui_win_hide);
 
 rt_err_t rtgui_win_activate(struct rtgui_win *win)
 {
@@ -469,7 +469,7 @@ rt_bool_t rtgui_win_event_handler(struct rtgui_object *object, struct rtgui_even
         break;
 
     case RTGUI_EVENT_WIN_HIDE:
-        rtgui_win_hiden(win);
+        rtgui_win_hide(win);
         break;
 
     case RTGUI_EVENT_WIN_CLOSE:
