@@ -390,7 +390,7 @@ rt_err_t rtgui_server_post_event_sync(struct rtgui_event *event, rt_size_t size)
 
 struct rtgui_app* rtgui_get_server(void)
 {
-    return rtgui_server_app;
+    return rt_thread_find("rtgui");
 }
 RTM_EXPORT(rtgui_get_server);
 
