@@ -90,7 +90,7 @@ struct rtgui_event
     rt_uint16_t user;
 
     /* the event sender */
-    struct rtgui_app *sender;
+    rt_thread_t sender;
 
     /* mailbox to acknowledge request */
     rt_mailbox_t ack;
@@ -98,13 +98,11 @@ struct rtgui_event
 typedef struct rtgui_event rtgui_event_t;
 #define RTGUI_EVENT(e)  ((struct rtgui_event*)(e))
 
-extern struct rtgui_app* rtgui_app_self(void);
-
 #define RTGUI_EVENT_INIT(e, t)  do      \
 {                                       \
     (e)->type = (t);                    \
     (e)->user = 0;                      \
-    (e)->sender = rtgui_app_self();     \
+    (e)->sender = rt_thread_self();     \
     (e)->ack = RT_NULL;                 \
 } while (0)
 

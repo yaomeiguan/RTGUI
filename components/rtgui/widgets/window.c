@@ -623,7 +623,7 @@ rt_bool_t rtgui_win_event_handler(struct rtgui_object *object, struct rtgui_even
             return RT_TRUE;
         break;
 
-    default:
+    default :
         return rtgui_container_event_handler(object, event);
     }
 

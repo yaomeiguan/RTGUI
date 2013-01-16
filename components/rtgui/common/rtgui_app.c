@@ -53,8 +53,8 @@ DEFINE_CLASS_TYPE(application, "application",
 struct rtgui_app *rtgui_app_create(const char *title)
 {
     rt_thread_t tid = rt_thread_self();
+    rt_thread_t srv_tid;
     struct rtgui_app *app;
-    struct rtgui_app *srv_app;
     struct rtgui_event_application event;
 
     RT_ASSERT(tid != RT_NULL);
@@ -83,19 +83,23 @@ struct rtgui_app *rtgui_app_create(const char *title)
     if (app->name == RT_NULL)
         goto __err;
 
-    /* the first app should be the server */
-    srv_app = rtgui_get_server();
-    if (srv_app == RT_NULL)
+    /* send a message to notify rtgui server */
+    srv_tid = rtgui_get_server();
+    if (srv_tid == RT_NULL)
     {
-        rt_kprintf("RTGUI: creating the server app %p.\n", app);
-        return app;
+        rt_kprintf("gui server is not running.\n");
+        goto __err;
     }
+
+    /* create the rtgui server application */
+    if (srv_tid == rt_thread_self())
+        return app;
 
     RTGUI_EVENT_APP_CREATE_INIT(&event);
     event.app = app;
 
     /* notify rtgui server to one application has been created */
-    if (rtgui_send_sync(srv_app, RTGUI_EVENT(&event), sizeof(event)) == RT_EOK)
+    if (rtgui_send_sync(srv_tid, RTGUI_EVENT(&event), sizeof(event)) == RT_EOK)
     {
         return app;
     }
@@ -118,7 +122,7 @@ RTM_EXPORT(rtgui_app_create);
 
 void rtgui_app_destroy(struct rtgui_app *app)
 {
-    struct rtgui_app *srv_app;
+    rt_thread_t srv_tid;
     _rtgui_application_check(app);
 
     if (!(app->state_flag & RTGUI_APP_FLAG_EXITED))
@@ -129,14 +133,14 @@ void rtgui_app_destroy(struct rtgui_app *app)
     }
 
     /* send a message to notify rtgui server */
-    srv_app = rtgui_get_server();
-    if (srv_app != rtgui_app_self())
+    srv_tid = rtgui_get_server();
+    if (srv_tid != rt_thread_self()) /* must not the server thread */
     {
         struct rtgui_event_application event;
         RTGUI_EVENT_APP_DESTROY_INIT(&event);
         event.app = app;
 
-        if (rtgui_send_sync(srv_app, RTGUI_EVENT(&event), sizeof(event)) != RT_EOK)
+        if (rtgui_send_sync(srv_tid, RTGUI_EVENT(&event), sizeof(event)) != RT_EOK)
         {
             rt_kprintf("destroy an application in server failed\n");
             return ;
@@ -356,7 +360,7 @@ void rtgui_app_activate(struct rtgui_app *app)
     RTGUI_EVENT_APP_ACTIVATE_INIT(&event);
     event.app = app;
 
-    rtgui_send(app, RTGUI_EVENT(&event), sizeof(struct rtgui_event_application));
+    rtgui_send(app->tid, RTGUI_EVENT(&event), sizeof(struct rtgui_event_application));
 }
 RTM_EXPORT(rtgui_app_activate);
 
@@ -367,7 +371,7 @@ void rtgui_app_close(struct rtgui_app *app)
     RTGUI_EVENT_APP_DESTROY_INIT(&event);
     event.app = app;
 
-    rtgui_send(app, RTGUI_EVENT(&event), sizeof(struct rtgui_event_application));
+    rtgui_send(app->tid, RTGUI_EVENT(&event), sizeof(struct rtgui_event_application));
 }
 RTM_EXPORT(rtgui_app_close);
 
@@ -376,19 +380,19 @@ RTM_EXPORT(rtgui_app_close);
  */
 rt_err_t rtgui_app_set_as_wm(struct rtgui_app *app)
 {
-    struct rtgui_app *srv_app;
+    rt_thread_t srv_tid;
     struct rtgui_event_set_wm event;
 
     _rtgui_application_check(app);
 
-    srv_app = rtgui_get_server();
-    if (srv_app != RT_NULL)
+    srv_tid = rtgui_get_server();
+    if (srv_tid != RT_NULL)
     {
         /* notify rtgui server, this is a window manager */
         RTGUI_EVENT_SET_WM_INIT(&event);
         event.app = app;
 
-        rtgui_send_sync(srv_app, RTGUI_EVENT(&event), sizeof(event));
+        rtgui_send_sync(srv_tid, RTGUI_EVENT(&event), sizeof(event));
         return RT_EOK;
     }
 
