@@ -56,6 +56,7 @@ struct rtgui_app *rtgui_app_create(const char *title)
     struct rtgui_app *app;
     struct rtgui_app *srv_app;
     struct rtgui_event_application event;
+    char mq_name[RT_NAME_MAX];
 
     RT_ASSERT(tid != RT_NULL);
     RT_ASSERT(title != RT_NULL);
@@ -69,7 +70,8 @@ struct rtgui_app *rtgui_app_create(const char *title)
     RT_ASSERT(tid->user_data == 0);
     app->tid = tid;
 
-    app->mq = rt_mq_create("rtgui", sizeof(union rtgui_event_generic), 32, RT_IPC_FLAG_FIFO);
+    rt_snprintf(mq_name, RT_NAME_MAX, "g%s", title);
+    app->mq = rt_mq_create(mq_name, sizeof(union rtgui_event_generic), 32, RT_IPC_FLAG_FIFO);
     if (app->mq == RT_NULL)
     {
         rt_kprintf("create msgq failed.\n");
