@@ -101,9 +101,10 @@ void rtgui_server_handle_mouse_btn(struct rtgui_event_mouse *event)
     {
         event->wid = wnd->wid;
 
-        if (rtgui_topwin_get_focus() != wnd)
+        /* only raise window if the button is pressed down */
+        if (event->button & RTGUI_MOUSE_BUTTON_DOWN
+            && rtgui_topwin_get_focus() != wnd)
         {
-            /* raise this window */
             rtgui_topwin_activate_topwin(wnd);
         }
 
