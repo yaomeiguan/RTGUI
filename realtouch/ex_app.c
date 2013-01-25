@@ -20,8 +20,9 @@ void app1_entry(void* parameter)
 		rtgui_container_set_box(RTGUI_CONTAINER(win), box);
 		rtgui_container_add_child(RTGUI_CONTAINER(win), RTGUI_WIDGET(label));
 		rtgui_container_layout(RTGUI_CONTAINER(win));
-		
+
 		rtgui_win_show(win, RT_TRUE);
+        rtgui_win_destroy(win);
 
 		rtgui_app_destroy(application);
 	}
@@ -36,7 +37,8 @@ void app2_entry(void* parameter)
 	if (application != RT_NULL)
 	{
 		rtgui_rect_t rect = {220, 250, 400, 450};
-		win = rtgui_win_create(RT_NULL, "Window #2", &rect, RTGUI_WIN_STYLE_DEFAULT);
+		win = rtgui_win_create(RT_NULL, "Window #2", &rect,
+                RTGUI_WIN_STYLE_DEFAULT | RTGUI_WIN_STYLE_DESTROY_ON_CLOSE);
 		rtgui_win_show(win, RT_TRUE);
 
 		rtgui_app_destroy(application);

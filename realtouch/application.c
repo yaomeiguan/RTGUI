@@ -25,7 +25,7 @@ int rt_application_init()
 	app_mgr_init();
 	rt_thread_delay(10);
 	app_init();
-	picture_app_create();
+    picture_app_create();
 
 	return 0;
 }
