@@ -42,19 +42,20 @@ for exe_name, src_path in TARGETS:
     # end building
     EndBuilding(exe_name)
 
-# build for testcases 
-list = os.listdir(os.path.join(str(Dir('#')), 'test_cases'))
-for d in list:
-    src_path = os.path.join(str(Dir('#')), 'test_cases', d)
-    if os.path.isfile(os.path.join(src_path, 'SConscript')):
-        exe_name = os.path.basename(src_path)
-        objs = base_objs + SConscript(dirs=[src_path],
-                                       variant_dir=path_join('build', src_path),
-                                       duplicate=0)
-        # build program
-        env.Program(path_join(exe_dir, exe_name), objs)
+if ARGUMENTS.get('build_tests') == '1':
+    # build for testcases
+    list = os.listdir(os.path.join(str(Dir('#')), 'test_cases'))
+    for d in list:
+        src_path = os.path.join(str(Dir('#')), 'test_cases', d)
+        if os.path.isfile(os.path.join(src_path, 'SConscript')):
+            exe_name = os.path.basename(src_path)
+            objs = base_objs + SConscript(dirs=[src_path],
+                                           variant_dir=path_join('build', src_path),
+                                           duplicate=0)
+            # build program
+            env.Program(path_join(exe_dir, exe_name), objs)
 
-        # end building
-        EndBuilding(exe_name)
+            # end building
+            EndBuilding(exe_name)
 
 PreBuilding()
