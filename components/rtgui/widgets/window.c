@@ -538,27 +538,37 @@ rt_bool_t rtgui_win_event_handler(struct rtgui_object *object, struct rtgui_even
         break;
 
     case RTGUI_EVENT_MOUSE_BUTTON:
-        /* check whether has widget which handled mouse event before */
-        if (win->last_mevent_widget != RT_NULL)
         {
-            RTGUI_OBJECT(win->last_mevent_widget)->event_handler(
-                RTGUI_OBJECT(win->last_mevent_widget),
-                event);
-
-            /* clean last mouse event handled widget */
-            win->last_mevent_widget = RT_NULL;
-        }
-        else if (rtgui_container_dispatch_mouse_event(RTGUI_CONTAINER(win),
-                 (struct rtgui_event_mouse *)event) == RT_FALSE)
-        {
+            rt_bool_t res = rtgui_container_dispatch_mouse_event(RTGUI_CONTAINER(win),
+                                        (struct rtgui_event_mouse *)event);
 #ifndef RTGUI_USING_SMALL_SIZE
             if (RTGUI_WIDGET(object)->on_mouseclick != RT_NULL)
             {
-                return RTGUI_WIDGET(object)->on_mouseclick(object, event);
+                RTGUI_WIDGET(object)->on_mouseclick(object, event);
             }
 #endif
+            /* check whether has widget which handled mouse event before.
+             *
+             * Note #1: that the widget should have already received mouse down
+             * event and we should only feed the mouse up event to it here.
+             *
+             * Note #2: the widget is responsible to clean up
+             * last_mevent_widget on mouse up event(but not overwrite other
+             * widgets). If not, it will receive two mouse up events.
+             */
+            if (((struct rtgui_event_mouse *)event)->button & RTGUI_MOUSE_BUTTON_UP
+                    && win->last_mevent_widget != RT_NULL)
+            {
+                RTGUI_OBJECT(win->last_mevent_widget)->event_handler(
+                        RTGUI_OBJECT(win->last_mevent_widget),
+                        event);
+
+                /* clean last mouse event handled widget */
+                win->last_mevent_widget = RT_NULL;
+            }
+
+            return res;
         }
-        break;
 
     case RTGUI_EVENT_MOUSE_MOTION:
 #if 0
