@@ -250,7 +250,6 @@ rt_base_t rtgui_win_show(struct rtgui_win *win, rt_bool_t is_modal)
     struct rtgui_app *app;
     struct rtgui_event_win_show eshow;
 
-    app = win->app;
     RTGUI_EVENT_WIN_SHOW_INIT(&eshow);
     eshow.wid = win;
 
@@ -278,20 +277,19 @@ rt_base_t rtgui_win_show(struct rtgui_win *win, rt_bool_t is_modal)
     if (win->focused_widget == RT_NULL)
         rtgui_widget_focus(RTGUI_WIDGET(win));
 
+    app = win->app;
+    RT_ASSERT(app != RT_NULL);
+
     /* set main window */
     if (app->main_object == RT_NULL)
         rtgui_app_set_main_win(app, win);
 
     if (is_modal == RT_TRUE)
     {
-        struct rtgui_app *app;
         struct rtgui_event_win_modal_enter emodal;
 
         RTGUI_EVENT_WIN_MODAL_ENTER_INIT(&emodal);
         emodal.wid = win;
-
-        app = win->app;
-        RT_ASSERT(app != RT_NULL);
 
         win->flag |= RTGUI_WIN_FLAG_MODAL;
 
