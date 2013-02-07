@@ -347,6 +347,9 @@ RTM_EXPORT(rtgui_app_run);
 
 void rtgui_app_exit(struct rtgui_app *app, rt_uint16_t code)
 {
+    if (app->ref_count == 0)
+        return;
+
     --app->ref_count;
     app->exit_code = code;
 }
