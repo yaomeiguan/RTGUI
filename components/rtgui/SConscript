@@ -4,6 +4,7 @@ from building import *
 common_src = Split("""
 common/blit.c
 common/color.c
+common/calibration.c
 common/region.c
 common/rtgui_object.c
 common/rtgui_system.c
