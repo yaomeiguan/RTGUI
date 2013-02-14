@@ -254,7 +254,7 @@ rtgui_container_t *demo_view_listctrl(void)
 
     rect.y1 = rect.y2 + 3;
     rect.y2 = 250;
-    box = rtgui_listctrl_create((rt_uint32_t)items, sizeof(items) / sizeof(items[0]), &rect,
+    box = rtgui_listctrl_create(items, sizeof(items) / sizeof(items[0]), &rect,
                                 _rtgui_listctrl_item_draw);
     rtgui_listctrl_set_onitem(box, on_items);
     /* container是一个container控件，调用add_child方法添加这个listctrl控件 */
