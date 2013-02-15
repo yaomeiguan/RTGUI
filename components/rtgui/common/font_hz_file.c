@@ -120,6 +120,11 @@ static void rtgui_hz_file_font_load(struct rtgui_font *font)
     RT_ASSERT(hz_file_font != RT_NULL);
 
     hz_file_font->fd = open(hz_file_font->font_fn, O_RDONLY, 0);
+    if (hz_file_font->fd < 0)
+    {
+        rt_kprintf("RTGUI: could not open the font file:%s\n", hz_file_font->font_fn);
+        rt_kprintf("RTGUI: please mount the fs first and make sure the file is there\n");
+    }
 }
 
 static void _rtgui_hz_file_font_draw_text(struct rtgui_hz_file_font *hz_file_font, struct rtgui_dc *dc, const char *text, rt_ubase_t len, struct rtgui_rect *rect)
