@@ -1,28 +1,37 @@
-# 简介
+# Overview
 
-RTGUI 是一系列 RT-Thread 组件的一部分。它的目的是为开发人员提供一个便于在嵌入式系统中使用的图形界面库。以其和 RT-Thread 天然集成的优势，方便开发人员开发。这个图形用户界面组件能够为RT-Thread上的应用程序提供人机界面交互的功能，例如人机界面设备，设备信息显示，播放器界面等。图形用户界面组件的功能包括：
+RTGUI is one of the components of RT-Thread. It aims at providing a
+easy-to-use GUI library for embedded systems. Thanks to the integration with
+RT-Thread, it's much easier to develop. This GUI could provide ways for
+human-machine interaction interface such as HMI, information display, music
+player. The features of RTGUI contains:
 
-*  多线程图形用户界面；
-*  依赖于RT-Thread线程调度器的实时图形用户界面；
-*  C语言方式的全面向对象设计：
-    -  对象具备运行时类型信息；
-    -  对象自动销毁，使得内存的管理更为轻松；
-*  界面主题支持；
-*  中文文本显示支持；
-*  丰富的控件支持：
-    -  button，checkbox，radiobox
+*  multi threaded GUI
+*  real time GUI depend on RT-Thread
+*  object-oriented design in C:
+    -  run time type identification
+    -  automatic object destruction
+*  theme support
+*  Chinese text display
+*  plenty of widgets:
+    -  button, checkbox, radiobox
     -  textbox
-    -  progressbar，slider
-    -  列表视图，文件列表视图
-    -  等等
+    -  progressbar, slider
+    -  list view, file list view
+    -  et al
 
-# 使用方法
+# Usage
 
-1. 直接使用(在 windows 中模拟运行)
+1. direct usage(run in Windows via simulation)
 
-    安装好 VS(2008+，express版应该就可以)，在根目录下运行 scons。这时在 executeables 目录下会有两个可执行文件。一个是 demo，一个是 realtouch。把 win32/SDL/lib 里的 SDL.dll 复制到 executeables 里即可运行以上应用程序。
+    Install VS(2008+, express edition should be OK), run scons on the root
+    directory of this project. There will be two executeables in the folder
+    executeables/. One is demo.exe, the other is realtouch.exe. After copying
+    SDL.dll from win32/SDL/lib to executeables/, you are ready to run the
+    programs above.
 
-2. 在 RT-Thread 中使用
+2. use it in RT-Thread
 
-    在系统或运行环境中设置 RTT_RTGUI 变量，使其指向 components/rtgui 。然后再在你的工程目录里重新运行 scons 即可。
+    Set the environment variable RTT_RTGUI point to the abosulute directory of
+    components/rtgui. Re-run scons in your project directory.
 
