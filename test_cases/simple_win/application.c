@@ -58,7 +58,7 @@ void create_wins(struct rtgui_app *app, void *parameter)
 	rect.x2 = 180;
 	rect.y2 = 90;
 	win2 = rtgui_win_create(win1,
-		"test window2", &rect, RTGUI_WIN_STYLE_DEFAULT);
+		"test tree1.1", &rect, RTGUI_WIN_STYLE_DEFAULT);
 
 	rtgui_win_set_onclose(win2, on_window_close);
 	rtgui_win_show(win1, RT_FALSE);
@@ -127,8 +127,6 @@ int rt_application_init()
 {
 	rt_thread_t init_thread, init_thread2;
 
-	rt_err_t result;
-
 #if (RT_THREAD_PRIORITY_MAX == 32)
 	init_thread = rt_thread_create("init",
 								rt_init_thread_entry, 1,
@@ -147,8 +145,8 @@ int rt_application_init()
 
 	if (init_thread != RT_NULL)
 		rt_thread_startup(init_thread);
-	if (init_thread2 != RT_NULL)
-		rt_thread_startup(init_thread2);
+    if (init_thread2 != RT_NULL)
+        rt_thread_startup(init_thread2);
 
 	return 0;
 
