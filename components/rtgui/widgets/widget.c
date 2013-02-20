@@ -655,8 +655,8 @@ rt_bool_t rtgui_widget_onhide(struct rtgui_object *object, struct rtgui_event *e
             parent = parent->parent;
         }
 
-        /* union widget rect */
-        rtgui_region_union_rect(&(parent->clip), &(parent->clip), &(widget->extent));
+        /* give my clip back to parent */
+        rtgui_region_union(&(parent->clip), &(parent->clip), &(widget->clip));
     }
 
     return RT_FALSE;
