@@ -582,8 +582,7 @@ rt_inline void _rtgui_topwin_mark_hidden(struct rtgui_topwin *topwin)
 
 rt_inline void _rtgui_topwin_mark_shown(struct rtgui_topwin *topwin)
 {
-    if (!(topwin->flag & WINTITLE_SHOWN)
-        && RTGUI_WIDGET_IS_HIDE(topwin->wid))
+    if (topwin->flag & WINTITLE_SHOWN)
         return;
 
     topwin->flag |= WINTITLE_SHOWN;
@@ -591,7 +590,11 @@ rt_inline void _rtgui_topwin_mark_shown(struct rtgui_topwin *topwin)
     {
         RTGUI_WIDGET_UNHIDE(topwin->title);
     }
-    RTGUI_WIDGET_UNHIDE(topwin->wid);
+
+    if (RTGUI_WIDGET_IS_HIDE(topwin->wid))
+    {
+        rtgui_widget_show(RTGUI_WIDGET(topwin->wid));
+    }
 }
 
 rt_err_t rtgui_topwin_show(struct rtgui_event_win *event)
@@ -604,13 +607,9 @@ rt_err_t rtgui_topwin_show(struct rtgui_event_win *event)
     if (topwin == RT_NULL)
         return -RT_ERROR;
 
-    /* if the parent is hidden, just mark it as shown. It will be shown when
-     * the parent is shown. */
+    /* child windows could only be shown iif the parent is shown */
     if (!_rtgui_topwin_could_show(topwin))
     {
-        topwin->flag |= WINTITLE_SHOWN;
-        _rtgui_topwin_raise_in_sibling(topwin);
-
         return -RT_ERROR;
     }
 
