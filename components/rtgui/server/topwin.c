@@ -495,7 +495,7 @@ static void _rtgui_topwin_draw_tree(struct rtgui_topwin *topwin, struct rtgui_ev
     }
 
     epaint->wid = topwin->wid;
-    rtgui_send(topwin->app, &(epaint->parent), sizeof(struct rtgui_event_paint));
+    rtgui_send(topwin->app, &(epaint->parent), sizeof(*epaint));
 
     rtgui_dlist_foreach(node, &topwin->child_list, prev)
     {
@@ -567,7 +567,7 @@ rt_inline void _rtgui_topwin_preorder_map(struct rtgui_topwin *topwin, void (*fu
     func(topwin);
 
     rtgui_dlist_foreach(child, &topwin->child_list, next)
-    _rtgui_topwin_preorder_map(get_topwin_from_list(child), func);
+        _rtgui_topwin_preorder_map(get_topwin_from_list(child), func);
 }
 
 rt_inline void _rtgui_topwin_mark_hidden(struct rtgui_topwin *topwin)
@@ -583,7 +583,7 @@ rt_inline void _rtgui_topwin_mark_hidden(struct rtgui_topwin *topwin)
 rt_inline void _rtgui_topwin_mark_shown(struct rtgui_topwin *topwin)
 {
     if (!(topwin->flag & WINTITLE_SHOWN)
-            && RTGUI_WIDGET_IS_HIDE(topwin->wid))
+        && RTGUI_WIDGET_IS_HIDE(topwin->wid))
         return;
 
     topwin->flag |= WINTITLE_SHOWN;
@@ -874,8 +874,9 @@ struct rtgui_topwin *rtgui_topwin_get_wnd_no_modaled(int x, int y)
 }
 
 /* clip region from topwin, and the windows beneath it. */
-rt_inline void _rtgui_topwin_clip_to_region(struct rtgui_region *region,
-        struct rtgui_topwin *topwin)
+rt_inline void _rtgui_topwin_clip_to_region(
+        struct rtgui_topwin *topwin,
+        struct rtgui_region *region)
 {
     RT_ASSERT(region != RT_NULL);
     RT_ASSERT(topwin != RT_NULL);
@@ -909,7 +910,7 @@ static void rtgui_topwin_update_clip(void)
     struct rtgui_region region_available;
 
     if (rtgui_dlist_isempty(&_rtgui_topwin_list) ||
-            !(get_topwin_from_list(_rtgui_topwin_list.next)->flag & WINTITLE_SHOWN))
+        !(get_topwin_from_list(_rtgui_topwin_list.next)->flag & WINTITLE_SHOWN))
         return;
 
     RTGUI_EVENT_CLIP_INFO_INIT(&eclip);
@@ -929,7 +930,7 @@ static void rtgui_topwin_update_clip(void)
     while (top != RT_NULL)
     {
         /* clip the topwin */
-        _rtgui_topwin_clip_to_region(&region_available, top);
+        _rtgui_topwin_clip_to_region(top, &region_available);
 #if 0
         /* debug window clipping */
         rt_kprintf("clip %s ", top->wid->title);
@@ -949,18 +950,24 @@ static void rtgui_topwin_update_clip(void)
 
         /* move to next sibling tree */
         if (top->parent == RT_NULL)
+        {
             if (top->list.next != &_rtgui_topwin_list &&
-                    get_topwin_from_list(top->list.next)->flag & WINTITLE_SHOWN)
+                get_topwin_from_list(top->list.next)->flag & WINTITLE_SHOWN)
                 top = _rtgui_topwin_get_topmost_child_shown(get_topwin_from_list(top->list.next));
             else
                 break;
+        }
         /* move to next slibing topwin */
         else if (top->list.next != &top->parent->child_list &&
                  get_topwin_from_list(top->list.next)->flag & WINTITLE_SHOWN)
+        {
             top = _rtgui_topwin_get_topmost_child_shown(get_topwin_from_list(top->list.next));
+        }
         /* level up */
         else
+        {
             top = top->parent;
+        }
     }
 }
 
