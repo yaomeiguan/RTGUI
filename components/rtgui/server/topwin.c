@@ -519,7 +519,10 @@ rt_err_t rtgui_topwin_activate_topwin(struct rtgui_topwin *topwin)
 
     if (topwin->flag & WINTITLE_NOFOCUS)
     {
-        /* just raise and show, not affect others. */
+        /* just raise and show, no other effects.  Active window is the one
+         * which will receive kbd events. So a no-focus window can only be
+         * "raised" but not "activated".
+         */
         _rtgui_topwin_raise_tree_from_root(topwin);
         rtgui_topwin_update_clip();
         _rtgui_topwin_draw_tree(
@@ -531,7 +534,7 @@ rt_err_t rtgui_topwin_activate_topwin(struct rtgui_topwin *topwin)
         return RT_EOK;
 
     old_focus_topwin = rtgui_topwin_get_focus();
-    /* if topwin has the focus, it shoule have WINTITLE_ACTIVATE set and
+    /* if topwin has the focus, it should have WINTITLE_ACTIVATE set and
      * returned above. */
     RT_ASSERT(old_focus_topwin != topwin);
 
