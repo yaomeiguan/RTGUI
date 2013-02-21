@@ -725,7 +725,6 @@ static void rtgui_filelist_view_clear(rtgui_filelist_view_t *view)
     view->items_count = 0;
     view->current_item = 0;
 }
-RTM_EXPORT(rtgui_filelist_view_clear);
 
 void rtgui_filelist_view_set_directory(rtgui_filelist_view_t *view, const char *directory)
 {
