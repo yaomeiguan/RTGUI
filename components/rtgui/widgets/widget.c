@@ -549,7 +549,16 @@ void rtgui_widget_update_clip(rtgui_widget_t *widget)
     rtgui_widget_t *parent;
 
     /* no widget or widget is hide, no update clip */
-    if (widget == RT_NULL || RTGUI_WIDGET_IS_HIDE(widget)) return;
+    if (widget == RT_NULL || RTGUI_WIDGET_IS_HIDE(widget))
+        return;
+
+    // TODO: use some magic to remove this ugly sanity check
+    if (RTGUI_IS_WIN(widget))
+    {
+        rt_kprintf("RTGUI: clip of window is managed by topwin\n");
+        rt_kprintf("RTGUI: don't use rtgui_widget_update_clip(win)\n");
+        return;
+    }
 
     parent = widget->parent;
     /* if there is no parent, there is no clip to update. */
