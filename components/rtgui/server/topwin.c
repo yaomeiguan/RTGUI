@@ -1025,8 +1025,8 @@ static void rtgui_topwin_redraw(struct rtgui_rect *rect)
 }
 
 /* a window enter modal mode will modal all the sibling window and parent
- * window all along to the root window(which parent is RT_NULL or the desktop
- * window if there is). If a root window modals, there is nothing to do here.*/
+ * window all along to the root window. If a root window modals, there is
+ * nothing to do here.*/
 rt_err_t rtgui_topwin_modal_enter(struct rtgui_event_win_modal_enter *event)
 {
     struct rtgui_topwin *topwin, *parent_top;
@@ -1045,16 +1045,13 @@ rt_err_t rtgui_topwin_modal_enter(struct rtgui_event_win_modal_enter *event)
     /* modal window should be on top already */
     RT_ASSERT(get_topwin_from_list(parent_top->child_list.next) == topwin);
 
-    while (!IS_ROOT_WIN(parent_top))
-    {
+    do {
         rtgui_dlist_foreach(node, &parent_top->child_list, next)
-        get_topwin_from_list(node)->flag |= WINTITLE_MODALED;
-        parent_top->flag |= WINTITLE_MODALED;
+            get_topwin_from_list(node)->flag |= WINTITLE_MODALED;
 
+        parent_top->flag |= WINTITLE_MODALED;
         parent_top = parent_top->parent;
-    }
-    /* mark root window as modaled */
-    parent_top->flag |= WINTITLE_MODALED;
+    } while (parent_top);
 
     topwin->flag &= ~WINTITLE_MODALED;
     topwin->flag |= WINTITLE_MODALING;
