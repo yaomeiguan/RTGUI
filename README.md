@@ -32,6 +32,8 @@ player. The features of RTGUI contains:
 
 2. use it in RT-Thread
 
-    Set the environment variable RTT_RTGUI point to the abosulute directory of
-    components/rtgui. Re-run scons in your project directory.
+    Because RT-Thread has removed RTGUI component. You have to copy
+    `components/rtgui` to the `components` folder. If you need demo, you should
+    copy all the files in `demo/examples` to the examples/gui folder under RTT.
+    Don't forget to re-run scons.
 

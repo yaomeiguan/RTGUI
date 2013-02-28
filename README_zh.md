@@ -24,5 +24,8 @@ RTGUI 是一系列 RT-Thread 组件的一部分。它的目的是为开发人员
 
 2. 在 RT-Thread 中使用
 
-    在系统或运行环境中设置 RTT_RTGUI 变量，使其指向 components/rtgui 。然后再在你的工程目录里重新运行 scons 即可。
+    由于 RT-Thread 上游已经将 RTGUI 组件删除，所以如果需要在 RT-Thread 中运行
+    RTGUI的话需要将 components/rtgui 复制到 RTT 的 components 文件夹之下。如果
+    需要运行demo，需要将 demo/examples 内的所有文件复制到 RTT 的 examples/gui/
+    目录下(没有目录的需要创建一个)。然后再在你的工程目录里重新运行 scons 即可。
 
