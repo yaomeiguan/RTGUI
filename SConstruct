@@ -90,7 +90,7 @@ path_jn = os.path.join
 BSP_ROOT = path_jn(RTT_ROOT, 'bsp/simulator')
 
 # make use of bsp/simulator
-sim_objs = SConscript(GetCurrentDir() + '/win32-sim/SConscript',
+sim_objs = SConscript(GetCurrentDir() + '/sim-common/SConscript',
 					   variant_dir='build/simulator/sim-com',
 					   duplicate=0)
 
