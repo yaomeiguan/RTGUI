@@ -42,7 +42,11 @@ for exe_name, src_path in TARGETS:
     # end building
     EndBuilding(exe_name)
 
-if ARGUMENTS.get('build_tests') == '1':
+AddOption('--build-tests',
+          action='store_true',
+          help='build all the test cases')
+
+if GetOption('build_tests'):
     # build for testcases
     list = os.listdir(os.path.join(str(Dir('#')), 'test_cases'))
     for d in list:
