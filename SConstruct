@@ -5,6 +5,7 @@ if os.getenv('RTT_ROOT'):
     RTT_ROOT = os.getenv('RTT_ROOT')
 else:
     print "error! Please set the environment var 'RTT_ROOT'"
+    sys.exit(255)
 
 path_cwd = os.path.normpath(os.getcwd())
 sys.path = sys.path + [os.path.join(RTT_ROOT, 'tools')]
