@@ -82,9 +82,11 @@ int rt_basic_system_init()
 {
     rt_thread_t tid;
 
+    /* set the init thread to highest priority because we need a fully
+     * initialized env when other thread is about to start.*/
     tid = rt_thread_create("init",
                            rt_basic_system_entry, RT_NULL,
-                           2048, RT_THREAD_PRIORITY_MAX / 4, 20);
+                           2048, 0, 20);
 
     if (tid != RT_NULL)
         rt_thread_startup(tid);
