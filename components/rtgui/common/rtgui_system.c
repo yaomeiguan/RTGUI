@@ -316,10 +316,6 @@ FINSH_FUNCTION_EXPORT(list_guimem, display memory information);
 /* RTGUI Event Dump                                                     */
 /************************************************************************/
 
-#ifdef _WIN32_NATIVE
-#define RTGUI_EVENT_DEBUG
-#endif
-
 #ifdef RTGUI_EVENT_DEBUG
 const char *event_string[] =
 {
