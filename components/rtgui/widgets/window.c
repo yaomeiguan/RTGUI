@@ -537,14 +537,8 @@ rt_bool_t rtgui_win_event_handler(struct rtgui_object *object, struct rtgui_even
 
     case RTGUI_EVENT_MOUSE_BUTTON:
         {
-            rt_bool_t res = rtgui_container_dispatch_mouse_event(RTGUI_CONTAINER(win),
-                                        (struct rtgui_event_mouse *)event);
-#ifndef RTGUI_USING_SMALL_SIZE
-            if (RTGUI_WIDGET(object)->on_mouseclick != RT_NULL)
-            {
-                RTGUI_WIDGET(object)->on_mouseclick(object, event);
-            }
-#endif
+            rt_bool_t res;
+
             /* check whether has widget which handled mouse event before.
              *
              * Note #1: that the widget should have already received mouse down
@@ -565,6 +559,20 @@ rt_bool_t rtgui_win_event_handler(struct rtgui_object *object, struct rtgui_even
                 win->last_mevent_widget = RT_NULL;
             }
 
+            /** if a widget will destroy the window in the event_handler(or in
+             * on_* callbacks), it should return RT_TRUE. Otherwise, it will
+             * crash the application.
+             *
+             * TODO: add it in the doc
+             */
+            res = rtgui_container_dispatch_mouse_event(RTGUI_CONTAINER(win),
+                                        (struct rtgui_event_mouse *)event);
+#ifndef RTGUI_USING_SMALL_SIZE
+            if (!res && RTGUI_WIDGET(object)->on_mouseclick != RT_NULL)
+            {
+                res = RTGUI_WIDGET(object)->on_mouseclick(object, event);
+            }
+#endif
             return res;
         }
 
