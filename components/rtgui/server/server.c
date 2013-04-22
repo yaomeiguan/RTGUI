@@ -97,29 +97,30 @@ void rtgui_server_handle_mouse_btn(struct rtgui_event_mouse *event)
 
     /* get the wnd which contains the mouse */
     wnd = rtgui_topwin_get_wnd_no_modaled(event->x, event->y);
-    if (wnd != RT_NULL)
+    if (wnd == RT_NULL)
+        return;
+
+    event->wid = wnd->wid;
+
+    /* only raise window if the button is pressed down */
+    if (event->button & RTGUI_MOUSE_BUTTON_DOWN &&
+        rtgui_topwin_get_focus() != wnd)
     {
-        event->wid = wnd->wid;
-
-        /* only raise window if the button is pressed down */
-        if (event->button & RTGUI_MOUSE_BUTTON_DOWN
-            && rtgui_topwin_get_focus() != wnd)
-        {
-            rtgui_topwin_activate_topwin(wnd);
-        }
-
-        if (wnd->title != RT_NULL &&
-                rtgui_rect_contains_point(&(RTGUI_WIDGET(wnd->title)->extent), event->x, event->y) == RT_EOK)
-        {
-            rtgui_topwin_title_onmouse(wnd, event);
-        }
-        else
-        {
-            /* send mouse event to thread */
-            rtgui_send(wnd->app, (struct rtgui_event *)event, sizeof(struct rtgui_event_mouse));
-        }
-        return ;
+        rtgui_topwin_activate_topwin(wnd);
     }
+
+    if (wnd->title != RT_NULL &&
+        rtgui_rect_contains_point(&(RTGUI_WIDGET(wnd->title)->extent),
+                                  event->x, event->y) == RT_EOK)
+    {
+        rtgui_topwin_title_onmouse(wnd, event);
+    }
+    else
+    {
+        /* send mouse event to thread */
+        rtgui_send(wnd->app, (struct rtgui_event *)event, sizeof(struct rtgui_event_mouse));
+    }
+    return;
 }
 
 static struct rtgui_topwin *last_monitor_topwin = RT_NULL;
