@@ -551,12 +551,15 @@ rt_bool_t rtgui_win_event_handler(struct rtgui_object *object, struct rtgui_even
             if (((struct rtgui_event_mouse *)event)->button & RTGUI_MOUSE_BUTTON_UP
                     && win->last_mevent_widget != RT_NULL)
             {
-                RTGUI_OBJECT(win->last_mevent_widget)->event_handler(
+                if (RTGUI_OBJECT(win->last_mevent_widget)->event_handler(
                         RTGUI_OBJECT(win->last_mevent_widget),
-                        event);
+                        event) == RT_TRUE)
+                {
+                    /* clean last mouse event handled widget */
+                    win->last_mevent_widget = RT_NULL;
 
-                /* clean last mouse event handled widget */
-                win->last_mevent_widget = RT_NULL;
+                    return RT_TRUE;
+                }
             }
 
             /** if a widget will destroy the window in the event_handler(or in
