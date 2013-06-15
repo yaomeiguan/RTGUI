@@ -38,23 +38,22 @@ RTM_EXPORT(_rtgui_object);
 
 void rtgui_type_object_construct(const rtgui_type_t *type, rtgui_object_t *object)
 {
-    /* first call parent's type */
+    /* construct from parent to children */
     if (type->parent != RT_NULL)
         rtgui_type_object_construct(type->parent, object);
 
-    if (type->constructor) type->constructor(object);
+    if (type->constructor)
+        type->constructor(object);
 }
 
 void rtgui_type_destructors_call(const rtgui_type_t *type, rtgui_object_t *object)
 {
-    const rtgui_type_t *t;
+    /* destruct from children to parent */
+    if (type->destructor)
+        type->destructor(object);
 
-    t = type;
-    while (t)
-    {
-        if (t->destructor) t->destructor(object);
-        t = t->parent;
-    }
+    if (type->parent)
+        rtgui_type_destructors_call(type->parent, object);
 }
 
 rt_bool_t rtgui_type_inherits_from(const rtgui_type_t *type, const rtgui_type_t *parent)
